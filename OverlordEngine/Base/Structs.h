@@ -26,6 +26,8 @@ struct SceneSettings
 	bool vSyncEnabled{ true };
 	XMFLOAT4 clearColor{ Colors::CornflowerBlue };
 
+	bool inDebug{};
+
 	void Toggle_ShowInfoOverlay() { showInfoOverlay = !showInfoOverlay; }
 	bool Toggle_DrawPhysXDebug() { drawPhysXDebug = !drawPhysXDebug; }
 	bool Toggle_DrawGrid() { drawGrid = !drawGrid; }

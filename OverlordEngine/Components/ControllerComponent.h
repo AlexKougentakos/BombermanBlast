@@ -19,8 +19,14 @@ public:
 
 	XMFLOAT3 GetPosition() const;
 	XMFLOAT3 GetFootPosition() const;
+	void SetFootPosition(const XMFLOAT3 footPosition) const;
+	PxF32 GetContactOffset() const;
+	void SetContactOffset(const float offset) const;
 	PxControllerCollisionFlags GetCollisionFlags() const {return m_CollisionFlag;}
 	PxController* GetPxController() const { return m_pController; }
+
+	void SetStepOffset(const float offset) const;
+	PxF32 GetStepOffset() const;
 
 protected:
 	void Initialize(const SceneContext& sceneContext) override;

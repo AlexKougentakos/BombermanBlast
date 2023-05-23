@@ -157,3 +157,60 @@ void ModelComponent::SetMaterial(UINT materialId, UINT8 submeshId)
 	const auto pMaterial = MaterialManager::Get()->GetMaterial(materialId);
 	SetMaterial(pMaterial, submeshId);
 }
+
+float ModelComponent::CalculateWidth() const
+{
+	float minX = std::numeric_limits<float>::max();
+	float maxX = std::numeric_limits<float>::lowest();
+
+	for (const auto& subMesh : m_pMeshFilter->GetMeshes())
+	{
+		for (const auto& position : subMesh.positions)
+		{
+			if (position.x < minX)
+				minX = position.x;
+			if (position.x > maxX)
+				maxX = position.x;
+		}
+	}
+
+	return maxX - minX;
+}
+
+float ModelComponent::CalculateHeight() const
+{
+	float minY = std::numeric_limits<float>::max();
+	float maxY = std::numeric_limits<float>::lowest();
+
+	for (const auto& subMesh : m_pMeshFilter->GetMeshes())
+	{
+		for (const auto& position : subMesh.positions)
+		{
+			if (position.y < minY)
+				minY = position.y;
+			if (position.y > maxY)
+				maxY = position.y;
+		}
+	}
+
+	return maxY - minY;
+}
+
+float ModelComponent::CalculateDepth() const
+{
+	float minZ = std::numeric_limits<float>::max();
+	float maxZ = std::numeric_limits<float>::lowest();
+
+	for (const auto& subMesh : m_pMeshFilter->GetMeshes())
+	{
+		for (const auto& position : subMesh.positions)
+		{
+			if (position.z < minZ)
+				minZ = position.z;
+			if (position.z > maxZ)
+				maxZ = position.z;
+		}
+	}
+
+	return maxZ - minZ;
+}

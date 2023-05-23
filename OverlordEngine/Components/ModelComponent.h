@@ -21,6 +21,11 @@ public:
 	ModelAnimator* GetAnimator() const { return m_pAnimator; }
 	bool HasAnimator() const { return m_pAnimator != nullptr; }
 
+	float CalculateDepth() const;
+	float CalculateHeight() const;
+	float CalculateWidth() const;
+	
+
 protected:
 	void Initialize(const SceneContext& sceneContext) override;
 	void Update(const SceneContext&) override;

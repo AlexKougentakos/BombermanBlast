@@ -99,6 +99,24 @@ XMFLOAT3 ControllerComponent::GetFootPosition() const
 	return PhysxHelper::ToXMFLOAT3(m_pController->getFootPosition());
 }
 
+void ControllerComponent::SetFootPosition(const XMFLOAT3 footPosition) const
+{
+	ASSERT_NULL_(m_pController);
+	m_pController->setFootPosition(PhysxHelper::ToPxExtendedVec3(footPosition));
+}
+
+PxF32 ControllerComponent::GetContactOffset() const
+{
+	ASSERT_NULL_(m_pController);
+	return m_pController->getContactOffset();
+}
+
+void ControllerComponent::SetContactOffset(PxF32 offset) const
+{
+	ASSERT_NULL_(m_pController);
+	m_pController->setContactOffset(offset);
+}
+
 void ControllerComponent::SetCollisionGroup(CollisionGroup groups)
 {
 	m_CollisionGroups.word0 = PxU32(groups);
@@ -110,3 +128,16 @@ void ControllerComponent::SetCollisionIgnoreGroup(CollisionGroup ignoreGroups)
 	m_CollisionGroups.word1 = PxU32(ignoreGroups);
 	ApplyFilterData();
 }
+
+PxF32 ControllerComponent::GetStepOffset() const
+{
+	ASSERT_NULL_(m_pController);
+	return m_pController->getStepOffset();
+}
+
+void ControllerComponent::SetStepOffset(const float offset) const
+{
+	ASSERT_NULL_(m_pController);
+	m_pController->setStepOffset(offset);
+}
+

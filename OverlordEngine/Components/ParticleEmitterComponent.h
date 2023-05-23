@@ -53,7 +53,7 @@ protected:
 private:
 	void CreateVertexBuffer(const SceneContext& sceneContext); //Method to create the vertex buffer
 	void UpdateParticle(Particle& p, float elapsedTime) const;
-	void SpawnParticle(Particle& p);
+	void SpawnParticle(Particle& p) const;
 
 	TextureData* m_pParticleTexture{};
 	static ParticleMaterial* m_pParticleMaterial; //Material used to render the particles (static >> shared by all emitters)

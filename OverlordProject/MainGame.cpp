@@ -7,9 +7,10 @@
 //#define W5
 //#define W6
 //#define W7
-#define W8
+//#define W8
 //#define W9
 //#define W10
+#define GameProj
 
 /*MILESTONE Content*/
 //#define MILESTONE_1
@@ -56,6 +57,11 @@
 #ifdef W10
 #include "Scenes/Week 10/PostProcessingScene.h"
 #endif
+
+#ifdef GameProj
+#include "Scenes/GameScene/BombermanBlastScene.h"
+#endif // GameProj
+
 
 #ifdef MILESTONE_1
 #include "Scenes/Week 3/PongScene.h"
@@ -134,6 +140,11 @@ void MainGame::Initialize()
 #ifdef W10
 	SceneManager::Get()->AddGameScene(new PostProcessingScene());
 #endif
+
+#ifdef GameProj
+	SceneManager::Get()->AddGameScene(new BombermanBlastScene());
+#endif
+
 
 #ifdef MILESTONE_1
 	SceneManager::Get()->AddGameScene(new PongScene());

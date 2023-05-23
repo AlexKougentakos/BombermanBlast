@@ -16,7 +16,7 @@ protected:
 private:
 	ModelAnimator* pAnimator{};
 
-	int m_AnimationClipId{ 0 };
+	int m_AnimationClipId{ 1 };
 	float m_AnimationSpeed{ 1.f };
 
 	char** m_ClipNames{};

@@ -9,7 +9,6 @@ ShadowMapRenderer::~ShadowMapRenderer()
 
 void ShadowMapRenderer::Initialize()
 {
-	TODO_W8(L"Implement Initialize")
 	//1. Create a separate RenderTarget (see RenderTarget class), store in m_pShadowRenderTarget
 	//	- RenderTargets are initialized with the RenderTarget::Create function, requiring a RENDERTARGET_DESC
 	//	- Initialize the relevant fields of the RENDERTARGET_DESC (enableColorBuffer:false, enableDepthSRV:true, width & height)
