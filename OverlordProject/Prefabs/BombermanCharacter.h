@@ -1,4 +1,6 @@
 ﻿#pragma once
+class GridComponent;
+
 struct CharacterDesc
 {
 	CharacterDesc(
@@ -28,13 +30,19 @@ struct CharacterDesc
 	int actionId_MoveRight{ -1 };
 	int actionId_MoveForward{ -1 };
 	int actionId_MoveBackward{ -1 };
-	int actionId_Jump{ -1 };
+	int actionId_PlaceBomb{ -1 };
+};
+
+struct PlayerStats
+{
+	int bombs{ 1 };
+	int blastRadius{ 1 };
 };
 
 class BombermanCharacter : public GameObject
 {
 public:
-	BombermanCharacter(const CharacterDesc& characterDesc);
+	BombermanCharacter(const CharacterDesc& characterDesc, GridComponent* const pGrid);
 	~BombermanCharacter() override = default;
 
 	BombermanCharacter(const BombermanCharacter& other) = delete;
@@ -45,8 +53,11 @@ public:
 	void DrawImGui();
 	float GetYAxisRotation() const { return m_YRotation; }
 
+	void SpawnBomb() const;
+
 protected:
 	void Initialize(const SceneContext&) override;
+	void HandleInputAndMovement(const SceneContext& sceneContext);
 	void Update(const SceneContext&) override;
 
 private:
@@ -62,5 +73,7 @@ private:
 	XMFLOAT3 m_CurrentDirection{};					//Current/Last Direction based on Camera forward/right (Stored for deacceleration)
 	float m_YRotation{}; //In Degrees
 
+	PlayerStats m_PlayerStats{};
+	GridComponent* m_pGrid{};
 };
 

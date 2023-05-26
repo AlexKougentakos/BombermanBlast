@@ -27,6 +27,8 @@ void RockPrefab::Initialize(const SceneContext& /*gameContext*/)
 	//Scale if necessary
 	m_pModelComponent->GetTransform()->Scale(m_Scale);
 
+	SetTag(L"Rock");
+
 }
 
 void RockPrefab::Update(const SceneContext& /*gameContext*/)

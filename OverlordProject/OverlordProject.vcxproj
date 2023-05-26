@@ -94,8 +94,10 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Components\Grid.cpp" />
+    <ClCompile Include="Materials\Post\PostBlur.cpp" />
+    <ClCompile Include="Materials\Post\PostGrayscale.cpp" />
     <ClCompile Include="Prefabs\BombPrefab.cpp" />
-    <ClCompile Include="Components\LevelComponent.cpp" />
     <ClCompile Include="Prefabs\BombermanCharacter.cpp" />
     <ClCompile Include="Prefabs\RockPrefab.cpp" />
     <ClCompile Include="Scenes\GameScene\BombermanBlastScene.cpp" />
@@ -107,6 +109,7 @@
     <ClCompile Include="Materials\SpikyMaterial.cpp" />
     <ClCompile Include="Materials\UberMaterial.cpp" />
     <ClCompile Include="Prefabs\Character.cpp" />
+    <ClCompile Include="Scenes\Week 10\PostProcessingScene.cpp" />
     <ClCompile Include="Scenes\Week 4\ModelTestScene.cpp" />
     <ClCompile Include="Scenes\Week 3\PongScene.cpp" />
     <ClCompile Include="Scenes\Week 3\ComponentTestScene.cpp" />
@@ -149,8 +152,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Components\Grid.h" />
+    <ClInclude Include="Materials\Post\PostBlur.h" />
+    <ClInclude Include="Materials\Post\PostGrayscale.h" />
     <ClInclude Include="Prefabs\BombPrefab.h" />
-    <ClInclude Include="Components\LevelComponent.h" />
     <ClInclude Include="Prefabs\BombermanCharacter.h" />
     <ClInclude Include="Prefabs\RockPrefab.h" />
     <ClInclude Include="Scenes\GameScene\BombermanBlastScene.h" />
@@ -162,6 +167,7 @@
     <ClInclude Include="Materials\SpikyMaterial.h" />
     <ClInclude Include="Materials\UberMaterial.h" />
     <ClInclude Include="Prefabs\Character.h" />
+    <ClInclude Include="Scenes\Week 10\PostProcessingScene.h" />
     <ClInclude Include="Scenes\Week 4\ModelTestScene.h" />
     <ClInclude Include="Scenes\Week 3\PongScene.h" />
     <ClInclude Include="Scenes\Week 3\ComponentTestScene.h" />

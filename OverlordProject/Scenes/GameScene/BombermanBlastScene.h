@@ -14,7 +14,10 @@ public:
 	BombermanBlastScene& operator=(const BombermanBlastScene& other) = delete;
 	BombermanBlastScene& operator=(BombermanBlastScene&& other) noexcept = delete;
 
+	GameObject* GetLevel() const { return m_pLevel; }
+
 protected:
+	void CalculateNeededBlockSize();
 	void Initialize() override;
 	void Update() override;
 	void Draw() override;
@@ -45,7 +48,7 @@ private:
 		CharacterMoveRight,
 		CharacterMoveForward,
 		CharacterMoveBackward,
-		CharacterJump
+		CharacterPlaceBomb
 	};
 
 	void ChangeAnimationClip(UINT animationID);
@@ -56,25 +59,29 @@ private:
 	void SpawnRocks();
 	void ExplodeBomb(const BombPrefab& bomb);
 
+	//This will appear reversed in the game. The topLeft is the bottom left..etc
 	std::vector<char> m_Map
 	{
-		'X','O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X',
-		'O','X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O',
-		'X','O', 'X', 'O', 'X', 'O', 'O', 'O', 'X', 'O', 'X', 'O', 'X',
-		'O','X', 'O', 'X', 'O', 'O', 'O', 'O', 'O', 'X', 'O', 'X', 'O',
-		'X','O', 'X', 'O', 'X', 'O', 'O', 'O', 'X', 'O', 'X', 'O', 'X',
-		'O','X', 'O', 'X', 'O', 'O', 'O', 'O', 'O', 'X', 'O', 'X', 'O',
-		'X','O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X',
-		'O','X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O',
-		'X','O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X',
-		'O','X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
 	};
+
+	int m_NumOfColumns{13}, m_NumOfRows{10};
 
 	XMFLOAT3 m_MapBottomLeft{}, m_MapTopRight{};
 	float m_SingleBlockSize{};
-	BombPrefab* test{};
+	float m_SingleBlockScale{};
 
 	//Debug
 	bool m_IsDebugCameraActive{ false };
+	GameObject* ptest{};
 };
 
