@@ -56,21 +56,22 @@ private:
 	 This function spawns rocks on the map. It finds the bottom left and top right of the map and spawns rocks in between.
 	 It scales the rocks and their colliders to fit to the map.
 	 */
-	void SpawnRocks();
-	void ExplodeBomb(const BombPrefab& bomb);
+	void SpawnRocks() const;
 
 	//This will appear reversed in the game. The topLeft is the bottom left..etc
-	std::vector<char> m_Map
+	//Map is to be used for debug visualizations
+	std::vector<char> m_Map{};
+	std::vector<char> m_StartingLayout
 	{
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'R','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'R', 'O', 'R', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'R', 'R', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'R', 'O', 'O', 'O', 'O',
 		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
 	};
 

@@ -36,10 +36,9 @@ void BombermanCharacter::Update(const SceneContext& sceneContext)
 void BombermanCharacter::SpawnBomb() const
 {
  	const XMFLOAT3 playerPos = GetTransform()->GetPosition();
-	const GridCell playerCell = m_pGrid->GetCell(playerPos);
+	GridCell& playerCell = m_pGrid->GetCell(playerPos);
 
 	m_pGrid->PlaceObject(new BombPrefab(m_PlayerStats.blastRadius, m_pGrid), playerCell);
-
 }
 
 void BombermanCharacter::HandleInputAndMovement(const SceneContext& sceneContext)

@@ -1,5 +1,6 @@
 #pragma once
 
+struct GridCell;
 class GridComponent;
 
 class BombPrefab final : public GameObject
@@ -27,5 +28,6 @@ private:
 	int m_BlastRadius{ 1 };
 
 	void Explode(int explosionDistance) const;
+	void ExplodeRecursive(const GridCell& cell, int explosionDistance, std::vector<GridCell>& affectedCellsOut) const;
 	GridComponent* m_pGrid{};
 };

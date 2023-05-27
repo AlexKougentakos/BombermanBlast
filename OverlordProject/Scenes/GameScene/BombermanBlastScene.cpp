@@ -63,6 +63,10 @@ void BombermanBlastScene::Initialize()
 	m_MapTopRight = { 5.0f,0,3.45f };
 
 	//Level
+	//Fill the map with 'O' for open space
+	m_Map.resize(m_NumOfRows * m_NumOfColumns);
+	m_Map.assign(m_Map.size(), 'O');
+
 	m_pLevel = new GameObject();
 	AddChild(m_pLevel);
 	const auto levelRigidBody = m_pLevel->AddComponent(new RigidBodyComponent(true));
@@ -77,7 +81,7 @@ void BombermanBlastScene::Initialize()
 	const auto pModelCompo = m_pLevel->AddComponent(new ModelComponent(L"Meshes/Level.ovm"));
 	pModelCompo->SetMaterial(pDiffuseMat2->GetMaterialId());
 
-	//Add stones
+	//Define Level Boundries
 	SpherePrefab* pBottomLeftPoint{new SpherePrefab(0.2f)}, * pTopRightPoint{new SpherePrefab(0.2f)};
 	AddChild(pBottomLeftPoint);
 	AddChild(pTopRightPoint);
@@ -87,7 +91,6 @@ void BombermanBlastScene::Initialize()
 
 	CalculateNeededBlockSize();
 
-	//SpawnRocks();
 	//Add grid component to level
 	m_pLevel->AddComponent(new GridComponent(m_Map, m_MapBottomLeft, m_MapTopRight, m_SingleBlockSize));
 	
@@ -117,65 +120,25 @@ void BombermanBlastScene::Initialize()
 	m_pModelAnimator->SetAnimationSpeed(1.f);
 	m_pModelAnimator->Play();
 
-	m_pLevel->GetComponent<GridComponent>()->PlaceObject(new RockPrefab(RockType::BREAKABLE), 7, 2);
+	SpawnRocks();
 }
 
-void BombermanBlastScene::SpawnRocks()
+void BombermanBlastScene::SpawnRocks() const 
 {
+	const auto grid = m_pLevel->GetComponent<GridComponent>();
+
 	//Todo: redo this to work with the grid
-	for (int currentRow{ 0 }; currentRow < m_NumOfRows; ++currentRow)
+	for (int currentRow = 1; currentRow <= m_NumOfRows; ++currentRow)
 	{
-		for (int currentCol{ 0 }; currentCol < m_NumOfColumns; ++currentCol)
+		for (int currentCol = 1; currentCol <= m_NumOfColumns; ++currentCol)
 		{
-			// Get the value at the corresponding index in m_Map
-			const char mapValue = m_Map[currentRow * m_NumOfColumns + currentCol];
-
-			if (mapValue == 'X')
+			const int index = (currentRow - 1) * m_NumOfColumns + (currentCol - 1);
+			if (m_StartingLayout[index] == 'R')
 			{
-				const auto pRock = new RockPrefab(RockType::BREAKABLE, m_SingleBlockScale);
-				AddChild(pRock);
-
-				const auto pos = XMFLOAT3{
-					m_MapBottomLeft.x + m_SingleBlockSize / 2 + currentCol * m_SingleBlockSize,
-					0,
-					m_MapBottomLeft.z + m_SingleBlockSize / 2 + currentRow * m_SingleBlockSize
-				};	
-
-				pRock->GetTransform()->Translate(pos);
+				grid->PlaceObject(new RockPrefab(RockType::BREAKABLE), currentRow, currentCol);
 			}
 		}
 	}
-}
-
-void BombermanBlastScene::ExplodeBomb(const BombPrefab& bomb)
-{
-	auto origin = PhysxHelper::ToPxVec3(bomb.GetTransform()->GetWorldPosition());
-	origin.y += 0.3f;
-	const auto direction = PhysxHelper::ToPxVec3(m_pMainCamera->GetTransform()->GetRight());
-	//Offset the origin to be outside the bomb
-	origin += bomb.GetWidth() / 2.f * direction;
-
-	PxRaycastBuffer hit{};
-
-	if (GetPhysxProxy()->Raycast(origin, direction, m_SingleBlockSize, hit))
-	{
-		const auto objectHit = static_cast<BaseComponent*>(hit.block.actor->userData)->GetGameObject();
-
-		if (dynamic_cast<RockPrefab*>(objectHit))
-		{
-			RemoveChild(objectHit, true);
-		}
-
-		//Todo: Implement the collision with a character
-		else if (dynamic_cast<BombermanCharacter*>(objectHit))
-		{
-			
-		}
-
-
-	}
-
-	DebugRenderer::DrawLine(PhysxHelper::ToXMFLOAT3(origin), PhysxHelper::ToXMFLOAT3( origin + direction * m_SingleBlockSize), XMFLOAT4{1, 0, 0, 1	 });
 }
 
 void BombermanBlastScene::CalculateNeededBlockSize()
@@ -189,8 +152,6 @@ void BombermanBlastScene::CalculateNeededBlockSize()
 
 	RemoveChild(defaultRock, true);
 }
-
-
 
 void BombermanBlastScene::Update()
 {
@@ -207,6 +168,7 @@ void BombermanBlastScene::Update()
 	//else
 	//	ChangeAnimationClip(0);
 	//ExplodeBomb(*test);
+	m_pLevel->GetComponent<GridComponent>()->UpdateCharacterOnMap(m_pCharacter->GetTransform()->GetPosition());
 }
 
 void BombermanBlastScene::ChangeAnimationClip(UINT animationID)
@@ -247,8 +209,82 @@ void BombermanBlastScene::OnGUI()
 	if (ImGui::Button("Add Object"))
 	{
 		m_pLevel->GetComponent<GridComponent>()->PlaceObject(new RockPrefab(RockType::BREAKABLE),
-			m_pLevel->GetComponent<GridComponent>()->GetCellToTheRight(7, 2));
+			m_pLevel->GetComponent<GridComponent>()->GetCellOnTop(1, 1));
 		
 	}
 
+	//Display the map
+	ImGui::Begin("Map Display");
+
+	static int selectedCell{ 0 };
+	// Calculate the size of each button
+	const ImVec2 buttonSize(30, 30);  // Adjust the size as per your requirements
+
+	// Iterate over the m_map vector and display each element as a button
+	for (int row = m_NumOfRows - 1; row >= 0; --row)  // Start from bottom-left
+	{
+		for (int col = 0; col < m_NumOfColumns; ++col)
+		{
+			// Calculate the index in the m_map vector based on row and column
+			const int index = row * m_NumOfColumns + col;
+
+			// Determine the color based on the char value
+			ImVec4 buttonColor;
+			switch (m_Map[index])
+			{
+			case 'R':
+				buttonColor = ImVec4(0.6f, 0.4f, 0.2f, 1.0f);  // Brownish color
+				break;
+			case 'P':
+				buttonColor = ImVec4(0.86f, 0.08f, 0.24f, 1.0f);  // Crimson color
+				break;
+			case 'B':
+				buttonColor = ImVec4(0.2f, 0.2f, 0.2f, 1.0f);  // Dark gray (almost black)
+				break;
+			case 'O':
+				buttonColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);  // Almost white
+				break;
+			default:
+				buttonColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);  // Default color (white)
+				break;
+			}
+
+			// Set the button color
+			ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
+
+			// Display the button
+			ImGui::PushID(index);
+			ImGui::Button(std::string(1, m_Map[index]).c_str(), buttonSize);
+
+			// Check if the button is hovered
+			if (ImGui::IsItemHovered())
+			{
+				// Display the tooltip with the currentIndex
+				ImGui::SetTooltip("Current Index: %d", index);
+			}
+
+			ImGui::PopID();
+			ImGui::SameLine();  // Align buttons horizontally
+
+			// Reset the button color
+			ImGui::PopStyleColor();
+		}
+		ImGui::NewLine();  // Move to the next row
+	}
+
+
+	if (ImGui::CollapsingHeader("Cell Contents", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::InputInt("SetValue", &selectedCell);
+
+		const auto grid = m_pLevel->GetComponent<GridComponent>();
+		for (const auto item : grid->GetCell(selectedCell).objects)
+		{
+			if (item)
+				ImGui::Text("%s", item->GetTag().c_str());
+		}
+	}
+
+	// End ImGui window
+	ImGui::End();
 }

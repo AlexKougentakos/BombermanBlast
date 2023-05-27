@@ -36,7 +36,7 @@ struct CharacterDesc
 struct PlayerStats
 {
 	int bombs{ 1 };
-	int blastRadius{ 1 };
+	int blastRadius{ 3 };
 };
 
 class BombermanCharacter : public GameObject
