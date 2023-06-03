@@ -2,6 +2,8 @@
 #include "RockPrefab.h"
 
 #include "Materials/DiffuseMaterial.h"
+#include "Materials/Shadow/DiffuseMaterial_Shadow.h"
+#include "Materials/Shadow/DiffuseMaterial_ShadowFixed.h"
 
 RockPrefab::RockPrefab(RockType type, float scale)
 {
@@ -11,7 +13,7 @@ RockPrefab::RockPrefab(RockType type, float scale)
 
 void RockPrefab::Initialize(const SceneContext& /*gameContext*/)
 {
-	const auto pDiffuseMat = MaterialManager::Get()->CreateMaterial<DiffuseMaterial>();
+	const auto pDiffuseMat = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_ShadowFixed>(XMFLOAT3{0, -1, -1});
 	pDiffuseMat->SetDiffuseTexture(L"Textures/brick.png");
 
 	m_pModelComponent = AddComponent(new ModelComponent(L"Meshes/Brick.ovm"));
@@ -28,8 +30,8 @@ void RockPrefab::Initialize(const SceneContext& /*gameContext*/)
 	m_pModelComponent->GetTransform()->Scale(m_Scale);
 
 	SetTag(L"Rock");
-
 }
+
 
 void RockPrefab::Update(const SceneContext& /*gameContext*/)
 {

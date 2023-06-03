@@ -1,14 +1,17 @@
 ﻿#include "stdafx.h"
 #include "Grid.h"
 
+#include "PowerUpManager.h"
+#include "PowerUpManager.h"
 #include "Prefabs/BombermanCharacter.h"
-#include "Prefabs/BombPrefab.h"
+#include "Prefabs/PowerUps/PowerUp.h"
 
-GridComponent::GridComponent(std::vector<char>& gridMap, XMFLOAT3 bottomLeft, XMFLOAT3 topRight, float cellSize)
+GridComponent::GridComponent(std::vector<char>& gridMap, XMFLOAT3 bottomLeft, XMFLOAT3 topRight, float cellSize, float scaleFactor)
 	:m_GridMap(gridMap),
 	m_BottomLeft(bottomLeft),
 	m_TopRight(topRight),
-	m_CellSize(cellSize)
+	m_CellSize(cellSize),
+    m_CellScaleFactor(scaleFactor)
 {
 	InitializeCells();
 }
@@ -22,7 +25,7 @@ GridCell& GridComponent::GetCell(const XMFLOAT3& position)
     for (auto& cell : m_GridCells)
     {
 	    if (position.x >= cell.bottomLeft.x && position.x <= cell.topRight.x &&
-                    	position.z >= cell.bottomLeft.z && position.z <= cell.topRight.z)
+            position.z >= cell.bottomLeft.z && position.z <= cell.topRight.z)
 	    {
 	    	return cell;
 		}
@@ -59,27 +62,35 @@ GridCell& GridComponent::GetCell(int row, int col)
     return m_GridCells[row * numOfRows + col];
 }
 
-void GridComponent::Draw(const SceneContext& /*sceneContext*/)
+void GridComponent::Draw(const SceneContext& sceneContext)
 {
-	const auto drawCol = XMFLOAT4{ Colors::BlueViolet };
+    if (sceneContext.settings.drawPhysXDebug)
+    {
 
-	for (const auto& cell : m_GridCells)
-	{
-		DebugRenderer::DrawLine(cell.bottomLeft, {cell.bottomLeft.x, cell.bottomLeft.y, cell.topRight.z},drawCol);
-		DebugRenderer::DrawLine({ cell.bottomLeft.x, cell.bottomLeft.y, cell.topRight.z }, cell.topRight,drawCol);
-		DebugRenderer::DrawLine(cell.topRight, { cell.topRight.x, cell.bottomLeft.y, cell.bottomLeft.z}, drawCol);
-		DebugRenderer::DrawLine({ cell.topRight.x, cell.bottomLeft.y, cell.bottomLeft.z }, cell.bottomLeft, drawCol);
-	}
+        const auto drawCol = XMFLOAT4{ Colors::BlueViolet };
+
+        for (const auto& cell : m_GridCells)
+        {
+            DebugRenderer::DrawLine(cell.bottomLeft, { cell.bottomLeft.x, cell.bottomLeft.y, cell.topRight.z }, drawCol);
+            DebugRenderer::DrawLine({ cell.bottomLeft.x, cell.bottomLeft.y, cell.topRight.z }, cell.topRight, drawCol);
+            DebugRenderer::DrawLine(cell.topRight, { cell.topRight.x, cell.bottomLeft.y, cell.bottomLeft.z }, drawCol);
+            DebugRenderer::DrawLine({ cell.topRight.x, cell.bottomLeft.y, cell.bottomLeft.z }, cell.bottomLeft, drawCol);
+        }
+    }
 }
 
-char GridComponent::GetObjectOnCell(const GridCell& cell)
+//Todo: Rework or remove this function if possible
+char GridComponent::GetObjectOnCell(const GridCell& cell) const
 {
-    for (const auto object : m_pObjectsInGrid)
+    for (const auto cellToCompare : m_GridCells)
     {
-        const GridCell toCompare = GetCell(*object);
-		if (toCompare.center.x == cell.center.x && toCompare.center.z == cell.center.z)
-			return GetCharOfObject(object);
-	}
+	    if (cellToCompare.center.x == cell.center.x &&
+            cellToCompare.center.z == cell.center.y)
+	    {
+            return GetCharOfObject(cell.objects[0]);
+	    }
+    }
+
     return 'O';
 }
 
@@ -90,66 +101,102 @@ void GridComponent::PlaceObject(GameObject* pObject, int row, int col)
 
 void GridComponent::PlaceObject(GameObject* pObject, GridCell& cell) 
 {
-	if (m_GridMap[GetCellIndex(cell)] == 'O' ||
-        //If the cell is occupied by a player, we can still place a bomb on it
-        (m_GridMap[GetCellIndex(cell)] == 'P' && GetCharOfObject(pObject) == 'B'))
-	{
-        cell.objects.emplace_back(pObject);
+    const std::wstring objectTag = pObject->GetTag();
 
-        m_pObjectsInGrid.emplace_back(GetScene()->AddChild(pObject));
-        pObject->GetTransform()->Translate(XMFLOAT3{ cell.center.x, 0.f, cell.center.z });
-		m_GridMap[GetCellIndex(cell)] = GetCharOfObject(pObject);
-	}
+    GetScene()->AddChild(pObject);
+    m_GridCells[GetCellIndex(cell)].objects.emplace_back(pObject);
+
+    float yOffset{0.f};
+    if (objectTag == L"PowerUp")
+		yOffset = 4.5f;
+
+    pObject->GetTransform()->Translate(XMFLOAT3{ cell.center.x, yOffset, cell.center.z });
 }
 
-void GridComponent::RemoveObject(int row, int col)
-{
-    RemoveObject(GetCell(row, col));
-}
 
-void GridComponent::RemoveObject(GridCell& cell)
+void GridComponent::DeleteSpecificObject(GameObject* pObject)
 {
-    for (auto it = m_pObjectsInGrid.begin(); it != m_pObjectsInGrid.end();)
+    for (auto& cell : m_GridCells)
     {
-        const auto& object = *it;
-        const GridCell toCompare = GetCell(*object);
-
-        if (toCompare.center.x == cell.center.x && toCompare.center.z == cell.center.z)
+        for (auto toCompare = cell.objects.begin(); toCompare != cell.objects.end(); ++toCompare)
         {
-            if (object->GetTag() == L"Player")
+            // Check if the current object matches the one to be removed
+            if (*toCompare == pObject)
             {
-                // Call player death function here
-                Logger::LogTodo(L"Add Player Destruction");
+                GetScene()->RemoveChild(pObject, true);
+                cell.objects.erase(toCompare);
                 return;
             }
-
-            //Update the cells directly
-            auto& vec = m_GridCells[GetCellIndex(cell)].objects;
-            vec.erase(std::remove(vec.begin(), vec.end(), object), vec.end());
-
-            GetScene()->RemoveChild(object, true);
-            m_GridMap[GetCellIndex(cell)] = 'O';
-
-            // Erase the removed object from m_pObjectsInGrid and update the iterator
-            it = m_pObjectsInGrid.erase(it);
-        }
-        else
-        {
-            // Move to the next object
-            ++it;
         }
     }
+}
 
+
+void GridComponent::TryToRemoveAllObjects(int row, int col)
+{
+    TryToRemoveAllObjects(GetCell(row, col));
+}
+
+void GridComponent::TryToRemoveAllObjects(GridCell& cell)
+{
+	auto& vec = m_GridCells[GetCellIndex(cell)].objects;
+    std::vector<GameObject*> objectsToKeep{}; //Hot fix to prevent the player from being removed. Should
+                                            // be replaced with a proper handle for the player death.
+
+    std::vector<GridCell> cellsForPowerUpSpawn{};
+
+    for (const auto object : vec)
+    {
+        if (object->GetTag() == L"Bomb")
+        {
+            objectsToKeep.emplace_back(object);
+            continue;
+        }
+
+	    if (object->GetTag() == L"Player")
+	    {
+            dynamic_cast<BombermanCharacter*>(object)->Kill();
+            objectsToKeep.emplace_back(object);
+            continue;
+	    }
+
+        if (object->GetTag() == L"Rock")
+        {
+            //don't add when itterating over
+            cellsForPowerUpSpawn.emplace_back(cell);
+        }
+
+        if (object->GetTag() == L"PowerUp")
+        {
+            objectsToKeep.emplace_back(object);
+			continue;
+		}
+
+        GetScene()->RemoveChild(object, true);
+    }
+
+    vec = std::move(objectsToKeep);
+
+    for (auto& cellForPowerUp : cellsForPowerUpSpawn)
+    {
+        GetGameObject()->GetComponent<PowerUpManager>()->TriggerPowerUpSpawn(cellForPowerUp);
+	}
 }
 
 char GridComponent::GetCharOfObject(const GameObject* const gameObject) const
 {
+    if (gameObject->GetTag() == L"Player")
+        return 'P';
+    if (gameObject->GetTag() == L"Explosion")
+        return 'X';
     if (gameObject->GetTag() == L"Enemy")
 		return 'E';
     if (gameObject->GetTag() == L"Bomb")
         return 'B';
     if (gameObject->GetTag() == L"Rock")
 		return 'R';
+    if (gameObject->GetTag() == L"PowerUp")
+        return 'U';
 
     return 'O';
 }
@@ -170,7 +217,7 @@ GridCell& GridComponent::GetCellUnder(const GridCell& cell)
 GridCell& GridComponent::GetCellOnTop(const GridCell& cell)
 {
     const int index = GetCellIndex(cell) + m_NumOfColumns;
-    if (index > m_GridCells.size())
+    if (index >= m_GridCells.size())
         return m_InvalidCell;
 
     GridCell& cellToReturn = m_GridCells[index];
@@ -212,7 +259,8 @@ void GridComponent::InitializeCells()
 {
     // Calculate the number of cells in x and y directions
     m_NumOfColumns = static_cast<int>((m_TopRight.x - m_BottomLeft.x) / m_CellSize);
-    m_NumOfRows = static_cast<int>((m_TopRight.z - m_BottomLeft.z) / m_CellSize);
+    m_NumOfRows = static_cast<int>((m_TopRight.z - m_BottomLeft.z) / m_CellSize) + 1;
+    //todo: fix the rows/ columns issue
 
     m_GridCells.reserve(m_NumOfColumns * m_NumOfRows);
 
@@ -236,33 +284,49 @@ void GridComponent::InitializeCells()
     }
 }
 
-void GridComponent::UpdateCharacterOnMap(XMFLOAT3 position)
+void GridComponent::UpdateCharacterOnMap(std::vector<BombermanCharacter*>& players)
 {
-#ifdef _DEBUG
-    //Override the cell and draw the player
-    const GridCell playerCell = GetCell(position);
-    const int index = GetCellIndex(playerCell);
-    if (m_GridMap[index] == 'O')
-        m_GridMap[index] = 'P';
+    //Update the cells to contain the right character
 
-    for (size_t currentCell{ 0 }; currentCell < m_GridCells.size(); ++currentCell)
+    for (BombermanCharacter* character : players)
     {
-        const auto toCompare = m_GridCells[currentCell];
-        if ((toCompare.center.x != playerCell.center.x ||
-            toCompare.center.z != playerCell.center.z)
-            && m_GridMap[currentCell] == 'P')
+        if (character->IsDead())
         {
-            m_GridMap[currentCell] = 'O';
+	        std::erase(players, character);
+            DeleteSpecificObject(character);
+			continue;
+        }
+
+        const XMFLOAT3 characterPos = character->GetTransform()->GetPosition();
+        const int characterCellIdx = GetCellIndex(GetCell(characterPos));
+        //If the cell doesn't contain the character add it
+        if (!GetCell(characterPos).Contains(character))
+        {
+            m_GridCells[characterCellIdx].objects.emplace_back(character);
+        }
+
+        // Iterate through all cells to remove characters from incorrect cells
+        for (size_t currentCellIdx = 0; currentCellIdx < m_GridCells.size(); ++currentCellIdx)
+        {
+            if (currentCellIdx != characterCellIdx)
+            {
+                GridCell& currentCell = m_GridCells[currentCellIdx];
+                currentCell.Remove(character);
+            }
         }
     }
 
     for (size_t currentCellIdx{ 0 }; currentCellIdx < m_GridCells.size(); ++currentCellIdx)
     {
         GridCell currentCell = m_GridCells[currentCellIdx];
-        if (currentCell.objects.empty()) return;
+        if (currentCell.objects.empty())
+        {
+            m_GridMap[currentCellIdx] = 'O';
+            continue;
+        }
 
         //Update the map (draw the first element on there)
         m_GridMap[currentCellIdx] = GetCharOfObject(currentCell.objects[0]);
+
     }
-#endif
 }

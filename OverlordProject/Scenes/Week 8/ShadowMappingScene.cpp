@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ShadowMappingScene.h"
 
+#include "Materials/DiffuseMaterial.h"
 #include "Materials/Shadow/DiffuseMaterial_Shadow.h"
 #include "Materials/Shadow/DiffuseMaterial_Shadow_Skinned.h"
 
@@ -14,8 +15,8 @@ void ShadowMappingScene::Initialize()
 
 	//Materials
 	//*********
-	const auto pPeasantMaterial = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow_Skinned>();
-	pPeasantMaterial->SetDiffuseTexture(L"Textures/PeasantGirl_Diffuse.png");
+	const auto pPeasantMaterial = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow>();
+	pPeasantMaterial->SetDiffuseTexture(L"Textures/WhiteBomberMan.png");
 
 	const auto pGroundMaterial = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow>();
 	pGroundMaterial->SetDiffuseTexture(L"Textures/GroundBrick.jpg");
@@ -34,10 +35,12 @@ void ShadowMappingScene::Initialize()
 	//Character Mesh
 	//**************
 	const auto pObject = AddChild(new GameObject);
-	const auto pModel = pObject->AddComponent(new ModelComponent(L"Meshes/PeasantGirl.ovm"));
+	const auto pModel = pObject->AddComponent(new ModelComponent(L"Meshes/PowerUp.ovm"));
 	pModel->SetMaterial(pPeasantMaterial);
 
-	pObject->GetTransform()->Scale(0.1f, 0.1f, 0.1f);
+	//pObject->GetTransform()->Scale(15.0f, 15.0f, 15.0f);
+	pObject->GetTransform()->Scale(25.1f, 25.1f, 25.1f);
+	pObject->GetTransform()->Rotate(45, 90, 0);
 
 	if (const auto pAnimator = pModel->GetAnimator())
 	{

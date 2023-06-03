@@ -44,6 +44,5 @@ private:
 
 	ModelAnimator* m_pAnimator{};
 
-	//W9
 	bool m_CastShadows{ true };
 };

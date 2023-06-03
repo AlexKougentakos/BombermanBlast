@@ -476,8 +476,10 @@ float4 MainPS(VS_Output input) : SV_TARGET{
 }
 
 // Default Technique
-technique10 WithAlphaBlending {
-	pass p0 {
+technique10 WithAlphaBlending 
+{
+	pass p0 
+	{
 		SetRasterizerState(gRS_FrontCulling);
 		SetBlendState(gBS_EnableBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
 		SetVertexShader(CompileShader(vs_4_0, MainVS()));
@@ -487,8 +489,10 @@ technique10 WithAlphaBlending {
 }
 
 // Default Technique
-technique10 WithoutAlphaBlending {
-	pass p0 {
+technique10 WithoutAlphaBlending 
+{
+	pass p0 
+	{
 		SetRasterizerState(gRS_FrontCulling);
 		SetVertexShader(CompileShader(vs_4_0, MainVS()));
 		SetGeometryShader(NULL);

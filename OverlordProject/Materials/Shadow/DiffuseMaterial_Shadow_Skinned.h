@@ -11,6 +11,7 @@ public:
 	DiffuseMaterial_Shadow_Skinned& operator=(DiffuseMaterial_Shadow_Skinned&& other) noexcept = delete;
 
 	void SetDiffuseTexture(const std::wstring& assetFile);
+	void SetOpacity(float opacity) const { SetVariable_Scalar(L"gOpacity", opacity); }
 
 protected:
 	void InitializeEffectVariables() override;

@@ -23,7 +23,7 @@ void SpriteComponent::Draw(const SceneContext& sceneContext)
 	if (!m_pTexture)
 		return;
 
-	TransformComponent* pTransform{ GetGameObject()->GetComponent<TransformComponent>() };
+	const TransformComponent* pTransform{ GetGameObject()->GetComponent<TransformComponent>() };
 	const XMFLOAT3& position{ pTransform->GetWorldPosition() };
 	const XMFLOAT3& scale{ pTransform->GetWorldScale() };
 	SpriteRenderer::Get()->DrawImmediate(

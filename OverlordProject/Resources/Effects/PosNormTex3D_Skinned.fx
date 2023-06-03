@@ -3,6 +3,7 @@ float4x4 gWorldViewProj : WORLDVIEWPROJECTION;
 float4x4 gBones[70];
 
 float3 gLightDirection = float3(-0.577f, -0.577f, 0.577f);
+float gOpacity = 1.f;
 
 Texture2D gDiffuseMap;
 SamplerState samLinear
@@ -44,9 +45,21 @@ RasterizerState NoCulling
 	CullMode = NONE;
 };
 
+RasterizerState FrontCulling
+{
+	CullMode = FRONT;
+};
+
 BlendState NoBlending
 {
 	BlendEnable[0] = FALSE;
+};
+
+BlendState EnableBlending
+{
+	BlendEnable[0] = TRUE;
+	SrcBlend = SRC_ALPHA;
+	DestBlend = INV_SRC_ALPHA;
 };
 
 //--------------------------------------------------------------------------------------
@@ -90,6 +103,7 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 	float4 diffuseColor = gDiffuseMap.Sample(samLinear, input.texCoord);
 	float3 color_rgb = diffuseColor.rgb;
 	float color_a = diffuseColor.a;
+	color_a = gOpacity;
 
 	// HalfLambert Diffuse :)
 	float diffuseStrength = dot(input.normal, -gLightDirection);
@@ -107,9 +121,9 @@ technique11 Default
 {
 	pass P0
 	{
-		SetRasterizerState(NoCulling);
+		SetRasterizerState(FrontCulling);
 		SetDepthStencilState(EnableDepth, 0);
-		SetBlendState(NoBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
+		SetBlendState(EnableBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
 
 		SetVertexShader(CompileShader(vs_4_0, VS()));
 		SetGeometryShader(NULL);

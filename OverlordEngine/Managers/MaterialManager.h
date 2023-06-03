@@ -10,9 +10,9 @@ public:
 	MaterialManager& operator=(const MaterialManager& other) = delete;
 	MaterialManager& operator=(MaterialManager&& other) noexcept = delete;
 
-	template<typename T>
+	template <typename T, typename... Args>
 	std::enable_if<std::is_base_of_v<BaseMaterial, T>, T>::type*
-	CreateMaterial();
+		CreateMaterial(Args&&... args);
 
 	template<typename T>
 	std::enable_if<std::is_base_of_v<PostProcessingMaterial, T>, T>::type*
@@ -53,13 +53,13 @@ private:
 	std::vector<PostProcessingMaterial*> m_MaterialsPP{};
 };
 
-template <typename T>
+template <typename T, typename... Args>
 std::enable_if<std::is_base_of_v<BaseMaterial, T>, T>::type*
-MaterialManager::CreateMaterial()
+MaterialManager::CreateMaterial(Args&&... args)
 {
-	auto pMaterial = new T();
+	auto pMaterial = new T(std::forward<Args>(args)...);
 
-	UINT newMaterialId{ UINT_MAX};
+	UINT newMaterialId{ UINT_MAX };
 	for (size_t i{ 0 }; i < m_Materials.size(); ++i)
 	{
 		if (m_Materials[i] == nullptr)
@@ -81,6 +81,7 @@ MaterialManager::CreateMaterial()
 
 	return pMaterial;
 }
+
 
 template <typename T>
 std::enable_if<std::is_base_of_v<PostProcessingMaterial, T>, T>::type*

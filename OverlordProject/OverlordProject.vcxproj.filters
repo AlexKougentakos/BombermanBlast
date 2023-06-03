@@ -40,6 +40,14 @@
     <ClCompile Include="Scenes\Week 10\PostProcessingScene.cpp" />
     <ClCompile Include="Materials\Post\PostGrayscale.cpp" />
     <ClCompile Include="Materials\Post\PostBlur.cpp" />
+    <ClCompile Include="Prefabs\Explosion.cpp" />
+    <ClCompile Include="Prefabs\PowerUps\PowerUp.cpp" />
+    <ClCompile Include="Prefabs\PowerUps\PowerUp_IncrDecrBlast.cpp" />
+    <ClCompile Include="Components\PowerUpManager.cpp" />
+    <ClCompile Include="Materials\Shadow\DiffuseMaterial_ShadowFixed.cpp" />
+    <ClCompile Include="Prefabs\UI\UIManager.cpp" />
+    <ClCompile Include="Prefabs\UI\CharacterPointDisplay.cpp" />
+    <ClCompile Include="Components\GameLoopManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
@@ -80,5 +88,13 @@
     <ClInclude Include="Scenes\Week 10\PostProcessingScene.h" />
     <ClInclude Include="Materials\Post\PostGrayscale.h" />
     <ClInclude Include="Materials\Post\PostBlur.h" />
+    <ClInclude Include="Prefabs\Explosion.h" />
+    <ClInclude Include="Prefabs\PowerUps\PowerUp.h" />
+    <ClInclude Include="Prefabs\PowerUps\PowerUp_IncrDecrBlast.h" />
+    <ClInclude Include="Components\PowerUpManager.h" />
+    <ClInclude Include="Materials\Shadow\DiffuseMaterial_ShadowFixed.h" />
+    <ClInclude Include="Prefabs\UI\UIManager.h" />
+    <ClInclude Include="Prefabs\UI\CharacterPointDisplay.h" />
+    <ClInclude Include="Components\GameLoopManager.h" />
   </ItemGroup>
 </Project>

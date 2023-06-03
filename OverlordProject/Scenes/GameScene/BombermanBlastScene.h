@@ -25,16 +25,8 @@ protected:
 
 private:
 
-	//Character
-	BombermanCharacter* m_pCharacter{};
-
-	//Animations
-	ModelAnimator* m_pModelAnimator{};
-	ModelComponent* m_pModelComponent{};
-	UINT m_AnimationClipId{ 0 };
-
-	//World
-	GameObject* m_pLevel{};
+	//Characters
+	std::vector<BombermanCharacter*> m_pCharacters{};
 
 	//Cameras
 	CameraComponent* m_pCamera{ nullptr };
@@ -44,14 +36,31 @@ private:
 
 	enum InputIds
 	{
-		CharacterMoveLeft,
-		CharacterMoveRight,
-		CharacterMoveForward,
-		CharacterMoveBackward,
-		CharacterPlaceBomb
+		CharacterMoveLeft_P1,
+		CharacterMoveRight_P1,
+		CharacterMoveForward_P1,
+		CharacterMoveBackward_P1,
+		CharacterPlaceBomb_P1,
+
+		CharacterMoveLeft_P2,
+		CharacterMoveRight_P2,
+		CharacterMoveForward_P2,
+		CharacterMoveBackward_P2,
+		CharacterPlaceBomb_P2,
+
+		CharacterMoveLeft_P3,
+		CharacterMoveRight_P3,
+		CharacterMoveForward_P3,
+		CharacterMoveBackward_P3,
+		CharacterPlaceBomb_P3,
+
+		CharacterMoveLeft_P4,
+		CharacterMoveRight_P4,
+		CharacterMoveForward_P4,
+		CharacterMoveBackward_P4,
+		CharacterPlaceBomb_P4,
 	};
 
-	void ChangeAnimationClip(UINT animationID);
 	/*
 	 This function spawns rocks on the map. It finds the bottom left and top right of the map and spawns rocks in between.
 	 It scales the rocks and their colliders to fit to the map.
@@ -63,7 +72,7 @@ private:
 	std::vector<char> m_Map{};
 	std::vector<char> m_StartingLayout
 	{
-		'R','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
 		'O','R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
 		'O','O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
 		'O','O', 'O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
@@ -75,14 +84,20 @@ private:
 		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
 	};
 
+	// Referring to the map above
 	int m_NumOfColumns{13}, m_NumOfRows{10};
+
+	//World
+	GameObject* m_pLevel{};
 
 	XMFLOAT3 m_MapBottomLeft{}, m_MapTopRight{};
 	float m_SingleBlockSize{};
 	float m_SingleBlockScale{};
 
+	ParticleEmitterComponent* m_pEmitter{};
+
 	//Debug
 	bool m_IsDebugCameraActive{ false };
-	GameObject* ptest{};
+
 };
 

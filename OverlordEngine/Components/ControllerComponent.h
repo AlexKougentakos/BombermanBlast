@@ -4,7 +4,7 @@ class ControllerComponent : public BaseComponent
 {
 public:
 	ControllerComponent(const PxCapsuleControllerDesc& controllerDesc);
-	~ControllerComponent() override = default;
+	~ControllerComponent() override;
 
 	ControllerComponent(const ControllerComponent& other) = delete;
 	ControllerComponent(ControllerComponent&& other) noexcept = delete;
@@ -28,6 +28,8 @@ public:
 	void SetStepOffset(const float offset) const;
 	PxF32 GetStepOffset() const;
 
+	CollisionGroup GetCollisionGroup() const;
+
 protected:
 	void Initialize(const SceneContext& sceneContext) override;
 	void OnSceneDetach(GameScene*) override;
@@ -38,6 +40,7 @@ protected:
 private:
 
 	PxCapsuleControllerDesc m_ControllerDesc{};
+	PxControllerFilters m_ControllerFilters;
 
 	PxController* m_pController{};
 	PxControllerCollisionFlags m_CollisionFlag{};

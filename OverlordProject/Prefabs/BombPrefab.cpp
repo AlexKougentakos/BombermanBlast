@@ -1,13 +1,16 @@
 #include "stdafx.h"
 #include "BombPrefab.h"
 
-#include "CubePrefab.h"
+#include "BombermanCharacter.h"
 #include "Materials/DiffuseMaterial.h"
 #include "Components/Grid.h"
+#include "Explosion.h"
 
-BombPrefab::BombPrefab(int blastRadius, GridComponent* pGridComponent)
+BombPrefab::BombPrefab(int blastRadius, GridComponent* pGridComponent, BombermanCharacter* playerWhoPlacedBomb,float size)
 	:m_BlastRadius(blastRadius),
-	m_pGrid(pGridComponent)
+	m_pGrid(pGridComponent),
+	m_Size(size),
+	m_pPlayerWhoPlacedBomb(playerWhoPlacedBomb)
 {
 	SetTag(L"Bomb");
 }
@@ -20,9 +23,9 @@ void BombPrefab::Initialize(const SceneContext& /*gameContext*/)
 	m_pModelComponent = AddComponent(new ModelComponent(L"Meshes/Bomb.ovm"));
 	[[maybe_unused]]const auto pRigidBody = AddComponent(new RigidBodyComponent(true));
 
-	m_pModelComponent->SetMaterial(pDiffuseMat);
+	GetTransform()->Scale(m_pGrid->GetScaleFactor());
 
-	
+	m_pModelComponent->SetMaterial(pDiffuseMat);
 
 	//todo: add collider after
 	//const auto physicsMat = PhysXManager::Get()->GetPhysics()->createMaterial(0.2f, 0.2f, 0.2f);
@@ -40,10 +43,10 @@ void BombPrefab::Update(const SceneContext& sceneContext)
 	}
 }
 
-void BombPrefab::Explode(int explosionDistance) const
+void BombPrefab::Explode(int explosionDistance)
 {
 	const auto bombPosition = GetTransform()->GetPosition();
-	auto cell = m_pGrid->GetCell(bombPosition);
+	const auto cell = m_pGrid->GetCell(bombPosition);
 
 	std::vector<GridCell> affectedCells{};
 
@@ -51,16 +54,18 @@ void BombPrefab::Explode(int explosionDistance) const
 
 	for (auto& affectedCell : affectedCells)
 	{
-		//todo: add particle effects
-		//Bombs don't affect other bombs
-		if (m_pGrid->GetObjectOnCell(affectedCell) == 'B')
-			continue;
 		if (affectedCell.isValid)
-			m_pGrid->RemoveObject(affectedCell);
+			m_pGrid->TryToRemoveAllObjects(affectedCell);
+
+		if (affectedCell.isValid)
+			m_pGrid->PlaceObject(new Explosion(m_pGrid), affectedCell);
 	}
 
-	m_pGrid->RemoveObject(cell);
+	//Recharge player bomb
+	m_pPlayerWhoPlacedBomb->GiveBackBomb();
 
+	SoundManager::Get()->Play(L"Explosion.wav", 0.5f);
+	m_pGrid->DeleteSpecificObject(this);
 }
 
 void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, std::vector<GridCell>& affectedCellsOut) const
@@ -68,7 +73,7 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 	std::function<void(const GridCell&, int, std::vector<GridCell>&)> findLeft;
 	findLeft = [&](const GridCell& cell, int distance, std::vector<GridCell>& affectedCellsOut)
 	{
-		if (distance <= 0)
+		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
 		GridCell leftCell = m_pGrid->GetCellToTheLeft(cell);
 		if (leftCell.isValid)
@@ -83,7 +88,7 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 	std::function<void(const GridCell&, int, std::vector<GridCell>&)> findUp;
 	findUp = [&](const GridCell& cell, int distance, std::vector<GridCell>& affectedCellsOut)
 	{
-		if (distance <= 0)
+		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
 		GridCell leftCell = m_pGrid->GetCellOnTop(cell);
 		if (leftCell.isValid)
@@ -98,7 +103,7 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 	std::function<void(const GridCell&, int, std::vector<GridCell>&)> findDown;
 	findDown = [&](const GridCell& cell, int distance, std::vector<GridCell>& affectedCellsOut)
 	{
-		if (distance <= 0)
+		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
 		GridCell leftCell = m_pGrid->GetCellUnder(cell);
 		if (leftCell.isValid)
@@ -113,7 +118,7 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 	std::function<void(const GridCell&, int, std::vector<GridCell>&)> findRight;
 	findRight = [&](const GridCell& cell, int distance, std::vector<GridCell>& affectedCellsOut)
 	{
-		if (distance <= 0)
+		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
 		GridCell leftCell = m_pGrid->GetCellToTheRight(cell);
 		if (leftCell.isValid)

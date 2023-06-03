@@ -9,6 +9,8 @@ public:
 
 	FMOD::System* GetSystem() const { return m_pFmodSystem; }
 
+	void Play(const std::wstring& soundPath, float volume = 1.f, bool isLooping = false) const;
+
 protected:
 	void Initialize() override;
 

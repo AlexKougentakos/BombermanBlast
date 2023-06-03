@@ -94,12 +94,20 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Components\GameLoopManager.cpp" />
     <ClCompile Include="Components\Grid.cpp" />
+    <ClCompile Include="Components\PowerUpManager.cpp" />
     <ClCompile Include="Materials\Post\PostBlur.cpp" />
     <ClCompile Include="Materials\Post\PostGrayscale.cpp" />
+    <ClCompile Include="Materials\Shadow\DiffuseMaterial_ShadowFixed.cpp" />
+    <ClCompile Include="Prefabs\PowerUps\PowerUp.cpp" />
     <ClCompile Include="Prefabs\BombPrefab.cpp" />
     <ClCompile Include="Prefabs\BombermanCharacter.cpp" />
+    <ClCompile Include="Prefabs\Explosion.cpp" />
+    <ClCompile Include="Prefabs\PowerUps\PowerUp_IncrDecrBlast.cpp" />
     <ClCompile Include="Prefabs\RockPrefab.cpp" />
+    <ClCompile Include="Prefabs\UI\CharacterPointDisplay.cpp" />
+    <ClCompile Include="Prefabs\UI\UIManager.cpp" />
     <ClCompile Include="Scenes\GameScene\BombermanBlastScene.cpp" />
     <ClCompile Include="Materials\DiffuseMaterial_Skinned.cpp" />
     <ClCompile Include="Materials\Shadow\DiffuseMaterial_Shadow.cpp" />
@@ -152,12 +160,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Components\GameLoopManager.h" />
     <ClInclude Include="Components\Grid.h" />
+    <ClInclude Include="Components\PowerUpManager.h" />
     <ClInclude Include="Materials\Post\PostBlur.h" />
     <ClInclude Include="Materials\Post\PostGrayscale.h" />
+    <ClInclude Include="Materials\Shadow\DiffuseMaterial_ShadowFixed.h" />
+    <ClInclude Include="Prefabs\PowerUps\PowerUp.h" />
     <ClInclude Include="Prefabs\BombPrefab.h" />
     <ClInclude Include="Prefabs\BombermanCharacter.h" />
+    <ClInclude Include="Prefabs\Explosion.h" />
+    <ClInclude Include="Prefabs\PowerUps\PowerUp_IncrDecrBlast.h" />
     <ClInclude Include="Prefabs\RockPrefab.h" />
+    <ClInclude Include="Prefabs\UI\CharacterPointDisplay.h" />
+    <ClInclude Include="Prefabs\UI\UIManager.h" />
     <ClInclude Include="Scenes\GameScene\BombermanBlastScene.h" />
     <ClInclude Include="Materials\DiffuseMaterial_Skinned.h" />
     <ClInclude Include="Materials\Shadow\DiffuseMaterial_Shadow.h" />

@@ -146,12 +146,14 @@
     <ClInclude Include="Base\Enumerations.h" />
     <ClInclude Include="OverlordAPI.h" />
     <ClInclude Include="Utils\Macros.h" />
+    <ClInclude Include="Utils\Observer.h" />
     <ClInclude Include="Utils\PhysxHelper.h" />
     <ClInclude Include="Components\SpriteComponent.h" />
     <ClInclude Include="Misc\SpriteFont.h" />
     <ClInclude Include="Graphics\SpriteRenderer.h" />
     <ClInclude Include="Misc\TextureData.h" />
     <ClInclude Include="Content\TextureDataLoader.h" />
+    <ClInclude Include="Utils\Subject.h" />
     <ClInclude Include="Utils\Utils.h" />
     <ClInclude Include="Utils\VertexHelper.h" />
     <ClInclude Include="Utils\MathHelper.h" />

@@ -9,10 +9,18 @@
 #include "Prefabs/CubePrefab.h"
 #include "Prefabs/RockPrefab.h"
 #include "Prefabs/SpherePrefab.h"
+#include "Prefabs/PowerUps/PowerUp_IncrDecrBlast.h"
+#include "Components/PowerUpManager.h"
+
+#include <Windows.h>
+
+#include "Materials/Shadow/DiffuseMaterial_Shadow.h"
+#include "Prefabs/UI/UIManager.h"
 
 
 BombermanBlastScene::BombermanBlastScene() :
 	GameScene(L"BombermanBlastScene") {}
+
 
 void BombermanBlastScene::Initialize()
 {
@@ -29,38 +37,24 @@ void BombermanBlastScene::Initialize()
 
 	//Fixed Camera
 	m_pMainCamera = new FixedCamera();
-	m_pMainCamera->GetTransform()->Translate(0, 8.5f, -6.5f);
+	m_pMainCamera->GetTransform()->Translate(0, 85.f, -65.f);
 	m_pMainCamera->GetTransform()->Rotate(60, 0, 0);
 	AddChild(m_pMainCamera);
 	SetActiveCamera(m_pMainCamera->GetComponent<CameraComponent>());
+	m_pMainCamera->GetComponent<CameraComponent>()->SetOrthoSize(25);
 
 	m_pDebugCamera = new FreeCamera();
 	m_pDebugCamera->GetTransform()->Translate(0, 8.5f, -6.5f);
 	m_pDebugCamera->GetTransform()->Rotate(60, 0, 0);
 	AddChild(m_pDebugCamera);
 
-	//Ground Plane
+	//Light
+	m_SceneContext.pLights->SetDirectionalLight({ 0,20,0 }, {0, -1, 0.001f});
+
 	const auto pDefaultMaterial = PxGetPhysics().createMaterial(0.9f, 0.9f, 0.5f);
-	GameSceneExt::CreatePhysXGroundPlane(*this, pDefaultMaterial);
 
-	//Input
-	auto inputAction = InputAction(CharacterMoveLeft, InputState::down, 'A');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	
-	inputAction = InputAction(CharacterMoveRight, InputState::down, 'D');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-
-	inputAction = InputAction(CharacterMoveForward, InputState::down, 'W');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-
-	inputAction = InputAction(CharacterMoveBackward, InputState::down, 'S');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-
-	inputAction = InputAction(CharacterPlaceBomb, InputState::pressed, VK_SPACE, -1, XINPUT_GAMEPAD_A);
-	m_SceneContext.pInput->AddInputAction(inputAction);
-
-	m_MapBottomLeft = { -4.3f,0,-3.55f };
-	m_MapTopRight = { 5.0f,0,3.45f };
+	m_MapBottomLeft = { -43.f,0,-35.443f };
+	m_MapTopRight = { 49.9f,0,34.f };
 
 	//Level
 	//Fill the map with 'O' for open space
@@ -70,64 +64,134 @@ void BombermanBlastScene::Initialize()
 	m_pLevel = new GameObject();
 	AddChild(m_pLevel);
 	const auto levelRigidBody = m_pLevel->AddComponent(new RigidBodyComponent(true));
+	m_pLevel->GetTransform()->Scale(10);
 
 	//Add collider to level
 	const auto pPxTriangleMesh = ContentManager::Load<PxTriangleMesh>(L"Meshes/Level.ovpt");
-	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 1.f,1.f,1.f })), *pDefaultMaterial);
+	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 10.f,10.f,10.f })), *pDefaultMaterial);
+	levelRigidBody->SetCollisionGroup(CollisionGroup::Group2);
+	levelRigidBody->GetPxRigidActor()->setName("level");
 
 	//Add model to the level
-	const auto pDiffuseMat2 = MaterialManager::Get()->CreateMaterial<DiffuseMaterial>();
+	const auto pDiffuseMat2 = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow>();
 	pDiffuseMat2->SetDiffuseTexture(L"Textures/7EE07A6D_c.png");
-	const auto pModelCompo = m_pLevel->AddComponent(new ModelComponent(L"Meshes/Level.ovm"));
+	const auto pModelCompo = m_pLevel->AddComponent(new ModelComponent(L"Meshes/Level.ovm", false));
 	pModelCompo->SetMaterial(pDiffuseMat2->GetMaterialId());
-
-	//Define Level Boundries
-	SpherePrefab* pBottomLeftPoint{new SpherePrefab(0.2f)}, * pTopRightPoint{new SpherePrefab(0.2f)};
-	AddChild(pBottomLeftPoint);
-	AddChild(pTopRightPoint);
-		
-	pBottomLeftPoint->GetTransform()->Translate(m_MapBottomLeft);
-	pTopRightPoint->GetTransform()->Translate(m_MapTopRight);
 
 	CalculateNeededBlockSize();
 
 	//Add grid component to level
-	m_pLevel->AddComponent(new GridComponent(m_Map, m_MapBottomLeft, m_MapTopRight, m_SingleBlockSize));
-	
-	//Character
-	CharacterDesc characterDesc{ pDefaultMaterial, 0.35f, 1.f };
-	characterDesc.actionId_MoveForward = CharacterMoveForward;
-	characterDesc.actionId_MoveBackward = CharacterMoveBackward;
-	characterDesc.actionId_MoveLeft = CharacterMoveLeft;
-	characterDesc.actionId_MoveRight = CharacterMoveRight;
-	characterDesc.actionId_PlaceBomb = CharacterPlaceBomb;
+	m_pLevel->AddComponent(new GridComponent(m_Map, m_MapBottomLeft, m_MapTopRight, m_SingleBlockSize, m_SingleBlockScale));
+	m_pLevel->AddComponent(new PowerUpManager(m_pLevel->GetComponent<GridComponent>()));
 
-	m_pCharacter = AddChild(new BombermanCharacter(characterDesc, m_pLevel->GetComponent<GridComponent>()));
+	InputAction inputAction{};
+	//P1
+	inputAction = InputAction(CharacterMoveLeft_P2, InputState::down, 'A');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveRight_P2, InputState::down, 'D');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveForward_P2, InputState::down, 'W');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveBackward_P2, InputState::down, 'S');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterPlaceBomb_P2, InputState::pressed, VK_SPACE, -1, XINPUT_GAMEPAD_A, GamepadIndex::playerTwo);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	//P2
+	inputAction = InputAction(CharacterMoveLeft_P1, InputState::down, 'J');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveRight_P1, InputState::down, 'L');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveForward_P1, InputState::down, 'I');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveBackward_P1, InputState::down, 'K');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterPlaceBomb_P1, InputState::pressed, 'H', -1, XINPUT_GAMEPAD_A, GamepadIndex::playerOne);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	//todo: add more support for player input ^^^
 
-	const auto pModelForCharacter = new GameObject();
-	m_pCharacter->AddChild(pModelForCharacter);
-	pModelForCharacter->GetTransform()->Translate(0, -characterDesc.controller.height + characterDesc.controller.radius / 2.f, 0);
-	m_pCharacter->GetTransform()->Translate(0, 10, 0);
-	//Add Model to Character
-	const auto pDiffuseMat = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Skinned>();
+	constexpr unsigned int numOfPlayers{ 2 };
+	for (int i{}; i < numOfPlayers; ++i)
+	{
+		//Character
+		CharacterDesc characterDesc{ pDefaultMaterial, 3.f, 10.f };
+		int placementRow{}, placementColumn{};
+		switch (i + 1)
+		{
+		case 1:
+			//Bottom left
+			placementRow = 1;
+			placementColumn = 1;
 
-	m_pModelComponent = pModelForCharacter->AddComponent(new ModelComponent(L"Meshes/Character.ovm"));
-	pDiffuseMat->SetDiffuseTexture(L"Textures/WhiteBomberMan.png");
-	m_pModelComponent->SetMaterial(pDiffuseMat->GetMaterialId());
+			characterDesc.actionId_MoveForward = CharacterMoveForward_P1;
+			characterDesc.actionId_MoveBackward = CharacterMoveBackward_P1;
+			characterDesc.actionId_MoveLeft = CharacterMoveLeft_P1;
+			characterDesc.actionId_MoveRight = CharacterMoveRight_P1;
+			characterDesc.actionId_PlaceBomb = CharacterPlaceBomb_P1;
+			break;
+		case 2:
+			//Bottom right
+			placementRow = 1;
+			placementColumn = m_NumOfColumns;
 
-	m_pModelAnimator = m_pModelComponent->GetAnimator();
-	m_pModelAnimator->SetAnimation(m_AnimationClipId);
-	m_pModelAnimator->SetAnimationSpeed(1.f);
-	m_pModelAnimator->Play();
+			characterDesc.actionId_MoveForward = CharacterMoveForward_P2;
+			characterDesc.actionId_MoveBackward = CharacterMoveBackward_P2;
+			characterDesc.actionId_MoveLeft = CharacterMoveLeft_P2;
+			characterDesc.actionId_MoveRight = CharacterMoveRight_P2;
+			characterDesc.actionId_PlaceBomb = CharacterPlaceBomb_P2;
+			break;
+		case 3:
+			//Top right
+			placementRow = m_NumOfRows;
+			placementColumn = m_NumOfColumns;
+
+			characterDesc.actionId_MoveForward = CharacterMoveForward_P3;
+			characterDesc.actionId_MoveBackward = CharacterMoveBackward_P3;
+			characterDesc.actionId_MoveLeft = CharacterMoveLeft_P3;
+			characterDesc.actionId_MoveRight = CharacterMoveRight_P3;
+			characterDesc.actionId_PlaceBomb = CharacterPlaceBomb_P3;
+			break;
+		case 4:
+			//Top Left
+			placementRow = m_NumOfRows;
+			placementColumn = 0;
+
+			characterDesc.actionId_MoveForward = CharacterMoveForward_P4;
+			characterDesc.actionId_MoveBackward = CharacterMoveBackward_P4;
+			characterDesc.actionId_MoveLeft = CharacterMoveLeft_P4;
+			characterDesc.actionId_MoveRight = CharacterMoveRight_P4;
+			characterDesc.actionId_PlaceBomb = CharacterPlaceBomb_P4;
+			break;
+			default:
+				assert("Invalid player number");
+				break;
+		}
+		characterDesc.maxMoveSpeed = 15.f;
+		characterDesc.moveAccelerationTime = 0.01f;
+
+
+		const auto character = new BombermanCharacter(characterDesc, m_pLevel->GetComponent<GridComponent>());
+		m_pCharacters.emplace_back(character);
+		m_pLevel->GetComponent<GridComponent>()->PlaceObject(character, placementRow, placementColumn);
+		const auto characterTransform = character->GetTransform();
+
+		characterTransform->Scale(10.f);
+		//Slight offset to make sure the character is on the ground, otherwise he clips through
+		characterTransform->Translate(characterTransform->GetPosition().x , 10.f, characterTransform->GetPosition().z);
+	}
 
 	SpawnRocks();
+
+	AddChild(new UIManager(m_pCharacters));
+
+	auto go = new GameObject();
+	AddChild(go);
+	go->AddComponent(new SpriteComponent(L"Textures/UI/transparent.png"));
 }
 
 void BombermanBlastScene::SpawnRocks() const 
 {
 	const auto grid = m_pLevel->GetComponent<GridComponent>();
 
-	//Todo: redo this to work with the grid
 	for (int currentRow = 1; currentRow <= m_NumOfRows; ++currentRow)
 	{
 		for (int currentCol = 1; currentCol <= m_NumOfColumns; ++currentCol)
@@ -135,7 +199,7 @@ void BombermanBlastScene::SpawnRocks() const
 			const int index = (currentRow - 1) * m_NumOfColumns + (currentCol - 1);
 			if (m_StartingLayout[index] == 'R')
 			{
-				grid->PlaceObject(new RockPrefab(RockType::BREAKABLE), currentRow, currentCol);
+				grid->PlaceObject(new RockPrefab(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
 			}
 		}
 	}
@@ -143,6 +207,7 @@ void BombermanBlastScene::SpawnRocks() const
 
 void BombermanBlastScene::CalculateNeededBlockSize()
 {
+	//Spawn a rock to get the size of it in world space
 	const auto defaultRock = new RockPrefab(RockType::BREAKABLE, 1);
 	AddChild(defaultRock);
 
@@ -155,35 +220,16 @@ void BombermanBlastScene::CalculateNeededBlockSize()
 
 void BombermanBlastScene::Update()
 {
-	//Update the Direction of the Model
-	m_pModelComponent->GetTransform()->Rotate( 0, m_pCharacter->GetYAxisRotation(), 0);
-	//if (m_SceneContext.pInput->IsActionTriggered(CharacterMoveForward)
-	//	|| m_SceneContext.pInput->IsActionTriggered(CharacterMoveBackward) ||
-	//	m_SceneContext.pInput->IsActionTriggered(CharacterMoveRight) ||
-	//	m_SceneContext.pInput->IsActionTriggered(CharacterMoveLeft))
-	//{
-	//	//TODO: set animation clip correctly here
-	//	ChangeAnimationClip(1);
-	//}
-	//else
-	//	ChangeAnimationClip(0);
-	//ExplodeBomb(*test);
-	m_pLevel->GetComponent<GridComponent>()->UpdateCharacterOnMap(m_pCharacter->GetTransform()->GetPosition());
-}
+	for (const auto player : m_pCharacters)
+		if (!player)
+			std::erase(m_pCharacters, player);
 
-void BombermanBlastScene::ChangeAnimationClip(UINT animationID)
-{
-	if (m_AnimationClipId != animationID)
-	{
-		m_AnimationClipId = animationID;
-		m_pModelAnimator->SetAnimation(m_AnimationClipId);
-		m_pModelAnimator->Play();
-	}
+	m_pLevel->GetComponent<GridComponent>()->UpdateCharacterOnMap(m_pCharacters);
+	m_pLevel->GetComponent<PowerUpManager>()->UpdatePowerUps();
 }
 
 void BombermanBlastScene::Draw()
 {
-
 }
 
 void BombermanBlastScene::OnGUI()
@@ -213,10 +259,14 @@ void BombermanBlastScene::OnGUI()
 		
 	}
 
+	for (const auto player : m_pCharacters)
+	{
+		player->DrawImGui();
+	}
+
 	//Display the map
 	ImGui::Begin("Map Display");
 
-	static int selectedCell{ 0 };
 	// Calculate the size of each button
 	const ImVec2 buttonSize(30, 30);  // Adjust the size as per your requirements
 
@@ -244,6 +294,12 @@ void BombermanBlastScene::OnGUI()
 			case 'O':
 				buttonColor = ImVec4(0.9f, 0.9f, 0.9f, 1.0f);  // Almost white
 				break;
+			case 'X':
+				buttonColor = ImVec4(0.95f, 0.7f, 0.2f, 1.0f);  // Light Orange
+				break;
+			case 'U':
+				buttonColor = ImVec4(0.15f, 0.0f, 0.7f, 1.0f);  // Light Blue
+				break;
 			default:
 				buttonColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);  // Default color (white)
 				break;
@@ -260,7 +316,48 @@ void BombermanBlastScene::OnGUI()
 			if (ImGui::IsItemHovered())
 			{
 				// Display the tooltip with the currentIndex
-				ImGui::SetTooltip("Current Index: %d", index);
+				std::string tooltipText = "Current Index: " + std::to_string(index) + "\n";
+
+				// Append the vector of objects as strings to the tooltip
+				const auto grid = m_pLevel->GetComponent<GridComponent>();
+				const auto& cellObjects = grid->GetCell(index).objects;
+				tooltipText += "Cell Objects:\n";
+				for (const auto& item : cellObjects)
+				{
+					if (item)
+					{
+						// Convert wide string to narrow string
+						const std::wstring& wideStr = item->GetTag();
+
+						const int narrowStrSize = WideCharToMultiByte(
+							CP_UTF8,        // UTF-8 encoding
+							0,              // Default flags
+							wideStr.c_str(),
+							static_cast<int>(wideStr.size()),
+							nullptr,
+							0,
+							nullptr,
+							nullptr
+						);
+
+						std::string narrowStr(narrowStrSize, '\0');
+
+						WideCharToMultiByte(
+							CP_UTF8,        // UTF-8 encoding
+							0,              // Default flags
+							wideStr.c_str(),
+							static_cast<int>(wideStr.size()),
+							narrowStr.data(),
+							narrowStrSize,
+							nullptr,
+							nullptr
+						);
+
+						tooltipText += narrowStr + "\n";
+					}
+				}
+
+				ImGui::SetTooltip("%s", tooltipText.c_str());
 			}
 
 			ImGui::PopID();
@@ -270,19 +367,6 @@ void BombermanBlastScene::OnGUI()
 			ImGui::PopStyleColor();
 		}
 		ImGui::NewLine();  // Move to the next row
-	}
-
-
-	if (ImGui::CollapsingHeader("Cell Contents", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGui::InputInt("SetValue", &selectedCell);
-
-		const auto grid = m_pLevel->GetComponent<GridComponent>();
-		for (const auto item : grid->GetCell(selectedCell).objects)
-		{
-			if (item)
-				ImGui::Text("%s", item->GetTag().c_str());
-		}
 	}
 
 	// End ImGui window

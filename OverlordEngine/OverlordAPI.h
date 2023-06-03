@@ -13,6 +13,11 @@
 #include "Utils/PhysxHelper.h"
 #include "Utils/VertexHelper.h"
 
+//===== Custom implementations =====
+#include "Utils/Observer.h"
+#include "Utils/Subject.h"
+//===== Custom implementations =====
+
 #include "Base/Structs.h"
 #include "Base/Enumerations.h"
 #include "Base/OverlordGame.h"

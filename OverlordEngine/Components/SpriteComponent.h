@@ -1,4 +1,5 @@
 #pragma once
+#include "Misc/TextureData.h"
 
 class TextureData;
 
@@ -18,6 +19,8 @@ public:
 	void SetPivot(const XMFLOAT2& pivot) { m_Pivot = pivot; }
 	void SetColor(const XMFLOAT4& color) { m_Color = color; }
 	void SetTexture(const std::wstring& spriteAsset);
+
+	XMFLOAT2 GetDimensions() const { return m_pTexture->GetDimension(); }
 
 protected:
 	void Initialize(const SceneContext& sceneContext) override;

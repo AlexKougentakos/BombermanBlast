@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+class BombermanCharacter;
 class MeshFilter;
 class ModelAnimator;
 
@@ -19,6 +20,21 @@ public:
 		const auto it = std::find(objects.begin(), objects.end(), gameObj);
 
 		return !(it == objects.end());
+	}
+
+	bool Contains(const std::wstring& objectTag) const
+	{
+		auto isSameTag = [&](const GameObject* obj)
+		{
+			return obj->GetTag() == objectTag;
+		};
+
+		return std::any_of(objects.begin(), objects.end(), isSameTag);
+	}
+
+	void Remove(const GameObject* gameObj)
+	{
+		objects.erase(std::remove(objects.begin(), objects.end(), gameObj), objects.end());
 	}
 
 	XMFLOAT3 bottomLeft{};
@@ -42,7 +58,7 @@ struct InvalidCell final : public GridCell
 class GridComponent : public BaseComponent
 {
 public:
-	explicit GridComponent(std::vector<char>& gridMap, XMFLOAT3 bottomLeft, XMFLOAT3 topRight, float cellSize);
+	explicit GridComponent(std::vector<char>& gridMap, XMFLOAT3 bottomLeft, XMFLOAT3 topRight, float cellSize, float scaleFactor);
 	~GridComponent() override = default;
 
 	GridComponent(const GridComponent& other) = delete;
@@ -52,8 +68,18 @@ public:
 
 	void PlaceObject(GameObject* pObject, GridCell& cell);
 	void PlaceObject(GameObject* pObject, int row, int col);
-	void RemoveObject(GridCell& cell);
-	void RemoveObject( int row, int col);
+
+	/**
+	 * \brief Will attempt to remove all objects from the cell.
+	 * Does checking to see what type of object it is, and will remove it based on the logic
+	 * you provide inside of it.
+	 * \param cell The cell you want to remove all objects from
+	 */
+	void TryToRemoveAllObjects(GridCell& cell);
+	void TryToRemoveAllObjects( int row, int col);
+
+	//Uses no checking, deletes a specific object
+	void DeleteSpecificObject(GameObject* pObject);
 
 	GridCell& GetCell(const GameObject& gameObject);
 	GridCell& GetCell(const XMFLOAT3& position);
@@ -74,9 +100,12 @@ public:
 	GridCell& GetCellOnTop(int row, int col) { return GetCellOnTop(GetCell(row, col)); }
 	GridCell& GetCellUnder(int row, int col) { return GetCellUnder(GetCell(row, col)); }
 
-	char GetObjectOnCell(const GridCell& cell);
+	float GetCellSize() const { return m_CellSize / 2.f; }
 
-	void UpdateCharacterOnMap(XMFLOAT3 position);
+	char GetObjectOnCell(const GridCell& cell) const;
+	void UpdateCharacterOnMap(std::vector<BombermanCharacter*>& players);
+
+	float GetScaleFactor() const { return m_CellScaleFactor; }
 
 protected:
 	void Initialize(const SceneContext&) override{};
@@ -94,6 +123,7 @@ private:
 	InvalidCell m_InvalidCell{};
 
 	float m_CellSize{};
+	float m_CellScaleFactor{};
 
 	void InitializeCells();
 	char GetCharOfObject(const GameObject* const gameObject) const;

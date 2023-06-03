@@ -1,28 +1,63 @@
 ﻿#include "stdafx.h"
 #include "BombermanCharacter.h"
+
+#include "SpherePrefab.h"
 #include "Scenes/GameScene/BombermanBlastScene.h"
 #include "Components/Grid.h"
+#include "Materials/DiffuseMaterial_Skinned.h"
+#include "Materials/Shadow/DiffuseMaterial_Shadow.h"
+#include "Materials/Shadow/DiffuseMaterial_Shadow_Skinned.h"
 #include "Prefabs/BombPrefab.h"
+
+int BombermanCharacter::m_InstanceCounter = 0;
 
 BombermanCharacter::BombermanCharacter(const CharacterDesc& characterDesc, GridComponent* const pGrid) :
 	m_CharacterDesc{ characterDesc },
 	m_MoveAcceleration(characterDesc.maxMoveSpeed / characterDesc.moveAccelerationTime),
 	m_FallAcceleration(characterDesc.maxFallSpeed / characterDesc.fallAccelerationTime),
 	m_pGrid(pGrid)
-{}
+{
+	++m_InstanceCounter;
+	m_PlayerIndex = m_InstanceCounter;
+	SetTag(L"Player");
+}
 
 void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 {
 	//Controller
 	m_pControllerComponent = AddComponent(new ControllerComponent(m_CharacterDesc.controller));
-	const auto controller = m_pControllerComponent->GetPxController();
 
-	
-	controller->setPosition({ 0,-10, 0 });
+	m_pControllerComponent->SetCollisionIgnoreGroup(CollisionGroup::Group5);
+
 	m_pControllerComponent->SetContactOffset(0.0001f);
 	m_pControllerComponent->SetStepOffset(0);
 
-	SetTag(L"Player");
+	const auto pModelForCharacter = new GameObject();
+	AddChild(pModelForCharacter);
+	pModelForCharacter->GetTransform()->Translate(0, -0.8f, 0);
+	//Add Model to Character
+	m_pMaterial = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Skinned>();
+
+	m_pModelComponent = pModelForCharacter->AddComponent(new ModelComponent(L"Meshes/Character.ovm", false));
+
+	m_pMaterial->SetDiffuseTexture(L"Textures/WhiteBomberMan.png");
+	m_pModelComponent->SetMaterial(m_pMaterial);
+
+	m_pModelAnimator = m_pModelComponent->GetAnimator();
+	m_pModelAnimator->SetAnimation(m_AnimationClipId);
+	m_pModelAnimator->SetAnimationSpeed(1.f);
+	m_pModelAnimator->Play();
+
+	//Add the shadow blob to the player
+	const auto pShadowBlobObject(new GameObject());
+	AddChild(pShadowBlobObject);
+	const auto modelComp = pShadowBlobObject->AddComponent(new ModelComponent(L"Meshes/Sphere.ovm"));
+
+	auto mat = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow>();
+	modelComp->SetMaterial(mat);
+
+	modelComp->GetTransform()->Scale(0.3f);
+	modelComp->GetTransform()->Translate(0.f, 0.f, 0.f);
 }
 
 void BombermanCharacter::Update(const SceneContext& sceneContext)
@@ -30,19 +65,69 @@ void BombermanCharacter::Update(const SceneContext& sceneContext)
 	if (!sceneContext.settings.inDebug)
 	{
 		HandleInputAndMovement(sceneContext);
+
+		switch (m_PlayerState)
+		{
+			case PlayerState::Idle:
+				ChangeAnimationClip(0);
+				break;
+			case PlayerState::Moving:
+				ChangeAnimationClip(1);
+				break;
+			case PlayerState::Dead:
+				ChangeAnimationClip(2);
+				m_ElapsedDeathTimer += sceneContext.pGameTime->GetElapsed();
+
+			//Player flickering
+				const float flickerDuration = 1.0f / m_DeathFlickerSpeed;
+				const float flickerProgress = fmod(m_ElapsedDeathTimer, flickerDuration) / flickerDuration;
+				[[maybe_unused]]const float flickerOpacity = (flickerProgress < 0.5f) ? 0.1f : 1.0f;
+
+				//m_pMaterial->SetOpacity(flickerOpacity);
+
+				if (m_ElapsedDeathTimer >= m_DeathAnimTime)
+				{
+					m_pGrid->DeleteSpecificObject(this);
+					m_IsDead = true;
+				}
+				break;
+		}
 	}
 }
 
-void BombermanCharacter::SpawnBomb() const
+void BombermanCharacter::SpawnBomb()
 {
+	if (m_RemainingBombs <= 0) return;
+
  	const XMFLOAT3 playerPos = GetTransform()->GetPosition();
 	GridCell& playerCell = m_pGrid->GetCell(playerPos);
 
-	m_pGrid->PlaceObject(new BombPrefab(m_PlayerStats.blastRadius, m_pGrid), playerCell);
+	m_pGrid->PlaceObject(new BombPrefab(m_PlayerStats.blastRadius, m_pGrid, this), playerCell);
+	m_RemainingBombs--;
+}
+
+void BombermanCharacter::GiveBackBomb()
+{
+	//This will likely never be false, but just in case
+	if (m_RemainingBombs +1 <= m_PlayerStats.maxBombs)
+		++m_RemainingBombs;
+}
+
+void BombermanCharacter::ChangeAnimationClip(UINT animationID)
+{
+	if (m_AnimationClipId != animationID)
+	{
+		m_AnimationClipId = animationID;
+		m_pModelAnimator->SetAnimation(m_AnimationClipId);
+		m_pModelAnimator->Play();
+	}
 }
 
 void BombermanCharacter::HandleInputAndMovement(const SceneContext& sceneContext)
 {
+	if (m_PlayerState == PlayerState::Dead)
+		return;
+
 	const float elapsedSec{ sceneContext.pGameTime->GetElapsed() };
 
 	//************
@@ -59,17 +144,22 @@ void BombermanCharacter::HandleInputAndMovement(const SceneContext& sceneContext
 	if (sceneContext.pInput->IsActionTriggered(m_CharacterDesc.actionId_PlaceBomb))
 		SpawnBomb();
 
+	if (InputManager::IsGamepadConnected(GamepadIndex(m_PlayerIndex - 1))) //-1 because they start at 0
+	{
+		if (move.x != 0 || move.y != 0) return;
 
-	//Change the look direction based on the input (in degrees)
-	if (sceneContext.pInput->IsActionTriggered(m_CharacterDesc.actionId_MoveForward))
-		m_YRotation = 180.f;
-	else if (sceneContext.pInput->IsActionTriggered(m_CharacterDesc.actionId_MoveBackward))
-		m_YRotation = 0.f;
-	if (sceneContext.pInput->IsActionTriggered(m_CharacterDesc.actionId_MoveRight))
-		m_YRotation = -90.f;
-	else if (sceneContext.pInput->IsActionTriggered(m_CharacterDesc.actionId_MoveLeft))
-		m_YRotation = 90.f;
+		move = InputManager::GetThumbstickPosition(true, GamepadIndex(m_PlayerIndex - 1));
 
+	}
+
+	if (move.x != 0 || move.y != 0)
+	{
+		m_YRotation = -std::atan2(move.x, -move.y) * 180.f / float(3.1415);
+		m_pModelComponent->GetTransform()->Rotate(0, m_YRotation, 0);
+
+		m_PlayerState = PlayerState::Moving;
+	}
+	else m_PlayerState = PlayerState::Idle;
 
 	//************************
 	//GATHERING TRANSFORM INFO
@@ -79,21 +169,26 @@ void BombermanCharacter::HandleInputAndMovement(const SceneContext& sceneContext
 	const XMVECTOR forward{ XMLoadFloat3(&forwardFloat) };
 	const XMVECTOR right{ XMLoadFloat3(&rightFloat) };
 
-
 	//********
 	//MOVEMENT
 
+	//Each powerup should result in a % speed increase
+	constexpr float speedPercentageIncrease{20.f};
+	constexpr  float toDivideWith{ 100.f / speedPercentageIncrease };
+	const float speedMultiplierFromPowerUp{ 1 + m_PlayerStats.speed / toDivideWith };
+
 	//## Horizontal Velocity (Forward/Backward/Right/Left)
-	const float currentMoveAcceleration{ m_MoveAcceleration * elapsedSec };
+	const float currentMoveAcceleration{ m_MoveAcceleration * elapsedSec * speedMultiplierFromPowerUp };
 	//If the character is moving (= input is pressed)
 	if (abs(move.x) > 0.0f || abs(move.y) > 0.0f)
 	{
 		//Calculate & Store the current direction (m_CurrentDirection) >> based on the forward/right vectors and the pressed input
 		const XMVECTOR moveDirection{ forward * move.y + right * move.x };
 		XMStoreFloat3(&m_CurrentDirection, moveDirection);
+		XMVector3Normalize(moveDirection);
 
 		m_MoveSpeed += currentMoveAcceleration;
-		m_MoveSpeed = std::min(m_MoveSpeed, m_CharacterDesc.maxMoveSpeed);
+		m_MoveSpeed = std::min(m_MoveSpeed, m_CharacterDesc.maxMoveSpeed * speedMultiplierFromPowerUp);
 	}
 	else
 	{
@@ -124,37 +219,73 @@ void BombermanCharacter::HandleInputAndMovement(const SceneContext& sceneContext
 	m_pControllerComponent->Move(displacement);
 }
 
+void BombermanCharacter::Kill()
+{
+	m_PlayerState = PlayerState::Dead;
+}
+
+void BombermanCharacter::AddPoint()
+{
+	++m_PlayerScore;
+	notifyObservers("Score Increase");
+}
+
 
 void BombermanCharacter::DrawImGui()
 {
-	if (ImGui::CollapsingHeader("Character"))
+	if (ImGui::CollapsingHeader(std::format("Player [{:1}]", m_PlayerIndex).c_str()))
 	{
-		ImGui::Text(std::format("Move Speed: {:0.1f} m/s", m_MoveSpeed).c_str());
-		ImGui::Text(std::format("Fall Speed: {:0.1f} m/s", m_TotalVelocity.y).c_str());
-
-		ImGui::Text(std::format("Move Acceleration: {:0.1f} m/s2", m_MoveAcceleration).c_str());
-		ImGui::Text(std::format("Fall Acceleration: {:0.1f} m/s2", m_FallAcceleration).c_str());
-
-		const float jumpMaxTime = m_CharacterDesc.JumpSpeed / m_FallAcceleration;
-		const float jumpMaxHeight = (m_CharacterDesc.JumpSpeed * jumpMaxTime) - (0.5f * (m_FallAcceleration * powf(jumpMaxTime, 2)));
-		ImGui::Text(std::format("Jump Height: {:0.1f} m", jumpMaxHeight).c_str());
-
-		ImGui::Dummy({ 0.f,5.f });
-		if (ImGui::DragFloat("Max Move Speed (m/s)", &m_CharacterDesc.maxMoveSpeed, 0.1f, 0.f, 0.f, "%.1f") ||
-			ImGui::DragFloat("Move Acceleration Time (s)", &m_CharacterDesc.moveAccelerationTime, 0.1f, 0.f, 0.f, "%.1f"))
+		if (ImGui::TreeNode("Default Info"))
 		{
-			m_MoveAcceleration = m_CharacterDesc.maxMoveSpeed / m_CharacterDesc.moveAccelerationTime;
+			ImGui::Text(std::format("Move Speed: {:0.1f} m/s", m_MoveSpeed).c_str());
+			ImGui::Text(std::format("Fall Speed: {:0.1f} m/s", m_TotalVelocity.y).c_str());
+
+			ImGui::Text(std::format("Move Acceleration: {:0.1f} m/s2", m_MoveAcceleration).c_str());
+			ImGui::Text(std::format("Fall Acceleration: {:0.1f} m/s2", m_FallAcceleration).c_str());
+
+			const float jumpMaxTime = m_CharacterDesc.JumpSpeed / m_FallAcceleration;
+			const float jumpMaxHeight = (m_CharacterDesc.JumpSpeed * jumpMaxTime) - (0.5f * (m_FallAcceleration * powf(jumpMaxTime, 2)));
+			ImGui::Text(std::format("Jump Height: {:0.1f} m", jumpMaxHeight).c_str());
+
+			ImGui::Dummy({ 0.f,5.f });
+			if (ImGui::DragFloat("Max Move Speed (m/s)", &m_CharacterDesc.maxMoveSpeed, 0.1f, 0.f, 0.f, "%.1f") ||
+				ImGui::DragFloat("Move Acceleration Time (s)", &m_CharacterDesc.moveAccelerationTime, 0.1f, 0.f, 0.f, "%.1f"))
+			{
+				m_MoveAcceleration = m_CharacterDesc.maxMoveSpeed / m_CharacterDesc.moveAccelerationTime;
+			}
+
+			ImGui::Dummy({ 0.f,5.f });
+			if (ImGui::DragFloat("Max Fall Speed (m/s)", &m_CharacterDesc.maxFallSpeed, 0.1f, 0.f, 0.f, "%.1f") ||
+				ImGui::DragFloat("Fall Acceleration Time (s)", &m_CharacterDesc.fallAccelerationTime, 0.1f, 0.f, 0.f, "%.1f"))
+			{
+				m_FallAcceleration = m_CharacterDesc.maxFallSpeed / m_CharacterDesc.fallAccelerationTime;
+			}
+
+			ImGui::Dummy({ 0.f,5.f });
+			ImGui::DragFloat("Jump Speed", &m_CharacterDesc.JumpSpeed, 0.1f, 0.f, 0.f, "%.1f");
+			ImGui::DragFloat("Rotation Speed (deg/s)", &m_CharacterDesc.rotationSpeed, 0.1f, 0.f, 0.f, "%.1f");
+			ImGui::TreePop();
 		}
 
-		ImGui::Dummy({ 0.f,5.f });
-		if (ImGui::DragFloat("Max Fall Speed (m/s)", &m_CharacterDesc.maxFallSpeed, 0.1f, 0.f, 0.f, "%.1f") ||
-			ImGui::DragFloat("Fall Acceleration Time (s)", &m_CharacterDesc.fallAccelerationTime, 0.1f, 0.f, 0.f, "%.1f"))
+		if (ImGui::TreeNode("Character Stats"))
 		{
-			m_FallAcceleration = m_CharacterDesc.maxFallSpeed / m_CharacterDesc.fallAccelerationTime;
-		}
+			constexpr float speedPercentageIncrease{ 20.f };
+			constexpr  float toDivideWith{ 100.f / speedPercentageIncrease };
+			const float speedMultiplierFromPowerUp{ 100 * m_PlayerStats.speed / toDivideWith };
 
-		ImGui::Dummy({ 0.f,5.f });
-		ImGui::DragFloat("Jump Speed", &m_CharacterDesc.JumpSpeed, 0.1f, 0.f, 0.f, "%.1f");
-		ImGui::DragFloat("Rotation Speed (deg/s)", &m_CharacterDesc.rotationSpeed, 0.1f, 0.f, 0.f, "%.1f");
+			ImGui::Text(std::format("Bombs: {} ({:1})", m_PlayerStats.maxBombs, m_RemainingBombs).c_str());
+			ImGui::Text(std::format("Blast Radius: {}", m_PlayerStats.blastRadius).c_str());
+			ImGui::Text(std::format("Speed: {} (+{:.1f}% %)", m_PlayerStats.speed, speedMultiplierFromPowerUp).c_str());
+
+			ImGui::Dummy({ 0.f,5.f });
+			if (ImGui::DragInt("Bombs", &m_PlayerStats.maxBombs, 0.1f, 0, 0) ||
+				ImGui::DragInt("Blast Radius", &m_PlayerStats.blastRadius, 0.1f, 0, 0) ||
+				ImGui::DragInt("Speed", &m_PlayerStats.speed, 0.1f, 0, 0))
+			{
+				// If you want to handle some updates when these values change, do it here
+			}
+
+			ImGui::TreePop();
+		}
 	}
 }

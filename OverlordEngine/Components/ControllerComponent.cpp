@@ -1,14 +1,20 @@
 #include "stdafx.h"
 #include "ControllerComponent.h"
 
-ControllerComponent::ControllerComponent(const PxCapsuleControllerDesc& controllerDesc):
+ControllerComponent::ControllerComponent(const PxCapsuleControllerDesc& controllerDesc) :
 	m_ControllerDesc{ controllerDesc }
 {
+	
+}
+
+ControllerComponent::~ControllerComponent()
+{
+	m_pController->release();
 }
 
 void ControllerComponent::Initialize(const SceneContext& /*sceneContext*/)
 {
-	if(!m_IsInitialized)
+	if (!m_IsInitialized)
 	{
 		const XMFLOAT3& position{ GetTransform()->GetPosition() };
 		m_ControllerDesc.position = PxExtendedVec3{ position.x, position.y, position.z };
@@ -21,9 +27,8 @@ void ControllerComponent::Initialize(const SceneContext& /*sceneContext*/)
 
 		m_pController->getActor()->userData = this;
 
-		SetCollisionGroup(static_cast<CollisionGroup>(m_CollisionGroups.word0));
-		SetCollisionIgnoreGroup(static_cast<CollisionGroup>(m_CollisionGroups.word1));
-
+		//SetCollisionGroup(static_cast<CollisionGroup>(m_CollisionGroups.word0));
+		//SetCollisionIgnoreGroup(static_cast<CollisionGroup>(m_CollisionGroups.word1));
 	}
 }
 
@@ -75,16 +80,77 @@ void ControllerComponent::ApplyFilterData() const
 	}
 }
 
+CollisionGroup ControllerComponent::GetCollisionGroup() const
+{
+	return static_cast<CollisionGroup>(m_CollisionGroups.word0);
+}
+
 void ControllerComponent::Translate(const XMFLOAT3& pos) const
 {
 	ASSERT_NULL_(m_pController);
 	m_pController->setPosition(PhysxHelper::ToPxExtendedVec3(pos));
 }
 
+class MyControllerFilterCallback : public PxControllerFilterCallback
+{
+public:
+    bool filter(const PxController&, const PxController&) override
+    {
+        // Return true to ignore the collision between controller 'a' and 'b'
+        return false;
+    }
+};
+
+class MyControllerFilterCallback2 : public PxQueryFilterCallback
+{
+public:
+	virtual PxQueryHitType::Enum preFilter(
+		const PxFilterData& /*filterData*/,
+		const PxShape* shape,
+		const PxRigidActor* /*actor*/,
+		PxHitFlags& /*queryFlags*/) override
+	{
+	
+		if (shape != nullptr && shape->getActor() != nullptr && shape->getActor()->getName() == std::string("level"))
+			__debugbreak();
+
+		return PxQueryHitType::eBLOCK;
+	}
+
+	virtual PxQueryHitType::Enum postFilter(
+		const PxFilterData& filterData,
+		const PxQueryHit& /*hit*/) override
+	{
+		// Modify post-filter behavior if needed
+
+		if (filterData.word0 == static_cast<UINT32>(CollisionGroup::Group2))
+		{
+			__debugbreak();
+		}
+		return PxQueryHitType::eNONE;
+	}
+
+private:
+	PxFilterData m_CollisionGroups;
+};
+
 void ControllerComponent::Move(const XMFLOAT3& displacement, float minDistance)
 {
 	ASSERT_NULL_(m_pController);
-	m_CollisionFlag = m_pController->move(PhysxHelper::ToPxVec3(displacement), minDistance, 0, nullptr, nullptr);
+
+	PxFilterData filterData;
+	filterData.word1 = m_CollisionGroups.word1;
+
+	MyControllerFilterCallback filterCallback;
+	MyControllerFilterCallback2 filterCallback2;
+
+	PxControllerFilters filters;
+	filters.mCCTFilterCallback = &filterCallback;
+	//filters.mFilterData = &filterData;
+	//filters.mFilterCallback = &filterCallback2;
+	
+
+	m_CollisionFlag = m_pController->move(PhysxHelper::ToPxVec3(displacement), minDistance, 0, filters, nullptr);
 }
 
 XMFLOAT3 ControllerComponent::GetPosition() const

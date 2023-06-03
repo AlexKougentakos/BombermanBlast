@@ -17,6 +17,12 @@ void DiffuseMaterial_Skinned::InitializeEffectVariables()
 
 }
 
+void DiffuseMaterial_Skinned::SetOpacity(float opacity)
+{
+	SetVariable_Scalar(L"gOpacity", opacity);
+}
+
+
 void DiffuseMaterial_Skinned::OnUpdateModelVariables(const SceneContext&, const ModelComponent* pModel) const
 {
 	const ModelAnimator* pAnimator{ pModel->GetAnimator() };

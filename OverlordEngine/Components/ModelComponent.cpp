@@ -5,6 +5,7 @@ ModelComponent::ModelComponent(const std::wstring& assetFile, bool castShadows):
 	m_AssetFile(assetFile),
 	m_CastShadows(castShadows)
 {
+	
 }
 
 ModelComponent::~ModelComponent()
