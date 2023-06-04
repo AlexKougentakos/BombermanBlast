@@ -95,6 +95,7 @@ public:
 
 	void ApplyPowerup(PlayerStatIncrease increase) { m_PlayerStats += increase; }
 	void AddPoint();
+	PlayerColour GetPlayerColour() const { return PlayerColour(m_PlayerIndex); }
 
 protected:
 	void Initialize(const SceneContext&) override;

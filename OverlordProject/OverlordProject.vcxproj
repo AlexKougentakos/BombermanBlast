@@ -94,7 +94,9 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Components\GameLoopManager.cpp" />
+    <ClCompile Include="Materials\Post\Vignette.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\ButtonManager.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Button.cpp" />
     <ClCompile Include="Components\Grid.cpp" />
     <ClCompile Include="Components\PowerUpManager.cpp" />
     <ClCompile Include="Materials\Post\PostBlur.cpp" />
@@ -107,6 +109,10 @@
     <ClCompile Include="Prefabs\PowerUps\PowerUp_IncrDecrBlast.cpp" />
     <ClCompile Include="Prefabs\RockPrefab.cpp" />
     <ClCompile Include="Prefabs\UI\CharacterPointDisplay.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\BackButton.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\ControllsButton.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\QuitButton.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\StartButton.cpp" />
     <ClCompile Include="Prefabs\UI\UIManager.cpp" />
     <ClCompile Include="Scenes\GameScene\BombermanBlastScene.cpp" />
     <ClCompile Include="Materials\DiffuseMaterial_Skinned.cpp" />
@@ -117,6 +123,8 @@
     <ClCompile Include="Materials\SpikyMaterial.cpp" />
     <ClCompile Include="Materials\UberMaterial.cpp" />
     <ClCompile Include="Prefabs\Character.cpp" />
+    <ClCompile Include="Scenes\GameScene\ControlsScene.cpp" />
+    <ClCompile Include="Scenes\GameScene\MainMenuScene.cpp" />
     <ClCompile Include="Scenes\Week 10\PostProcessingScene.cpp" />
     <ClCompile Include="Scenes\Week 4\ModelTestScene.cpp" />
     <ClCompile Include="Scenes\Week 3\PongScene.cpp" />
@@ -160,7 +168,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Components\GameLoopManager.h" />
+    <ClInclude Include="Materials\Post\Vignette.h" />
+    <ClInclude Include="Prefabs\UI\Menu\ButtonManager.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Button.h" />
     <ClInclude Include="Components\Grid.h" />
     <ClInclude Include="Components\PowerUpManager.h" />
     <ClInclude Include="Materials\Post\PostBlur.h" />
@@ -173,6 +183,10 @@
     <ClInclude Include="Prefabs\PowerUps\PowerUp_IncrDecrBlast.h" />
     <ClInclude Include="Prefabs\RockPrefab.h" />
     <ClInclude Include="Prefabs\UI\CharacterPointDisplay.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\BackButton.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\ControllsButton.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\QuitButton.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\StartButton.h" />
     <ClInclude Include="Prefabs\UI\UIManager.h" />
     <ClInclude Include="Scenes\GameScene\BombermanBlastScene.h" />
     <ClInclude Include="Materials\DiffuseMaterial_Skinned.h" />
@@ -183,6 +197,8 @@
     <ClInclude Include="Materials\SpikyMaterial.h" />
     <ClInclude Include="Materials\UberMaterial.h" />
     <ClInclude Include="Prefabs\Character.h" />
+    <ClInclude Include="Scenes\GameScene\ControlsScene.h" />
+    <ClInclude Include="Scenes\GameScene\MainMenuScene.h" />
     <ClInclude Include="Scenes\Week 10\PostProcessingScene.h" />
     <ClInclude Include="Scenes\Week 4\ModelTestScene.h" />
     <ClInclude Include="Scenes\Week 3\PongScene.h" />

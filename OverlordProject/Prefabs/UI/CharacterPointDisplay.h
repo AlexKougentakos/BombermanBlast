@@ -28,5 +28,10 @@ private:
 	BombermanCharacter* m_pBombermanCharacter{};
 	PlayerColour m_PlayerColour{};
 
-	XMFLOAT2 m_Position{};
+	XMFLOAT2 m_SpritePosition{};
+	XMFLOAT2 m_TextPosition{};
+
+	int m_ScoreToDisplay{};
+
+	SpriteFont* m_pFont{};
 };

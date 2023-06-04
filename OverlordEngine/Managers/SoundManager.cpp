@@ -46,50 +46,63 @@ void SoundManager::Initialize()
 
 void SoundManager::Play(const std::wstring& soundPath, float volume, bool isLooping) const
 {
-	const std::wstring fullPath = m_GameContext.contentRoot + L"Sounds/" + soundPath;
-	// Convert wide string to multi-byte string
-	const int narrowStrSize = WideCharToMultiByte(
-		CP_UTF8,        // UTF-8 encoding
-		0,              // Default flags
-		fullPath.c_str(),
-		-1,             // null-terminated input string
-		nullptr,        // output buffer is null, so return required size
-		0,
-		nullptr,
-		nullptr
-	);
+    std::jthread([this, soundPath, volume, isLooping]()
+        {
+            const std::wstring fullPath = m_GameContext.contentRoot + L"Sounds/" + soundPath;
+    // Convert wide string to multi-byte string
+    const int narrowStrSize = WideCharToMultiByte(
+        CP_UTF8,        // UTF-8 encoding
+        0,              // Default flags
+        fullPath.c_str(),
+        -1,             // null-terminated input string
+        nullptr,        // output buffer is null, so return required size
+        0,
+        nullptr,
+        nullptr
+    );
 
-	std::string narrowStr(narrowStrSize, '\0');
+    std::string narrowStr(narrowStrSize, '\0');
 
-	WideCharToMultiByte(
-		CP_UTF8,        // UTF-8 encoding
-		0,              // Default flags
-		fullPath.c_str(),
-		-1,             // null-terminated input string
-		&narrowStr[0],  // output buffer
-		narrowStrSize,
-		nullptr,
-		nullptr
-	);
+    WideCharToMultiByte(
+        CP_UTF8,        // UTF-8 encoding
+        0,              // Default flags
+        fullPath.c_str(),
+        -1,             // null-terminated input string
+        &narrowStr[0],  // output buffer
+        narrowStrSize,
+        nullptr,
+        nullptr
+    );
 
-	FMOD::Sound* sound = NULL;
-	FMOD::Channel* channel = NULL;
-	FMOD_RESULT result{};
+    FMOD::Sound* sound = NULL;
+    FMOD::Channel* channel = NULL;
+    FMOD_RESULT result{};
 
-	result = m_pFmodSystem->createSound(narrowStr.c_str(), FMOD_DEFAULT, 0, &sound);
-	if (result != FMOD_OK)
-	{
-		std::wcerr << "Cannot play sound: " << fullPath << ". Error: " << result << std::endl;
-		return;
-	}
-	sound->setMode(isLooping ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF);
+    result = m_pFmodSystem->createSound(narrowStr.c_str(), FMOD_DEFAULT, 0, &sound);
+    if (result != FMOD_OK)
+    {
+        std::wcerr << "Cannot play sound: " << fullPath << ". Error: " << result << std::endl;
+        return;
+    }
+    sound->setMode(isLooping ? FMOD_LOOP_NORMAL : FMOD_LOOP_OFF);
 
-	result = m_pFmodSystem->playSound(sound, 0, false, &channel);
-	if (result != FMOD_OK)
-	{
-		std::wcerr << "Cannot play sound: " << fullPath << ". Error: " << result << std::endl;
-		return;
-	}
+    result = m_pFmodSystem->playSound(sound, 0, false, &channel);
+    if (result != FMOD_OK)
+    {
+        std::wcerr << "Cannot play sound: " << fullPath << ". Error: " << result << std::endl;
+        return;
+    }
 
-	channel->setVolume(volume);
+    channel->setVolume(volume);
+
+    bool isPlaying = true;
+    while (isPlaying)
+    {
+        m_pFmodSystem->update();
+        channel->isPlaying(&isPlaying);
+    }
+
+    // Sound is no longer playing, clean up
+    result = sound->release();
+        }).detach();
 }

@@ -15,6 +15,7 @@ public:
 	BombermanBlastScene& operator=(BombermanBlastScene&& other) noexcept = delete;
 
 	GameObject* GetLevel() const { return m_pLevel; }
+	void OnSceneActivated() override;
 
 protected:
 	void CalculateNeededBlockSize();

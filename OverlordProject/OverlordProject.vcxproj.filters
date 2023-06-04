@@ -47,7 +47,15 @@
     <ClCompile Include="Materials\Shadow\DiffuseMaterial_ShadowFixed.cpp" />
     <ClCompile Include="Prefabs\UI\UIManager.cpp" />
     <ClCompile Include="Prefabs\UI\CharacterPointDisplay.cpp" />
-    <ClCompile Include="Components\GameLoopManager.cpp" />
+    <ClCompile Include="Scenes\GameScene\MainMenuScene.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Button.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\ButtonManager.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\StartButton.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\QuitButton.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\ControllsButton.cpp" />
+    <ClCompile Include="Materials\Post\Vignette.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\BackButton.cpp" />
+    <ClCompile Include="Scenes\GameScene\ControlsScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
@@ -95,6 +103,14 @@
     <ClInclude Include="Materials\Shadow\DiffuseMaterial_ShadowFixed.h" />
     <ClInclude Include="Prefabs\UI\UIManager.h" />
     <ClInclude Include="Prefabs\UI\CharacterPointDisplay.h" />
-    <ClInclude Include="Components\GameLoopManager.h" />
+    <ClInclude Include="Scenes\GameScene\MainMenuScene.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Button.h" />
+    <ClInclude Include="Prefabs\UI\Menu\ButtonManager.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\StartButton.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\QuitButton.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\ControllsButton.h" />
+    <ClInclude Include="Materials\Post\Vignette.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\BackButton.h" />
+    <ClInclude Include="Scenes\GameScene\ControlsScene.h" />
   </ItemGroup>
 </Project>

@@ -11,19 +11,25 @@ SamplerState samPoint
 
 BlendState EnableBlending
 {
-    BlendEnable[0] = TRUE;
+    /*BlendEnable[0] = TRUE;
     SrcBlend = SRC_ALPHA;
-    DestBlend = INV_SRC_ALPHA;
+    DestBlend = INV_SRC_ALPHA;*/
+
+    BlendEnable[0] = FALSE;
+    SrcBlend = ONE;
+    DestBlend = ZERO;
 };
 
 DepthStencilState NoDepth
 {
-    DepthEnable = FALSE;
+    DepthEnable = TRUE;
+    DepthWriteMask = ALL;
 };
 
 RasterizerState BackCulling
 {
     CullMode = BACK;
+    DepthClipEnable = FALSE;
 };
 
 //SHADER STRUCTS
@@ -74,8 +80,6 @@ void CreateVertex(inout TriangleStream<GS_DATA> triStream, float3 pos, float4 co
         //No rotation calculations (no need to do the rotation calculations if there is no rotation applied > redundant operations)
         //Just apply the pivot offset
         pos -= float3(pivotOffset, 0);
-
-
     }
 
     //Geometry Vertex Output
@@ -121,11 +125,23 @@ void MainGS(point VS_DATA vertex[1], inout TriangleStream<GS_DATA> triStream)
     CreateVertex(triStream, position + float3(gTextureSize.x * scale.x, gTextureSize.y * scale.y, 0), color, texCoord + float2(1, 1), rotation, cosSin, offset, pivotOffset); //Change the color data too!
 }
 
+
 //PIXEL SHADER
 //************
+//float4 MainPS(GS_DATA input) : SV_TARGET
+//{
+//    return gSpriteTexture.Sample(samPoint, input.TexCoord) * input.Color;
+//}
+
 float4 MainPS(GS_DATA input) : SV_TARGET
 {
-    return gSpriteTexture.Sample(samPoint, input.TexCoord) * input.Color;
+    //return gSpriteTexture.Sample(samPoint, input.TexCoord) * input.Color;
+    float4 color = gSpriteTexture.Sample(samPoint, input.TexCoord);
+    if (color.a < 0.5)
+        discard;
+
+    return color * input.Color;
+
 }
 
 // Default Technique
@@ -135,7 +151,7 @@ technique11 Default
     {
         SetRasterizerState(BackCulling);
         SetBlendState(EnableBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
-        //SetDepthStencilState(NoDepth,0);
+        SetDepthStencilState(NoDepth,0);
         SetVertexShader(CompileShader(vs_4_0, MainVS()));
         SetGeometryShader(CompileShader(gs_4_0, MainGS()));
         SetPixelShader(CompileShader(ps_4_0, MainPS()));

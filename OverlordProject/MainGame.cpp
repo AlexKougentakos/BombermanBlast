@@ -60,6 +60,8 @@
 
 #ifdef GameProj
 #include "Scenes/GameScene/BombermanBlastScene.h"
+#include "Scenes/GameScene/MainMenuScene.h"
+#include "Scenes/GameScene/ControlsScene.h"
 #endif // GameProj
 
 
@@ -142,7 +144,11 @@ void MainGame::Initialize()
 #endif
 
 #ifdef GameProj
+	SceneManager::Get()->AddGameScene(new MainMenuScene());
+	SceneManager::Get()->AddGameScene(new ControlsScene());
+
 	SceneManager::Get()->AddGameScene(new BombermanBlastScene());
+
 #endif
 
 

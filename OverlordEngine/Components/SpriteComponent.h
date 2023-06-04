@@ -20,7 +20,12 @@ public:
 	void SetColor(const XMFLOAT4& color) { m_Color = color; }
 	void SetTexture(const std::wstring& spriteAsset);
 
-	XMFLOAT2 GetDimensions() const { return m_pTexture->GetDimension(); }
+	XMFLOAT2 GetDimensions() const
+	{
+		return
+			XMFLOAT2{ m_pTexture->GetDimension().x * GetTransform()->GetScale().x,
+			m_pTexture->GetDimension().y * GetTransform()->GetScale().y };
+	}
 
 protected:
 	void Initialize(const SceneContext& sceneContext) override;

@@ -13,9 +13,11 @@ void UIManager::Initialize(const SceneContext& sceneContext)
 
 	for (size_t i{}; i < m_pPlayers.size(); ++i)
 	{
-		auto player = m_pPlayers[i];
-		AddChild(new CharacterPointDisplay(player, XMFLOAT2{i * (sceneContext.windowWidth / m_pPlayers.size()), sceneContext.windowWidth - 50.f}));
+		const auto player = m_pPlayers[i];
+		constexpr int maxPlayers{4};
+		const float increment{ sceneContext.windowWidth / maxPlayers + 1 };
 
+		AddChild(new CharacterPointDisplay(player, XMFLOAT2{i * increment, 0.f}));
 	}
 }
 

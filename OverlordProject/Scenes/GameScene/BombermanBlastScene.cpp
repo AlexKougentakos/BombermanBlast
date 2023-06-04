@@ -2,18 +2,13 @@
 #include "BombermanBlastScene.h"
 
 #include "Components/Grid.h"
-#include "Materials/DiffuseMaterial.h"
-#include "Materials/DiffuseMaterial_Skinned.h"
 #include "Prefabs/BombermanCharacter.h"
-#include "Prefabs/BombPrefab.h"
-#include "Prefabs/CubePrefab.h"
 #include "Prefabs/RockPrefab.h"
-#include "Prefabs/SpherePrefab.h"
-#include "Prefabs/PowerUps/PowerUp_IncrDecrBlast.h"
 #include "Components/PowerUpManager.h"
 
 #include <Windows.h>
 
+#include "Materials/Post/Vignette.h"
 #include "Materials/Shadow/DiffuseMaterial_Shadow.h"
 #include "Prefabs/UI/UIManager.h"
 
@@ -69,8 +64,7 @@ void BombermanBlastScene::Initialize()
 	//Add collider to level
 	const auto pPxTriangleMesh = ContentManager::Load<PxTriangleMesh>(L"Meshes/Level.ovpt");
 	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 10.f,10.f,10.f })), *pDefaultMaterial);
-	levelRigidBody->SetCollisionGroup(CollisionGroup::Group2);
-	levelRigidBody->GetPxRigidActor()->setName("level");
+	levelRigidBody->SetCollisionGroup(CollisionGroup::Level);
 
 	//Add model to the level
 	const auto pDiffuseMat2 = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow>();
@@ -179,13 +173,13 @@ void BombermanBlastScene::Initialize()
 		characterTransform->Translate(characterTransform->GetPosition().x , 10.f, characterTransform->GetPosition().z);
 	}
 
-	SpawnRocks();
-
 	AddChild(new UIManager(m_pCharacters));
 
-	auto go = new GameObject();
-	AddChild(go);
-	go->AddComponent(new SpriteComponent(L"Textures/UI/transparent.png"));
+	SpawnRocks();
+
+	//Post Processing
+	auto vignette = MaterialManager::Get()->CreateMaterial<Vignette>();
+	AddPostProcessingEffect(vignette);
 }
 
 void BombermanBlastScene::SpawnRocks() const 
@@ -204,6 +198,12 @@ void BombermanBlastScene::SpawnRocks() const
 		}
 	}
 }
+
+void BombermanBlastScene::OnSceneActivated()
+{
+	
+}
+
 
 void BombermanBlastScene::CalculateNeededBlockSize()
 {

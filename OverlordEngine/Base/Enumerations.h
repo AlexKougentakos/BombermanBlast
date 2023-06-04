@@ -65,12 +65,12 @@ ENABLE_BITMASK_OPERATORS(RigidBodyConstraint)
 
 enum class CollisionGroup : UINT32
 {
-	None = 0,
-	Group0 = (1 << 0),
-	Group1 = (1 << 1),
-	Group2 = (1 << 2),
-	Group3 = (1 << 3),
-	Group4 = (1 << 4),
+	None = 0,			//Naming these for convenience but not changing just in case they are needed
+	Group0 = (1 << 0), Player = (1 << 0),
+	Group1 = (1 << 1), Level = (1 << 1),
+	Group2 = (1 << 2), Bomb_Inside = (1 << 2),
+	Group3 = (1 << 3), Bomb_Outside = (1 << 3),
+	Group4 = (1 << 4), 
 	Group5 = (1 << 5),
 	Group6 = (1 << 6),
 	Group7 = (1 << 7),

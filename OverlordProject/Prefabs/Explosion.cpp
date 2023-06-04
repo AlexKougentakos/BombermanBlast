@@ -9,7 +9,6 @@ Explosion::Explosion(GridComponent* grid):
 	SetTag(L"Explosion");
 }
 
-
 void Explosion::Initialize(const SceneContext&)
 {
 	const float scale = m_pGrid->GetScaleFactor();
