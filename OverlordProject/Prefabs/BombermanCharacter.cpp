@@ -8,6 +8,7 @@
 #include "Materials/Shadow/DiffuseMaterial_Shadow.h"
 #include "Materials/Shadow/DiffuseMaterial_Shadow_Skinned.h"
 #include "Prefabs/BombPrefab.h"
+#include <Components/GameObjectManager.h>
 
 int BombermanCharacter::m_InstanceCounter = 0;
 
@@ -40,7 +41,22 @@ void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 
 	m_pModelComponent = pModelForCharacter->AddComponent(new ModelComponent(L"Meshes/Character.ovm", false));
 
-	m_pMaterial->SetDiffuseTexture(L"Textures/WhiteBomberMan.png");
+	switch (GetPlayerColour())
+	{
+	case PlayerColour::RED:
+		m_pMaterial->SetDiffuseTexture(L"Textures/RedBomberMan.png");
+		break;
+	case PlayerColour::YELLOW:
+		m_pMaterial->SetDiffuseTexture(L"Textures/YellowBomberMan.png");
+		break;
+	case PlayerColour::BLUE:
+		m_pMaterial->SetDiffuseTexture(L"Textures/BlueBomberMan.png");
+		break;
+	case PlayerColour::WHITE:
+		m_pMaterial->SetDiffuseTexture(L"Textures/WhiteBomberMan.png");
+		break;
+	}
+
 	m_pModelComponent->SetMaterial(m_pMaterial);
 
 	m_pModelAnimator = m_pModelComponent->GetAnimator();
@@ -59,6 +75,15 @@ void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 	modelComp->GetTransform()->Scale(0.3f);
 	modelComp->GetTransform()->Translate(0.f, 0.f, 0.f);
 }
+
+void BombermanCharacter::Reset()
+{
+	m_IsDead = false;
+	m_PlayerState = PlayerState::Idle;
+	m_PlayerStats = PlayerStats{};
+	m_RemainingBombs = m_PlayerStats.maxBombs;
+}
+
 
 void BombermanCharacter::Update(const SceneContext& sceneContext)
 {
@@ -87,8 +112,9 @@ void BombermanCharacter::Update(const SceneContext& sceneContext)
 
 				if (m_ElapsedDeathTimer >= m_DeathAnimTime)
 				{
-					m_pGrid->DeleteSpecificObject(this);
+					notifyObservers("Player Death");
 					m_IsDead = true;
+					//m_pGrid->DeleteSpecificObject(this);
 				}
 				break;
 		}
@@ -102,7 +128,9 @@ void BombermanCharacter::SpawnBomb()
  	const XMFLOAT3 playerPos = GetTransform()->GetPosition();
 	GridCell& playerCell = m_pGrid->GetCell(playerPos);
 
-	m_pGrid->PlaceObject(new BombPrefab(m_PlayerStats.blastRadius, m_pGrid, this), playerCell);
+	auto gameObjectManager = m_pGrid->GetGameObject()->GetComponent<GameObjectManager>();
+
+	m_pGrid->PlaceObject(gameObjectManager->CreateGameObject<BombPrefab>(m_PlayerStats.blastRadius, m_pGrid, this), playerCell);
 	m_RemainingBombs--;
 }
 

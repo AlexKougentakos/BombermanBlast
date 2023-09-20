@@ -2,7 +2,8 @@
 class Button : public GameObject
 {
 public:
-	Button(const XMFLOAT2& pos, const std::wstring& coverImagePath);
+	Button(const XMFLOAT2& pos, const std::wstring& coverImagePath );
+	Button(const XMFLOAT2& pos, const std::wstring& coverImagePath, XMFLOAT2& customCursorPos);
 	virtual ~Button() override = default;
 	
 	Button(const Button& other) = delete;
@@ -32,7 +33,6 @@ public:
 	bool IsHovering() const { return m_IsHovering; }
 
 protected:
-
 
 	XMFLOAT2 m_Position{};
 	SpriteComponent* m_pSpriteComponent{};

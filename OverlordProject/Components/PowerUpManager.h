@@ -40,5 +40,4 @@ private:
 
 	float m_SpawnChance{40};
 	int m_NumOfPowerUps{6};
-
 };

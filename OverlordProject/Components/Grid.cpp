@@ -2,9 +2,10 @@
 #include "Grid.h"
 
 #include "PowerUpManager.h"
-#include "PowerUpManager.h"
 #include "Prefabs/BombermanCharacter.h"
 #include "Prefabs/PowerUps/PowerUp.h"
+
+#include "Components/GameObjectManager.h"
 
 GridComponent::GridComponent(std::vector<char>& gridMap, XMFLOAT3 bottomLeft, XMFLOAT3 topRight, float cellSize, float scaleFactor)
 	:m_GridMap(gridMap),
@@ -99,16 +100,32 @@ void GridComponent::PlaceObject(GameObject* pObject, int row, int col)
     PlaceObject(pObject, GetCell(row, col));
 }
 
+void GridComponent::RemoveButKeepAlive(GameObject* pObject)
+{
+	const int index{GetCellIndex(GetCell(*pObject))};
+    m_GridCells[index].Remove(pObject);
+
+    pObject->GetTransform()->Translate(0, -100, 0);
+}
+
+
 void GridComponent::PlaceObject(GameObject* pObject, GridCell& cell) 
 {
+    if (!pObject) return;
+
     const std::wstring objectTag = pObject->GetTag();
 
-    GetScene()->AddChild(pObject);
+    if (!pObject->GetScene())
+    	GetScene()->AddChild(pObject);
+
     m_GridCells[GetCellIndex(cell)].objects.emplace_back(pObject);
 
     float yOffset{0.f};
     if (objectTag == L"PowerUp")
 		yOffset = 4.5f;
+
+    if (objectTag == L"Player")
+		yOffset = 10.f;
 
     pObject->GetTransform()->Translate(XMFLOAT3{ cell.center.x, yOffset, cell.center.z });
 }
@@ -116,19 +133,30 @@ void GridComponent::PlaceObject(GameObject* pObject, GridCell& cell)
 
 void GridComponent::DeleteSpecificObject(GameObject* pObject)
 {
+
     for (auto& cell : m_GridCells)
-    {
-        for (auto toCompare = cell.objects.begin(); toCompare != cell.objects.end(); ++toCompare)
+        for (auto toCompare = cell.objects.begin(); toCompare != cell.objects.end();)
         {
             // Check if the current object matches the one to be removed
             if (*toCompare == pObject)
             {
-                GetScene()->RemoveChild(pObject, true);
-                cell.objects.erase(toCompare);
-                return;
+                GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(pObject);
+                toCompare = cell.objects.erase(toCompare);
             }
+            else ++toCompare;
         }
-    }
+}
+
+void GridComponent::ClearGrid()
+{
+    for (auto& cell : m_GridCells)
+        for (const auto& object : cell.objects)
+        {
+            if (object->GetTag() == L"Rock" ||
+                object->GetTag() == L"Bomb" ||
+                object->GetTag() == L"PowerUp")
+                DeleteSpecificObject(object);
+        }
 }
 
 
@@ -172,7 +200,9 @@ void GridComponent::TryToRemoveAllObjects(GridCell& cell)
 			continue;
 		}
 
-        GetScene()->RemoveChild(object, true);
+        //TODO: Implement explode function on all game objects
+        //GetScene()->RemoveChild(object, true);
+        GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(object);
     }
 
     vec = std::move(objectsToKeep);
@@ -182,6 +212,36 @@ void GridComponent::TryToRemoveAllObjects(GridCell& cell)
         GetGameObject()->GetComponent<PowerUpManager>()->TriggerPowerUpSpawn(cellForPowerUp);
 	}
 }
+
+void GridComponent::MoveObject(GameObject* pObject, int row, int col)
+{
+		MoveObject(pObject, GetCell(row, col));
+}
+
+void GridComponent::MoveObject(GameObject* pObject, GridCell& newGridCell)
+{
+    for (auto& cell : m_GridCells)
+    {
+        auto& objects = cell.objects;
+
+        auto it = std::find(objects.begin(), objects.end(), pObject);
+        if (it != objects.end())
+        {
+            objects.erase(it);
+
+            const float yOffset{ pObject->GetTag() == L"Player" ? 10.f : 0.f };
+
+            newGridCell.objects.emplace_back(pObject);
+            pObject->GetTransform()->Translate(XMFLOAT3{ newGridCell.center.x,yOffset, newGridCell.center.z });
+
+            return;
+        }
+    }
+
+	// If we reach this point, the object wasn't found in any cell
+    std::cout << "The object wasn't found in any cell!" << std::endl;
+}
+
 
 char GridComponent::GetCharOfObject(const GameObject* const gameObject) const
 {
@@ -290,12 +350,12 @@ void GridComponent::UpdateCharacterOnMap(std::vector<BombermanCharacter*>& playe
 
     for (BombermanCharacter* character : players)
     {
-        if (character->IsDead())
+        /*if (character->IsDead())
         {
 	        std::erase(players, character);
             DeleteSpecificObject(character);
 			continue;
-        }
+        }*/
 
         const XMFLOAT3 characterPos = character->GetTransform()->GetPosition();
         const int characterCellIdx = GetCellIndex(GetCell(characterPos));

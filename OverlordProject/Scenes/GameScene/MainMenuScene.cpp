@@ -5,12 +5,15 @@
 #include "Prefabs/UI/Menu/Buttons/ControllsButton.h"
 #include "Prefabs/UI/Menu/Buttons/QuitButton.h"
 
+MainMenuScene::MainMenuScene() : GameScene(L"MainMenuScene")
+{
+}
+
 
 void MainMenuScene::Initialize()
 {
-	m_pButtonManager = new ButtonManager();
+	m_pButtonManager = new ButtonManager(&m_GameCursorPosition);
 	AddChild(m_pButtonManager);
-
 	const auto fixedCam = new FixedCamera();
 	AddChild(fixedCam);
 	SetActiveCamera(fixedCam->GetComponent<CameraComponent>());
@@ -30,25 +33,26 @@ void MainMenuScene::Initialize()
 
 	const XMFLOAT2 startButtonPos{ m_SceneContext.windowWidth / 2.f, m_SceneContext.windowHeight / 1.5f - 125 };
 	const auto startButton = new StartButton(startButtonPos, L"Textures/UI/StartButton.png");
-	AddChild(startButton);
 
 	const XMFLOAT2 controlsButtonPos{ m_SceneContext.windowWidth / 2.f, m_SceneContext.windowHeight / 1.5f };
 	const auto controlsButton = new ControllButton(controlsButtonPos, L"Textures/UI/SettingsButton.png");
-	AddChild(controlsButton);
 
 	const XMFLOAT2 quitButtonPos{ m_SceneContext.windowWidth / 2.f, m_SceneContext.windowHeight / 1.5f + 125 };
 	const auto quitButton = new QuitButton(quitButtonPos, L"Textures/UI/QuitButton.png");
-	AddChild(quitButton);
 
 	m_pButtonManager->AddButton(startButton);
 	m_pButtonManager->AddButton(controlsButton);
 	m_pButtonManager->AddButton(quitButton);
 
-	//Hide the mouse cursor
-	ShowCursor(FALSE);
-
 	//todo: test this pInput->ForceMouseToCenter(true)
+}
 
+void MainMenuScene::OnSceneActivated()
+{
+#ifndef _DEBUG
+	ShowCursor(FALSE);
+#endif 
+	m_SceneContext.pInput->SetEnabled(true);
 }
 
 void MainMenuScene::Update()

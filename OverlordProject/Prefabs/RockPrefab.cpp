@@ -19,6 +19,8 @@ void RockPrefab::Initialize(const SceneContext& /*gameContext*/)
 	m_pModelComponent = AddComponent(new ModelComponent(L"Meshes/Brick.ovm"));
 	const auto pRigidBody = AddComponent(new RigidBodyComponent(true));
 
+	pRigidBody->SetCollisionGroup(CollisionGroup::Brick);
+
 	m_pModelComponent->SetMaterial(pDiffuseMat);
 
 	const auto physicsMat = PhysXManager::Get()->GetPhysics()->createMaterial(0.2f, 0.2f, 0.2f);

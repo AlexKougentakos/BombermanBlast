@@ -94,7 +94,11 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Components\GameObjectManager.cpp" />
     <ClCompile Include="Materials\Post\Vignette.cpp" />
+    <ClCompile Include="Prefabs\GameLoopManager.cpp" />
+    <ClCompile Include="Prefabs\PowerUps\PowerUp_IncrDecrBombs.cpp" />
+    <ClCompile Include="Prefabs\PowerUps\PowerUp_IncrDecrSpeed.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\ButtonManager.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Button.cpp" />
     <ClCompile Include="Components\Grid.cpp" />
@@ -111,8 +115,11 @@
     <ClCompile Include="Prefabs\UI\CharacterPointDisplay.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\BackButton.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\ControllsButton.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\MenuButton.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\QuitButton.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\StartButton.cpp" />
+    <ClCompile Include="Prefabs\UI\RoundWinners.cpp" />
+    <ClCompile Include="Prefabs\UI\Timer.cpp" />
     <ClCompile Include="Prefabs\UI\UIManager.cpp" />
     <ClCompile Include="Scenes\GameScene\BombermanBlastScene.cpp" />
     <ClCompile Include="Materials\DiffuseMaterial_Skinned.cpp" />
@@ -168,7 +175,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Components\GameObjectManager.h" />
     <ClInclude Include="Materials\Post\Vignette.h" />
+    <ClInclude Include="Prefabs\GameLoopManager.h" />
+    <ClInclude Include="Prefabs\PowerUps\PowerUp_IncrDecrBombs.h" />
+    <ClInclude Include="Prefabs\PowerUps\PowerUp_IncrDecrSpeed.h" />
     <ClInclude Include="Prefabs\UI\Menu\ButtonManager.h" />
     <ClInclude Include="Prefabs\UI\Menu\Button.h" />
     <ClInclude Include="Components\Grid.h" />
@@ -185,8 +196,11 @@
     <ClInclude Include="Prefabs\UI\CharacterPointDisplay.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\BackButton.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\ControllsButton.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\MenuButton.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\QuitButton.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\StartButton.h" />
+    <ClInclude Include="Prefabs\UI\RoundWinners.h" />
+    <ClInclude Include="Prefabs\UI\Timer.h" />
     <ClInclude Include="Prefabs\UI\UIManager.h" />
     <ClInclude Include="Scenes\GameScene\BombermanBlastScene.h" />
     <ClInclude Include="Materials\DiffuseMaterial_Skinned.h" />

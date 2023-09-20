@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "GameScene.h"
 
+#include "../../OverlordProject/Prefabs/UI/Menu/ButtonManager.h"
+
 GameScene::GameScene(std::wstring sceneName):
 	m_SceneName(std::move(sceneName))
 {
@@ -137,19 +139,14 @@ void GameScene::RootUpdate()
 	SoundManager::Get()->GetSystem()->update();
 #pragma warning(pop)
 
-	//User-Scene Update
-	Update();
+		//User-Scene Update
+		Update();
 
-	//Root-Scene Update
-	/*for (const auto pChild : m_pChildren)
-	{
-		if(pChild)
-			pChild->RootUpdate(m_SceneContext);
-	}*/
-	for (int i{ 0 }; i < m_pChildren.size(); ++i)
-		m_pChildren[i]->RootUpdate(m_SceneContext);
+		//Root-Scene Update
+		for (int i{ 0 }; i < m_pChildren.size(); ++i)
+			m_pChildren[i]->RootUpdate(m_SceneContext);
 
-	m_pPhysxProxy->Update(m_SceneContext);
+		m_pPhysxProxy->Update(m_SceneContext);
 }
 
 void GameScene::RootDraw()

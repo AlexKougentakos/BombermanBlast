@@ -10,7 +10,7 @@ QuitButton::QuitButton(const XMFLOAT2& pos, const std::wstring& coverImagePath) 
 
 void QuitButton::OnClick() const
 {
-	
+	PostQuitMessage(0);
 }
 
 void QuitButton::OnHover() const

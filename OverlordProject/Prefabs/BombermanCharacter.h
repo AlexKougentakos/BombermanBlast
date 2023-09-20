@@ -7,10 +7,10 @@ class GridComponent;
 
 enum class PlayerColour
 {
-	WHITE,
-	BLUE,
-	RED,
-	YELLOW
+	WHITE = 1,
+	BLUE = 2,
+	RED = 3,
+	YELLOW = 4
 };
 
 struct CharacterDesc
@@ -60,9 +60,9 @@ struct PlayerStats
 
 	PlayerStats& operator+= (const PlayerStatIncrease& increase)
 	{
-		maxBombs += increase.bombs;
-		blastRadius += increase.blastRadius;
-		speed += increase.speed;
+		maxBombs = std::max( maxBombs + increase.bombs, 1);
+		blastRadius = std::max(blastRadius + increase.blastRadius, 1);
+		speed = std::max(speed + increase.speed, 1);
 
 		return *this;
 	}
@@ -93,9 +93,18 @@ public:
 	void Kill();
 	bool IsDead() const { return m_IsDead; }
 
-	void ApplyPowerup(PlayerStatIncrease increase) { m_PlayerStats += increase; }
+	void ApplyPowerup(PlayerStatIncrease increase)
+	{
+		m_PlayerStats += increase;
+		m_RemainingBombs += increase.bombs;
+	}
 	void AddPoint();
-	PlayerColour GetPlayerColour() const { return PlayerColour(m_PlayerIndex); }
+	PlayerColour GetPlayerColour() const
+	{
+		return PlayerColour(m_PlayerIndex);
+	}
+
+	void Reset();
 
 protected:
 	void Initialize(const SceneContext&) override;

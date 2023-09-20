@@ -7,7 +7,7 @@
 
 void ControlsScene::Initialize()
 {
-	m_pButtonManager = new ButtonManager();
+	m_pButtonManager = new ButtonManager(&m_GameCursorPosition);
 	AddChild(m_pButtonManager);
 
 	const auto fixedCam = new FixedCamera();
@@ -28,17 +28,22 @@ void ControlsScene::Initialize()
 	m_pCursor->GetTransform()->Scale(0.25f);
 
 	constexpr float offset{ 200.f };
-	constexpr XMFLOAT2 backButton{ offset, offset / 2.f };
+	constexpr XMFLOAT2 backButtonPos{ offset, offset / 2.f };
 
-	const auto startButton = new BackButton(backButton, L"Textures/UI/BackButton.png");
-	AddChild(startButton);
+	const auto backButton = new BackButton(backButtonPos, L"Textures/UI/BackButton.png");
 
-	m_pButtonManager->AddButton(startButton);
+	m_pButtonManager->AddButton(backButton);
 	//Hide the mouse cursor
 	ShowCursor(FALSE);
 
 	//todo: test this pInput->ForceMouseToCenter(true)
 
+}
+
+void ControlsScene::OnSceneActivated()
+{
+	ShowCursor(false);
+	m_SceneContext.pInput->SetEnabled(true);
 }
 
 void ControlsScene::Update()

@@ -17,6 +17,7 @@ protected:
 	void Initialize() override;
 	void UpdateCustomCursor();
 	void Update() override;
+	void OnSceneActivated() override;
 
 private:
 	SpriteFont* m_pFont{};

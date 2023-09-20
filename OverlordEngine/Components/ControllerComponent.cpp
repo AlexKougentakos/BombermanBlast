@@ -139,7 +139,7 @@ void ControllerComponent::Move(const XMFLOAT3& displacement, float minDistance)
 	ASSERT_NULL_(m_pController);
 
 	PxFilterData filterData;
-	filterData.word0 = PxU32(CollisionGroup::Level | CollisionGroup::Bomb_Outside);
+	filterData.word0 = PxU32(CollisionGroup::Level | CollisionGroup::Bomb_Outside | CollisionGroup::Brick);
 
 	MyControllerFilterCallback filterCallback;
 	//MyControllerFilterCallback2 filterCallback2;

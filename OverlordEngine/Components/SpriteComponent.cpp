@@ -5,11 +5,13 @@ SpriteComponent::SpriteComponent(const std::wstring& spriteAsset, const XMFLOAT2
     m_SpriteAsset(spriteAsset),
     m_Pivot(pivot),
     m_Color(color)
-{}
+{
+    m_pTexture = ContentManager::Load<TextureData>(m_SpriteAsset);
+}
 
 void SpriteComponent::Initialize(const SceneContext& /*sceneContext*/ )
 {
-    m_pTexture = ContentManager::Load<TextureData>(m_SpriteAsset);
+    
 }
 
 void SpriteComponent::SetTexture(const std::wstring& spriteAsset)

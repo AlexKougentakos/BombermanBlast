@@ -1,13 +1,17 @@
 #pragma once
 #include "Prefabs/CubePrefab.h"
+class MenuButton;
+class QuitButton;
+class GameLoopManager;
 class BombPrefab;
 class BombermanCharacter;
+class UIManager;
 
-class BombermanBlastScene final : public GameScene
+class BombermanBlastScene final : public GameScene, public Observer<GameLoopManager>
 {
 public:
 	BombermanBlastScene();
-	~BombermanBlastScene() override = default;
+	~BombermanBlastScene() override;
 
 	BombermanBlastScene(const BombermanBlastScene& other) = delete;
 	BombermanBlastScene(BombermanBlastScene&& other) noexcept = delete;
@@ -23,11 +27,13 @@ protected:
 	void Update() override;
 	void Draw() override;
 	void OnGUI() override;
+	void PostInitialize() override;
+	virtual void OnNotify(GameLoopManager* source, const std::string& event) override;
 
 private:
-
 	//Characters
 	std::vector<BombermanCharacter*> m_pCharacters{};
+	std::vector<BombermanCharacter*> m_pDeadCharacters{};
 
 	//Cameras
 	CameraComponent* m_pCamera{ nullptr };
@@ -67,22 +73,27 @@ private:
 	 It scales the rocks and their colliders to fit to the map.
 	 */
 	void SpawnRocks() const;
+	void AddCharacters(PxMaterial* pDefaultMaterial, int numOfPlayers);
+	void InitializeLevel(PxMaterial* pDefaultMaterial);
+	void DefinePlayerInputs();
+	void InitializeLevelNecessities();
+	void ResetLevel();
 
 	//This will appear reversed in the game. The topLeft is the bottom left..etc
 	//Map is to be used for debug visualizations
 	std::vector<char> m_Map{};
 	std::vector<char> m_StartingLayout
 	{
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'R', 'O', 'R', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'R', 'R', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'R', 'O', 'O', 'O', 'O',
-		'O','O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'O',
+		'O','O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'O',
+		'O','R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O',
+		'R','O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R',
+		'O','R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'R',
+		'R','O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R',
+		'O','R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'R',
+		'R','O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R',
+		'R','R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'R',
+		'R','R', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'R', 'O',
+		'O','R', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'R', 'O', 'O',
 	};
 
 	// Referring to the map above
@@ -100,5 +111,8 @@ private:
 	//Debug
 	bool m_IsDebugCameraActive{ false };
 
-};
+	GameLoopManager* m_pGameLoopManager{ nullptr };
+	UIManager* m_pUIManager{ nullptr };
 
+	bool m_IsGameOver{ false };
+};

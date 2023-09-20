@@ -1,5 +1,6 @@
 #pragma once
 #include "Base/Structs.h"
+class ButtonManager;
 class PostProcessingMaterial;
 class BaseMaterial;
 class PhysxProxy;

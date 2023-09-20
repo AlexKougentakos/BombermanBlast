@@ -9,11 +9,6 @@ PowerUp_IncreaseBlast::PowerUp_IncreaseBlast(GridComponent* pGridComponent)
 
 }
 
-void PowerUp_IncreaseBlast::Update(const SceneContext&)
-{
-
-}
-
 void PowerUp_IncreaseBlast::OnCollision(GameObject*, GameObject* other, PxTriggerAction action)
 {
 	if (action == PxTriggerAction::LEAVE) return;
@@ -30,3 +25,26 @@ void PowerUp_IncreaseBlast::OnCollision(GameObject*, GameObject* other, PxTrigge
 	MarkForRemoval();
 }
 
+
+PowerUp_DecreaseBlast::PowerUp_DecreaseBlast(GridComponent* pGridComponent)
+	:BasePowerUp(pGridComponent)
+{
+	SetTexture(texturePath);
+
+}
+
+void PowerUp_DecreaseBlast::OnCollision(GameObject*, GameObject* other, PxTriggerAction action)
+{
+	if (action == PxTriggerAction::LEAVE) return;
+
+	const auto player = dynamic_cast<BombermanCharacter*>(other);
+
+	if (!player) return;
+
+	PlayerStatIncrease increase{};
+	increase.blastRadius = -1;
+
+	player->ApplyPowerup(increase);
+
+	MarkForRemoval();
+}

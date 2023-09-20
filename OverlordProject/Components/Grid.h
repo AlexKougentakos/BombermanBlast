@@ -66,6 +66,9 @@ public:
 	GridComponent& operator=(const GridComponent& other) = delete;
 	GridComponent& operator=(GridComponent&& other) noexcept = delete;
 
+	void MoveObject(GameObject* pObject, int row, int col);
+	void MoveObject(GameObject* pObject, GridCell& newGridCell);
+
 	void PlaceObject(GameObject* pObject, GridCell& cell);
 	void PlaceObject(GameObject* pObject, int row, int col);
 
@@ -77,6 +80,8 @@ public:
 	 */
 	void TryToRemoveAllObjects(GridCell& cell);
 	void TryToRemoveAllObjects( int row, int col);
+
+	void RemoveButKeepAlive(GameObject* pObject);
 
 	//Uses no checking, deletes a specific object
 	void DeleteSpecificObject(GameObject* pObject);
@@ -106,6 +111,8 @@ public:
 	void UpdateCharacterOnMap(std::vector<BombermanCharacter*>& players);
 
 	float GetScaleFactor() const { return m_CellScaleFactor; }
+
+	void ClearGrid();
 
 protected:
 	void Initialize(const SceneContext&) override{};

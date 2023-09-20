@@ -6,6 +6,9 @@
 
 //Include all the PowerUps here
 #include "Prefabs/PowerUps/PowerUp_IncrDecrBlast.h"
+#include "Prefabs/PowerUps/PowerUp_IncrDecrBombs.h"
+#include "Prefabs/PowerUps/PowerUp_IncrDecrSpeed.h"
+#include "GameObjectManager.h"
 
 
 PowerUpManager::PowerUpManager(GridComponent* pGridComponent):
@@ -36,11 +39,20 @@ BasePowerUp* PowerUpManager::GetPowerUpByType(PowerUpType type) const
 	switch (type)
 	{
 	case PowerUpType::FlameUp:
-		return new PowerUp_IncreaseBlast(m_pGrid);
+		return m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->CreateGameObject<PowerUp_IncreaseBlast>(m_pGrid);
+	case PowerUpType::FlameDown:
+		return m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->CreateGameObject<PowerUp_DecreaseBlast>(m_pGrid);
+	case PowerUpType::BombUp:
+		return m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->CreateGameObject<PowerUp_IncreaseBomb>(m_pGrid);
+	case PowerUpType::BombDown:
+		return m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->CreateGameObject<PowerUp_DecreaseBomb>(m_pGrid);
+	case PowerUpType::SpeedUp:
+		return m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->CreateGameObject<PowerUp_IncreaseSpeed>(m_pGrid);
+	case PowerUpType::SpeedDown:
+		return m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->CreateGameObject<PowerUp_DecreaseSpeed>(m_pGrid);
 	default:
-		return new PowerUp_IncreaseBlast(m_pGrid);
-		//assert(true, "wrong power up");
-		//return nullptr;
+		assert(true && "wrong power up");
+		return nullptr;
 	}
 }
 

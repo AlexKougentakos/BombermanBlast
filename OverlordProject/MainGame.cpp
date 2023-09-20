@@ -174,6 +174,8 @@ void MainGame::Initialize()
 
 LRESULT MainGame::WindowProcedureHook(HWND /*hWnd*/, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
 
 	if(message == WM_KEYUP)
 	{
@@ -217,7 +219,6 @@ LRESULT MainGame::WindowProcedureHook(HWND /*hWnd*/, UINT message, WPARAM wParam
 			pScene->GetPhysxProxy()->NextPhysXFrame();
 		}
 	}
-	
 
 	return -1;
 }

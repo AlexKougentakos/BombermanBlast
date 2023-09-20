@@ -9,8 +9,8 @@ Texture2D gTexture;
 
 DepthStencilState EnableDepthWriting
 {
-	DepthEnable = true;
-	DepthWriteMask = ALL;
+	DepthEnable = false;
+	DepthWriteMask = ZERO;
 };
 
 RasterizerState BackCulling
@@ -52,6 +52,7 @@ float4 PS(PS_INPUT input): SV_Target
 
 	// Apply vignette
 	color.rgb *= vignette;
+	color.a = 1.0f;
 
 	return color;
 }
@@ -60,6 +61,7 @@ technique11 Vignette
 {
     pass P0
     {
+		SetDepthStencilState(EnableDepthWriting, 0);
         SetVertexShader( CompileShader( vs_4_0, VS() ) );
         SetGeometryShader( NULL );
         SetPixelShader( CompileShader( ps_4_0, PS() ) );

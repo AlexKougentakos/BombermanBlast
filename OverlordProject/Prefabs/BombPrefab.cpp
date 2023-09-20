@@ -5,6 +5,7 @@
 #include "Materials/DiffuseMaterial.h"
 #include "Components/Grid.h"
 #include "Explosion.h"
+#include "Components/GameObjectManager.h"
 
 BombPrefab::BombPrefab(int blastRadius, GridComponent* pGridComponent, BombermanCharacter* playerWhoPlacedBomb,float size)
 	:m_BlastRadius(blastRadius),
@@ -58,7 +59,7 @@ void BombPrefab::Explode(int explosionDistance)
 			m_pGrid->TryToRemoveAllObjects(affectedCell);
 
 		if (affectedCell.isValid)
-			m_pGrid->PlaceObject(new Explosion(m_pGrid), affectedCell);
+			m_pGrid->PlaceObject(m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->CreateGameObject<Explosion>(m_pGrid), affectedCell);
 	}
 
 	//Recharge player bomb

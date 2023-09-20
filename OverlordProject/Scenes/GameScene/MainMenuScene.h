@@ -5,7 +5,7 @@ class ButtonManager;
 class MainMenuScene : public GameScene
 {
 public:
-	MainMenuScene() : GameScene(L"MainMenuScene") {}
+	MainMenuScene();
 	~MainMenuScene() override = default;
 
 	MainMenuScene(const MainMenuScene& other) = delete;
@@ -17,6 +17,7 @@ protected:
 	void Initialize() override;
 	void UpdateCustomCursor();
 	void Update() override;
+	void OnSceneActivated() override;
 
 private:
 	SpriteFont* m_pFont{};

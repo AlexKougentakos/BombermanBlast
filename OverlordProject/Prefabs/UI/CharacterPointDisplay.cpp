@@ -25,20 +25,20 @@ void CharacterPointDisplay::Initialize(const SceneContext&)
 	m_pSpriteComponent->GetTransform()->Translate(m_SpritePosition.x, m_SpritePosition.y , 0.9f);
 
 	//Score
-	//todo: Replace this font
-	m_pFont = ContentManager::Load<SpriteFont>(L"./SpriteFonts/Consolas_32.fnt");
+	m_pFont = ContentManager::Load<SpriteFont>(L"./SpriteFonts/Bomberman.fnt");
 
 	constexpr float offset{ 10.f };
 	m_TextPosition = XMFLOAT2
 	{
 		m_SpritePosition.x + m_pSpriteComponent->GetDimensions().x + offset,
-		m_SpritePosition.y + m_pSpriteComponent->GetDimensions().y / 2.f
+		m_SpritePosition.y +	5.f
 	};
 }
 
 void CharacterPointDisplay::Update(const SceneContext&)
 {
 	TextRenderer::Get()->DrawText(m_pFont, StringUtil::utf8_decode(std::to_string(m_ScoreToDisplay)), m_TextPosition);
+	m_pFont = ContentManager::Load<SpriteFont>(L"./SpriteFonts/Bomberman.fnt");
 }
 
 void CharacterPointDisplay::OnNotify(BombermanCharacter*, const std::string& field)
@@ -46,10 +46,5 @@ void CharacterPointDisplay::OnNotify(BombermanCharacter*, const std::string& fie
 	if (field == "Score Increase")
 	{
 		++m_ScoreToDisplay;
-	}
-
-	if (field == "Player Death")
-	{
-		
 	}
 }

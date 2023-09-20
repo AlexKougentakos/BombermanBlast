@@ -18,6 +18,12 @@ BlendState EnableBlending
 	DestBlend = INV_SRC_ALPHA;
 };
 
+DepthStencilState NoDepth
+{
+	DepthEnable = FALSE;
+	DepthWriteMask = ZERO;
+};
+
 RasterizerState BackCulling
 {
 	CullMode = BACK;
@@ -104,6 +110,7 @@ technique10 Default {
 
 	pass p0 {
 		SetRasterizerState(BackCulling);
+		SetDepthStencilState(NoDepth, 0);
 		SetBlendState(EnableBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xFFFFFFFF);
 		SetVertexShader(CompileShader(vs_4_0, MainVS()));
 		SetGeometryShader(CompileShader(gs_4_0, MainGS()));

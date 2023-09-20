@@ -56,6 +56,13 @@
     <ClCompile Include="Materials\Post\Vignette.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\BackButton.cpp" />
     <ClCompile Include="Scenes\GameScene\ControlsScene.cpp" />
+    <ClCompile Include="Prefabs\UI\Timer.cpp" />
+    <ClCompile Include="Prefabs\GameLoopManager.cpp" />
+    <ClCompile Include="Prefabs\UI\Menu\Buttons\MenuButton.cpp" />
+    <ClCompile Include="Prefabs\PowerUps\PowerUp_IncrDecrSpeed.cpp" />
+    <ClCompile Include="Prefabs\PowerUps\PowerUp_IncrDecrBombs.cpp" />
+    <ClCompile Include="Prefabs\UI\RoundWinners.cpp" />
+    <ClCompile Include="Components\GameObjectManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
@@ -112,5 +119,12 @@
     <ClInclude Include="Materials\Post\Vignette.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\BackButton.h" />
     <ClInclude Include="Scenes\GameScene\ControlsScene.h" />
+    <ClInclude Include="Prefabs\UI\Timer.h" />
+    <ClInclude Include="Prefabs\GameLoopManager.h" />
+    <ClInclude Include="Prefabs\UI\Menu\Buttons\MenuButton.h" />
+    <ClInclude Include="Prefabs\PowerUps\PowerUp_IncrDecrSpeed.h" />
+    <ClInclude Include="Prefabs\PowerUps\PowerUp_IncrDecrBombs.h" />
+    <ClInclude Include="Prefabs\UI\RoundWinners.h" />
+    <ClInclude Include="Components\GameObjectManager.h" />
   </ItemGroup>
 </Project>

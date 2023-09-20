@@ -5,17 +5,26 @@
 #include "Prefabs/BombermanCharacter.h"
 #include "Prefabs/RockPrefab.h"
 #include "Components/PowerUpManager.h"
+#include "Components/GameObjectManager.h"
 
 #include <Windows.h>
 
 #include "Materials/Post/Vignette.h"
 #include "Materials/Shadow/DiffuseMaterial_Shadow.h"
+#include "Prefabs/GameLoopManager.h"
 #include "Prefabs/UI/UIManager.h"
+#include "Prefabs/UI/Menu/ButtonManager.h"
+#include "Prefabs/UI/Menu/Buttons/MenuButton.h"
+#include "Prefabs/UI/Menu/Buttons/QuitButton.h"
 
 
 BombermanBlastScene::BombermanBlastScene() :
 	GameScene(L"BombermanBlastScene") {}
 
+
+BombermanBlastScene::~BombermanBlastScene()
+{
+}
 
 void BombermanBlastScene::Initialize()
 {
@@ -44,70 +53,43 @@ void BombermanBlastScene::Initialize()
 	AddChild(m_pDebugCamera);
 
 	//Light
-	m_SceneContext.pLights->SetDirectionalLight({ 0,20,0 }, {0, -1, 0.001f});
-
-	const auto pDefaultMaterial = PxGetPhysics().createMaterial(0.9f, 0.9f, 0.5f);
+	m_SceneContext.pLights->SetDirectionalLight({ 0,20,0 }, { 0, -1, 0.001f });
 
 	m_MapBottomLeft = { -43.f,0,-35.443f };
 	m_MapTopRight = { 49.9f,0,34.f };
 
+	const auto pDefaultMaterial = PxGetPhysics().createMaterial(0.9f, 0.9f, 0.5f);
 	//Level
-	//Fill the map with 'O' for open space
-	m_Map.resize(m_NumOfRows * m_NumOfColumns);
-	m_Map.assign(m_Map.size(), 'O');
-
-	m_pLevel = new GameObject();
-	AddChild(m_pLevel);
-	const auto levelRigidBody = m_pLevel->AddComponent(new RigidBodyComponent(true));
-	m_pLevel->GetTransform()->Scale(10);
-
-	//Add collider to level
-	const auto pPxTriangleMesh = ContentManager::Load<PxTriangleMesh>(L"Meshes/Level.ovpt");
-	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 10.f,10.f,10.f })), *pDefaultMaterial);
-	levelRigidBody->SetCollisionGroup(CollisionGroup::Level);
-
-	//Add model to the level
-	const auto pDiffuseMat2 = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow>();
-	pDiffuseMat2->SetDiffuseTexture(L"Textures/7EE07A6D_c.png");
-	const auto pModelCompo = m_pLevel->AddComponent(new ModelComponent(L"Meshes/Level.ovm", false));
-	pModelCompo->SetMaterial(pDiffuseMat2->GetMaterialId());
+	InitializeLevel(pDefaultMaterial);
 
 	CalculateNeededBlockSize();
 
-	//Add grid component to level
 	m_pLevel->AddComponent(new GridComponent(m_Map, m_MapBottomLeft, m_MapTopRight, m_SingleBlockSize, m_SingleBlockScale));
 	m_pLevel->AddComponent(new PowerUpManager(m_pLevel->GetComponent<GridComponent>()));
+	m_pLevel->AddComponent(new GameObjectManager());
 
-	InputAction inputAction{};
-	//P1
-	inputAction = InputAction(CharacterMoveLeft_P2, InputState::down, 'A');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterMoveRight_P2, InputState::down, 'D');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterMoveForward_P2, InputState::down, 'W');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterMoveBackward_P2, InputState::down, 'S');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterPlaceBomb_P2, InputState::pressed, VK_SPACE, -1, XINPUT_GAMEPAD_A, GamepadIndex::playerTwo);
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	//P2
-	inputAction = InputAction(CharacterMoveLeft_P1, InputState::down, 'J');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterMoveRight_P1, InputState::down, 'L');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterMoveForward_P1, InputState::down, 'I');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterMoveBackward_P1, InputState::down, 'K');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterPlaceBomb_P1, InputState::pressed, 'H', -1, XINPUT_GAMEPAD_A, GamepadIndex::playerOne);
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	//todo: add more support for player input ^^^
+	constexpr unsigned int numOfPlayers{ 4 };
+	DefinePlayerInputs();
 
-	constexpr unsigned int numOfPlayers{ 2 };
+	AddCharacters(pDefaultMaterial, numOfPlayers);
+
+	InitializeLevelNecessities();
+
+	SpawnRocks();
+
+	//Post Processing
+	const auto vignette = MaterialManager::Get()->CreateMaterial<Vignette>();
+	AddPostProcessingEffect(vignette);
+}
+
+
+void BombermanBlastScene::AddCharacters(PxMaterial* const pDefaultMaterial, int numOfPlayers)
+{
+	CharacterDesc characterDesc{ pDefaultMaterial, 3.f, 10.f };
+
 	for (int i{}; i < numOfPlayers; ++i)
 	{
 		//Character
-		CharacterDesc characterDesc{ pDefaultMaterial, 3.f, 10.f };
 		int placementRow{}, placementColumn{};
 		switch (i + 1)
 		{
@@ -147,7 +129,7 @@ void BombermanBlastScene::Initialize()
 		case 4:
 			//Top Left
 			placementRow = m_NumOfRows;
-			placementColumn = 0;
+			placementColumn = 1;
 
 			characterDesc.actionId_MoveForward = CharacterMoveForward_P4;
 			characterDesc.actionId_MoveBackward = CharacterMoveBackward_P4;
@@ -155,13 +137,12 @@ void BombermanBlastScene::Initialize()
 			characterDesc.actionId_MoveRight = CharacterMoveRight_P4;
 			characterDesc.actionId_PlaceBomb = CharacterPlaceBomb_P4;
 			break;
-			default:
-				assert("Invalid player number");
-				break;
+		default:
+			assert("Invalid player number");
+			break;
 		}
 		characterDesc.maxMoveSpeed = 15.f;
 		characterDesc.moveAccelerationTime = 0.01f;
-
 
 		const auto character = new BombermanCharacter(characterDesc, m_pLevel->GetComponent<GridComponent>());
 		m_pCharacters.emplace_back(character);
@@ -172,14 +153,166 @@ void BombermanBlastScene::Initialize()
 		//Slight offset to make sure the character is on the ground, otherwise he clips through
 		characterTransform->Translate(characterTransform->GetPosition().x , 10.f, characterTransform->GetPosition().z);
 	}
+}
 
-	AddChild(new UIManager(m_pCharacters));
+void BombermanBlastScene::PostInitialize()
+{
+
+}
+
+void BombermanBlastScene::InitializeLevel(PxMaterial* const pDefaultMaterial)
+{
+	ShowCursor(true);
+
+	m_Map.resize(m_NumOfRows * m_NumOfColumns);
+	m_Map.assign(m_Map.size(), 'O');
+
+	m_pLevel = new GameObject();
+	AddChild(m_pLevel);
+	const auto levelRigidBody = m_pLevel->AddComponent(new RigidBodyComponent(true));
+	m_pLevel->GetTransform()->Scale(10);
+
+	//Add collider to level
+	const auto pPxTriangleMesh = ContentManager::Load<PxTriangleMesh>(L"Meshes/Level.ovpt");
+	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 10.f,10.f,10.f })), *pDefaultMaterial);
+	levelRigidBody->SetCollisionGroup(CollisionGroup::Level);
+
+	//Add model to the level
+	const auto pDiffuseMat2 = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow>();
+	pDiffuseMat2->SetDiffuseTexture(L"Textures/7EE07A6D_c.png");
+	const auto pModelCompo = m_pLevel->AddComponent(new ModelComponent(L"Meshes/Level.ovm", false));
+	pModelCompo->SetMaterial(pDiffuseMat2->GetMaterialId());
+}
+
+void BombermanBlastScene::DefinePlayerInputs()
+{
+	InputAction inputAction{};
+	//P1
+	inputAction = InputAction(CharacterMoveLeft_P2, InputState::down, 'A');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveRight_P2, InputState::down, 'D');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveForward_P2, InputState::down, 'W');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveBackward_P2, InputState::down, 'S');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterPlaceBomb_P2, InputState::pressed, VK_SPACE, -1, XINPUT_GAMEPAD_A, GamepadIndex::playerTwo);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	//P2
+	inputAction = InputAction(CharacterMoveLeft_P1, InputState::down, 'J');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveRight_P1, InputState::down, 'L');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveForward_P1, InputState::down, 'I');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveBackward_P1, InputState::down, 'K');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterPlaceBomb_P1, InputState::pressed, 'H', -1, XINPUT_GAMEPAD_A, GamepadIndex::playerOne);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+
+	//P3
+	inputAction = InputAction(CharacterMoveLeft_P3, InputState::down, VK_LEFT);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveRight_P3, InputState::down, VK_RIGHT);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveForward_P3, InputState::down, VK_UP);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveBackward_P3, InputState::down, VK_DOWN);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterPlaceBomb_P3, InputState::pressed, VK_LSHIFT, -1, XINPUT_GAMEPAD_A, GamepadIndex::playerThree);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	//P4
+	inputAction = InputAction(CharacterMoveLeft_P4, InputState::down, VK_NUMPAD1);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveRight_P4, InputState::down, VK_NUMPAD3);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveForward_P4, InputState::down, VK_NUMPAD5);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveBackward_P4, InputState::down, VK_NUMPAD2);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterPlaceBomb_P4, InputState::pressed, VK_NUMPAD4, -1, XINPUT_GAMEPAD_A, GamepadIndex::playerFour);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+}
+
+void BombermanBlastScene::InitializeLevelNecessities()
+{
+	m_pUIManager = AddChild(new UIManager(m_pCharacters));
+	m_pGameLoopManager = AddChild(new GameLoopManager(m_pCharacters));
+	m_pGameLoopManager->registerObserver(this);
+}
+
+void BombermanBlastScene::ResetLevel()
+{
+	m_pLevel->GetComponent<GridComponent>()->ClearGrid();
+
+	for (const auto & pCharacter : m_pDeadCharacters)
+	{
+		pCharacter->Reset();
+		m_pLevel->GetComponent<GridComponent>()->PlaceObject(pCharacter, 1, 1);
+	}
+
+	m_pCharacters.insert(m_pCharacters.end(), m_pDeadCharacters.begin(), m_pDeadCharacters.end());
+	m_pDeadCharacters.clear();
+
+	int placementRow{}, placementColumn{};
+	for (size_t i{}; i < m_pCharacters.size(); ++i)
+	{
+		switch (i + 1)
+		{
+		case 1:
+			//Bottom left
+			placementRow = 1;
+			placementColumn = 1;
+			break;
+		case 2:
+			//Bottom right
+			placementRow = 1;
+			placementColumn = m_NumOfColumns;
+
+			break;
+		case 3:
+			//Top right
+			placementRow = m_NumOfRows;
+			placementColumn = m_NumOfColumns;
+			break;
+		case 4:
+			//Top Left
+			placementRow = m_NumOfRows;
+			placementColumn = 1;
+			break;
+		default:
+			assert("Invalid player number");
+			break;
+		}
+
+		m_pLevel->GetComponent<GridComponent>()->MoveObject(m_pCharacters[i], placementRow, placementColumn);
+	}
 
 	SpawnRocks();
+}
 
-	//Post Processing
-	auto vignette = MaterialManager::Get()->CreateMaterial<Vignette>();
-	AddPostProcessingEffect(vignette);
+void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::string& event)
+{
+	if (event == "Pre-Round Start")
+		std::cout << "Gaming Starting.... \n";
+	{
+		if (m_IsGameOver)
+		{
+			ResetLevel();
+			m_pUIManager->ResetTimer();
+		}
+	}
+
+	if (event == "Round Start")
+	{
+		m_pUIManager->StartTimer();
+	}
+
+	if (event == "Post-Round Start")
+	{
+		m_pUIManager->ZeroTimer();
+		m_IsGameOver = true;
+	}
 }
 
 void BombermanBlastScene::SpawnRocks() const 
@@ -201,7 +334,9 @@ void BombermanBlastScene::SpawnRocks() const
 
 void BombermanBlastScene::OnSceneActivated()
 {
-	
+	m_SceneContext.pInput->SetEnabled(false);
+	ShowCursor(true);
+	m_SceneContext.pInput->ForceMouseToCenter(true);
 }
 
 
@@ -220,9 +355,19 @@ void BombermanBlastScene::CalculateNeededBlockSize()
 
 void BombermanBlastScene::Update()
 {
+	//m_SceneContext.pInput->ForceMouseToCenter(true);
+
 	for (const auto player : m_pCharacters)
-		if (!player)
+	{
+		if (player->IsDead())
+		{
+			m_pDeadCharacters.emplace_back(player);
 			std::erase(m_pCharacters, player);
+			m_pLevel->GetComponent<GridComponent>()->RemoveButKeepAlive(player);
+		}
+	}
+		/*if (!player)
+			std::erase(m_pCharacters, player);*/
 
 	m_pLevel->GetComponent<GridComponent>()->UpdateCharacterOnMap(m_pCharacters);
 	m_pLevel->GetComponent<PowerUpManager>()->UpdatePowerUps();
@@ -231,6 +376,7 @@ void BombermanBlastScene::Update()
 void BombermanBlastScene::Draw()
 {
 }
+
 
 void BombermanBlastScene::OnGUI()
 {
@@ -263,6 +409,8 @@ void BombermanBlastScene::OnGUI()
 	{
 		player->DrawImGui();
 	}
+
+	m_pGameLoopManager->DrawOnGUI();
 
 	//Display the map
 	ImGui::Begin("Map Display");

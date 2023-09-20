@@ -7,7 +7,7 @@ class Subject
 public:
     void registerObserver(Observer<T>* observer)
 	{
-        observers.push_back(observer);
+        observers.emplace_back(observer);
     }
 
     void unregisterObserver(Observer<T>* observer)
