@@ -56,7 +56,7 @@ void BombPrefab::Explode(int explosionDistance)
 	for (auto& affectedCell : affectedCells)
 	{
 		if (affectedCell.isValid)
-			m_pGrid->TryToRemoveAllObjects(affectedCell);
+			m_pGrid->Explode(affectedCell);
 
 		if (affectedCell.isValid)
 			m_pGrid->PlaceObject(m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->CreateGameObject<Explosion>(m_pGrid), affectedCell);
@@ -66,7 +66,7 @@ void BombPrefab::Explode(int explosionDistance)
 	m_pPlayerWhoPlacedBomb->GiveBackBomb();
 
 	SoundManager::Get()->Play(L"Explosion.wav", 0.5f);
-	m_pGrid->DeleteSpecificObject(this);
+	m_pGrid->RemoveObject(this);
 }
 
 void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, std::vector<GridCell>& affectedCellsOut) const

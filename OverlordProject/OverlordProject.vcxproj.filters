@@ -63,6 +63,8 @@
     <ClCompile Include="Prefabs\PowerUps\PowerUp_IncrDecrBombs.cpp" />
     <ClCompile Include="Prefabs\UI\RoundWinners.cpp" />
     <ClCompile Include="Components\GameObjectManager.cpp" />
+    <ClCompile Include="Helpers\ExplosionHandler.cpp" />
+    <ClCompile Include="Helpers\CellAssigner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
@@ -126,5 +128,8 @@
     <ClInclude Include="Prefabs\PowerUps\PowerUp_IncrDecrBombs.h" />
     <ClInclude Include="Prefabs\UI\RoundWinners.h" />
     <ClInclude Include="Components\GameObjectManager.h" />
+    <ClInclude Include="Helpers\ExplosionHandler.h" />
+    <ClInclude Include="Helpers\CellAssigner.h" />
+    <ClInclude Include="Helpers\Visitor.h" />
   </ItemGroup>
 </Project>

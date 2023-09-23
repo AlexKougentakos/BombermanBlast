@@ -35,6 +35,6 @@ void Explosion::Update(const SceneContext& sceneContext)
 
 	if (m_ExplosionElapsedTime >= m_ExplosionDuration)
 	{
-		m_pGrid->DeleteSpecificObject(this);
+		m_pGrid->RemoveObject(this);
 	}
 }

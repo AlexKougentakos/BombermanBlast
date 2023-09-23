@@ -114,6 +114,7 @@ void BombermanCharacter::Update(const SceneContext& sceneContext)
 				{
 					notifyObservers("Player Death");
 					m_IsDead = true;
+					m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(this);
 					//m_pGrid->DeleteSpecificObject(this);
 				}
 				break;
@@ -128,7 +129,7 @@ void BombermanCharacter::SpawnBomb()
  	const XMFLOAT3 playerPos = GetTransform()->GetPosition();
 	GridCell& playerCell = m_pGrid->GetCell(playerPos);
 
-	auto gameObjectManager = m_pGrid->GetGameObject()->GetComponent<GameObjectManager>();
+	const auto gameObjectManager = m_pGrid->GetGameObject()->GetComponent<GameObjectManager>();
 
 	m_pGrid->PlaceObject(gameObjectManager->CreateGameObject<BombPrefab>(m_PlayerStats.blastRadius, m_pGrid, this), playerCell);
 	m_RemainingBombs--;

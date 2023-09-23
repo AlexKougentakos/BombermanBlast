@@ -37,6 +37,11 @@ public:
 		objects.erase(std::remove(objects.begin(), objects.end(), gameObj), objects.end());
 	}
 
+	void Add(GameObject* gameObj)
+	{
+		objects.push_back(gameObj);
+	}
+
 	XMFLOAT3 bottomLeft{};
 	XMFLOAT3 topRight{};
 	XMFLOAT3 center{};
@@ -78,13 +83,11 @@ public:
 	 * you provide inside of it.
 	 * \param cell The cell you want to remove all objects from
 	 */
-	void TryToRemoveAllObjects(GridCell& cell);
-	void TryToRemoveAllObjects( int row, int col);
-
-	void RemoveButKeepAlive(GameObject* pObject);
+	void Explode(GridCell& cell);
+	void Explode( int row, int col);
 
 	//Uses no checking, deletes a specific object
-	void DeleteSpecificObject(GameObject* pObject);
+	void RemoveObject(GameObject* pObject);
 
 	GridCell& GetCell(const GameObject& gameObject);
 	GridCell& GetCell(const XMFLOAT3& position);
@@ -106,8 +109,6 @@ public:
 	GridCell& GetCellUnder(int row, int col) { return GetCellUnder(GetCell(row, col)); }
 
 	float GetCellSize() const { return m_CellSize / 2.f; }
-
-	char GetObjectOnCell(const GridCell& cell) const;
 	void UpdateCharacterOnMap(std::vector<BombermanCharacter*>& players);
 
 	float GetScaleFactor() const { return m_CellScaleFactor; }
@@ -123,6 +124,8 @@ private:
 	std::vector<char>& m_GridMap;
 	std::vector<GridCell> m_GridCells{};
 	std::vector<GameObject*> m_pObjectsInGrid{};
+
+	std::unordered_map<BombermanCharacter*, int> m_PrevCharPositions{};
 
 	XMFLOAT3 m_BottomLeft{}, m_TopRight{};
 

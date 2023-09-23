@@ -66,7 +66,7 @@ void PowerUpManager::RemovePowerUp(BasePowerUp* pPowerUp)
 {
 	m_pPowerUps.erase(std::remove(m_pPowerUps.begin(), m_pPowerUps.end(), pPowerUp), m_pPowerUps.end());
 
-	GetGameObject()->GetComponent<GridComponent>()->DeleteSpecificObject(pPowerUp);
+	GetGameObject()->GetComponent<GridComponent>()->RemoveObject(pPowerUp);
 }
 
 

@@ -1,8 +1,7 @@
 ﻿#include "stdafx.h"
 #include "RockPrefab.h"
+#include "Components/Grid.h"
 
-#include "Materials/DiffuseMaterial.h"
-#include "Materials/Shadow/DiffuseMaterial_Shadow.h"
 #include "Materials/Shadow/DiffuseMaterial_ShadowFixed.h"
 
 RockPrefab::RockPrefab(RockType type, float scale)
@@ -34,8 +33,7 @@ void RockPrefab::Initialize(const SceneContext& /*gameContext*/)
 	SetTag(L"Rock");
 }
 
-
-void RockPrefab::Update(const SceneContext& /*gameContext*/)
+void RockPrefab::Explode() const
 {
-	
+	m_pCurrentCell->Remove(this);
 }

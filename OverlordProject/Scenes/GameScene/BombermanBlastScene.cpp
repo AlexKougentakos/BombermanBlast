@@ -144,7 +144,7 @@ void BombermanBlastScene::AddCharacters(PxMaterial* const pDefaultMaterial, int 
 		characterDesc.maxMoveSpeed = 15.f;
 		characterDesc.moveAccelerationTime = 0.01f;
 
-		const auto character = new BombermanCharacter(characterDesc, m_pLevel->GetComponent<GridComponent>());
+		const auto character = m_pLevel->GetComponent<GameObjectManager>()->CreateGameObject<BombermanCharacter>(characterDesc, m_pLevel->GetComponent<GridComponent>());
 		m_pCharacters.emplace_back(character);
 		m_pLevel->GetComponent<GridComponent>()->PlaceObject(character, placementRow, placementColumn);
 		const auto characterTransform = character->GetTransform();
@@ -245,14 +245,15 @@ void BombermanBlastScene::ResetLevel()
 {
 	m_pLevel->GetComponent<GridComponent>()->ClearGrid();
 
-	for (const auto & pCharacter : m_pDeadCharacters)
-	{
-		pCharacter->Reset();
-		m_pLevel->GetComponent<GridComponent>()->PlaceObject(pCharacter, 1, 1);
-	}
+	//Todo: Rework this to not use dead characters
+	//for (const auto & pCharacter : m_pDeadCharacters)
+	//{
+	//	pCharacter->Reset();
+	//	m_pLevel->GetComponent<GridComponent>()->PlaceObject(pCharacter, 1, 1);
+	//}
 
-	m_pCharacters.insert(m_pCharacters.end(), m_pDeadCharacters.begin(), m_pDeadCharacters.end());
-	m_pDeadCharacters.clear();
+	//m_pCharacters.insert(m_pCharacters.end(), m_pDeadCharacters.begin(), m_pDeadCharacters.end());
+	//m_pDeadCharacters.clear();
 
 	int placementRow{}, placementColumn{};
 	for (size_t i{}; i < m_pCharacters.size(); ++i)
@@ -318,6 +319,7 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 void BombermanBlastScene::SpawnRocks() const 
 {
 	const auto grid = m_pLevel->GetComponent<GridComponent>();
+	const auto gameObjectManager = m_pLevel->GetComponent<GameObjectManager>();
 
 	for (int currentRow = 1; currentRow <= m_NumOfRows; ++currentRow)
 	{
@@ -326,7 +328,7 @@ void BombermanBlastScene::SpawnRocks() const
 			const int index = (currentRow - 1) * m_NumOfColumns + (currentCol - 1);
 			if (m_StartingLayout[index] == 'R')
 			{
-				grid->PlaceObject(new RockPrefab(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
+				grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
 			}
 		}
 	}
@@ -359,15 +361,11 @@ void BombermanBlastScene::Update()
 
 	for (const auto player : m_pCharacters)
 	{
-		if (player->IsDead())
-		{
-			m_pDeadCharacters.emplace_back(player);
+
+		if (!player || player->IsDead())
 			std::erase(m_pCharacters, player);
-			m_pLevel->GetComponent<GridComponent>()->RemoveButKeepAlive(player);
-		}
 	}
-		/*if (!player)
-			std::erase(m_pCharacters, player);*/
+		
 
 	m_pLevel->GetComponent<GridComponent>()->UpdateCharacterOnMap(m_pCharacters);
 	m_pLevel->GetComponent<PowerUpManager>()->UpdatePowerUps();

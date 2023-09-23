@@ -33,7 +33,6 @@ protected:
 private:
 	//Characters
 	std::vector<BombermanCharacter*> m_pCharacters{};
-	std::vector<BombermanCharacter*> m_pDeadCharacters{};
 
 	//Cameras
 	CameraComponent* m_pCamera{ nullptr };

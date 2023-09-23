@@ -6,6 +6,8 @@ enum class RockType
 	UNBREAKABLE
 };
 
+struct GridCell;
+
 class RockPrefab final : public GameObject
 {
 public:
@@ -18,16 +20,18 @@ public:
 	RockPrefab& operator=(RockPrefab&& other) noexcept = delete;
 
 	void Initialize(const SceneContext& gameContext) override;
-	void Update(const SceneContext& gameContext) override;
+	void Update(const SceneContext&) override {};
 
 	RockType GetType() const { return m_Type; }
-	void MarkForDeletion() { m_ToBeDeleted = true; }
+	void Explode() const;
 
 	float GetWidth() const { return m_pModelComponent->CalculateWidth(); }
+	void AssignCell(GridCell* pCell) { m_pCurrentCell = pCell; }
 
 private:
 	RockType m_Type{};
 	ModelComponent* m_pModelComponent{};
-	bool m_ToBeDeleted{false};
 	float m_Scale{};
+
+	GridCell* m_pCurrentCell{};
 };
