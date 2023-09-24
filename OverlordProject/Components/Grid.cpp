@@ -10,7 +10,6 @@
 #include "Prefabs/RockPrefab.h"
 
 #include "Components/GameObjectManager.h"
-#include "Helpers/CellAssigner.h"
 
 GridComponent::GridComponent(std::vector<char>& gridMap, XMFLOAT3 bottomLeft, XMFLOAT3 topRight, float cellSize, float scaleFactor)
 	:m_GridMap(gridMap),
@@ -28,7 +27,7 @@ GridCell& GridComponent::GetCell(const GameObject& gameObject)
 }
 GridCell& GridComponent::GetCell(const XMFLOAT3& position)
 {
-    for (auto& cell : m_GridCells)
+    for (GridCell& cell : m_GridCells)
     {
 	    if (position.x >= cell.bottomLeft.x && position.x <= cell.topRight.x &&
             position.z >= cell.bottomLeft.z && position.z <= cell.topRight.z)
@@ -99,7 +98,9 @@ void GridComponent::PlaceObject(GameObject* pObject, GridCell& cell)
     if (!pObject->GetScene())
     	GetScene()->AddChild(pObject);
 
-    m_GridCells[GetCellIndex(cell)].objects.emplace_back(pObject);
+    //Explosions don't have to be kept track of, they will disappear, only their position is needed.
+    if (objectTag != L"Explosion" && objectTag != L"PowerUp")
+        m_GridCells[GetCellIndex(cell)].objects.emplace_back(pObject);
 
     float yOffset{0.f};
     if (objectTag == L"PowerUp")
@@ -108,29 +109,7 @@ void GridComponent::PlaceObject(GameObject* pObject, GridCell& cell)
     if (objectTag == L"Player")
 		yOffset = 10.f;
 
-    CellAssigner cellAssigner{};
-
-    //Todo: Add all objects here
-    if (const auto testObj = dynamic_cast<RockPrefab*>(pObject))
-        cellAssigner.Visit(testObj, &cell);
-
     pObject->GetTransform()->Translate(XMFLOAT3{ cell.center.x, yOffset, cell.center.z });
-}
-
-void GridComponent::RemoveObject(GameObject* pObject)
-{
-
-    for (auto& cell : m_GridCells)
-        for (auto toCompare = cell.objects.begin(); toCompare != cell.objects.end();)
-        {
-            // Check if the current object matches the one to be removed
-            if (*toCompare == pObject)
-            {
-                GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(pObject);
-                toCompare = cell.objects.erase(toCompare);
-            }
-            else ++toCompare;
-        }
 }
 
 void GridComponent::ClearGrid()
@@ -141,7 +120,7 @@ void GridComponent::ClearGrid()
             if (object->GetTag() == L"Rock" ||
                 object->GetTag() == L"Bomb" ||
                 object->GetTag() == L"PowerUp")
-                RemoveObject(object);
+                GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(object);
         }
 }
 
@@ -180,16 +159,16 @@ void GridComponent::Explode(GridCell& cell)
         {
             //don't add when iterating over
             cellsForPowerUpSpawn.emplace_back(cell);
-            explosionHandler.Visit(dynamic_cast<RockPrefab*>(object));
+            explosionHandler.Visit(dynamic_cast<RockPrefab*>(object), &cell);
         }
 
         if (object->GetTag() == L"PowerUp")
         {
             objectsToKeep.emplace_back(object);
+            explosionHandler.Visit(dynamic_cast<BasePowerUp*>(object), &cell);
 			continue;
 		}
 
-        //TODO: Implement explode function on all game objects
         GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(object);
     }
 
@@ -248,6 +227,7 @@ char GridComponent::GetCharOfObject(const GameObject* const gameObject) const
 
     return 'O';
 }
+
 GridCell& GridComponent::GetCellUnder(const GridCell& cell)
 {
     const int index = GetCellIndex(cell) - m_NumOfColumns;

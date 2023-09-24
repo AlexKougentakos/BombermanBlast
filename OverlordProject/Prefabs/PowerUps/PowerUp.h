@@ -1,6 +1,7 @@
 #pragma once
 
 
+struct GridCell;
 class DiffuseMaterial_Shadow;
 class GridComponent;
 
@@ -18,6 +19,8 @@ public:
 	bool IsMarkedForRemoval() const { return m_MarkedForRemoval; }
 	void MarkForRemoval() { m_MarkedForRemoval = true; }
 
+	void SetGridCell(GridCell* pGridCell) { m_pGridCell = pGridCell; }
+
 
 private:
 	GridComponent* m_pGrid{};
@@ -26,10 +29,13 @@ private:
 	std::wstring m_TexturePath{};
 	bool m_MarkedForRemoval{ false };
 	RigidBodyComponent* m_pRigidBody{};
+	GridCell* m_pGridCell{};
 protected:
-	BasePowerUp(GridComponent* pGridComponent);
+	BasePowerUp(GridComponent* pGridComponent, GridCell* pGridCell);
 	void SetTexture(const std::wstring& texturePath);
+	void Explode(GridCell* gridCell) const;
 
+	void OnCollisionRoot(GameObject* trigger, GameObject* other, PxTriggerAction action);
 	virtual void OnCollision(GameObject* trigger, GameObject* other, PxTriggerAction action) = 0;
 };
 

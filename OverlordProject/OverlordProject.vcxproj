@@ -95,7 +95,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Components\GameObjectManager.cpp" />
-    <ClCompile Include="Helpers\CellAssigner.cpp" />
     <ClCompile Include="Helpers\ExplosionHandler.cpp" />
     <ClCompile Include="Materials\Post\Vignette.cpp" />
     <ClCompile Include="Prefabs\GameLoopManager.cpp" />
@@ -178,7 +177,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Components\GameObjectManager.h" />
-    <ClInclude Include="Helpers\CellAssigner.h" />
     <ClInclude Include="Helpers\ExplosionHandler.h" />
     <ClInclude Include="Helpers\Visitor.h" />
     <ClInclude Include="Materials\Post\Vignette.h" />

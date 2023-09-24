@@ -33,7 +33,7 @@ void RockPrefab::Initialize(const SceneContext& /*gameContext*/)
 	SetTag(L"Rock");
 }
 
-void RockPrefab::Explode() const
+void RockPrefab::Explode(GridCell* gridCell) const
 {
-	m_pCurrentCell->Remove(this);
+	gridCell->Remove(this);
 }

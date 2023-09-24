@@ -23,15 +23,12 @@ public:
 	void Update(const SceneContext&) override {};
 
 	RockType GetType() const { return m_Type; }
-	void Explode() const;
+	void Explode(GridCell* gridCell) const;
 
 	float GetWidth() const { return m_pModelComponent->CalculateWidth(); }
-	void AssignCell(GridCell* pCell) { m_pCurrentCell = pCell; }
 
 private:
 	RockType m_Type{};
 	ModelComponent* m_pModelComponent{};
 	float m_Scale{};
-
-	GridCell* m_pCurrentCell{};
 };

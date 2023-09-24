@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Explosion.h"
 
+#include "Components/GameObjectManager.h"
 #include "Components/Grid.h"
 
 Explosion::Explosion(GridComponent* grid):
@@ -35,6 +36,6 @@ void Explosion::Update(const SceneContext& sceneContext)
 
 	if (m_ExplosionElapsedTime >= m_ExplosionDuration)
 	{
-		m_pGrid->RemoveObject(this);
+		m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(this);
 	}
 }

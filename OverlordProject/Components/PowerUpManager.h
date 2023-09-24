@@ -28,7 +28,7 @@ public:
 	void Initialize(const SceneContext& sceneContext) override;
 
 	void TriggerPowerUpSpawn(GridCell& cell);
-	BasePowerUp* GetPowerUpByType(PowerUpType type) const;
+	BasePowerUp* GetPowerUpByType(PowerUpType type, GridCell* pGridCell) const;
 	void RemovePowerUp(BasePowerUp* pPowerUp);
 
 	void UpdatePowerUps();

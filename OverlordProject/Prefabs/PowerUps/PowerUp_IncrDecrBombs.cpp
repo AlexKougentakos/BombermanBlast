@@ -3,8 +3,8 @@
 
 #include "Prefabs/BombermanCharacter.h"
 
-PowerUp_IncreaseBomb::PowerUp_IncreaseBomb(GridComponent* pGridComponent)
-	:BasePowerUp(pGridComponent)
+PowerUp_IncreaseBomb::PowerUp_IncreaseBomb(GridComponent* pGridComponent, GridCell* pGridCell)
+	:BasePowerUp(pGridComponent, pGridCell)
 {
 	SetTexture(texturePath);
 
@@ -27,8 +27,8 @@ void PowerUp_IncreaseBomb::OnCollision(GameObject*, GameObject* other, PxTrigger
 }
 
 
-PowerUp_DecreaseBomb::PowerUp_DecreaseBomb(GridComponent* pGridComponent)
-	:BasePowerUp(pGridComponent)
+PowerUp_DecreaseBomb::PowerUp_DecreaseBomb(GridComponent* pGridComponent, GridCell* pGridCell)
+	:BasePowerUp(pGridComponent, pGridCell)
 {
 	SetTexture(texturePath);
 

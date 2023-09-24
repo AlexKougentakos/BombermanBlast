@@ -4,7 +4,7 @@
 class PowerUp_IncreaseSpeed : public BasePowerUp
 {
 public:
-	PowerUp_IncreaseSpeed(GridComponent* pGridComponent);
+	PowerUp_IncreaseSpeed(GridComponent* pGridComponent, GridCell* pGridCell);
 	virtual ~PowerUp_IncreaseSpeed() override = default;
 
 	PowerUp_IncreaseSpeed(const PowerUp_IncreaseSpeed& other) = delete;
@@ -22,7 +22,7 @@ private:
 class PowerUp_DecreaseSpeed : public BasePowerUp
 {
 public:
-	PowerUp_DecreaseSpeed(GridComponent* pGridComponent);
+	PowerUp_DecreaseSpeed(GridComponent* pGridComponent, GridCell* pGridCell);
 	virtual ~PowerUp_DecreaseSpeed() override = default;
 
 	PowerUp_DecreaseSpeed(const PowerUp_DecreaseSpeed& other) = delete;

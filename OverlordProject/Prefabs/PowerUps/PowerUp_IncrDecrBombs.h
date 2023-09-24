@@ -4,7 +4,7 @@
 class PowerUp_IncreaseBomb : public BasePowerUp
 {
 public:
-	PowerUp_IncreaseBomb(GridComponent* pGridComponent);
+	PowerUp_IncreaseBomb(GridComponent* pGridComponent, GridCell* pGridCell);
 	virtual ~PowerUp_IncreaseBomb() override = default;
 
 	PowerUp_IncreaseBomb(const PowerUp_IncreaseBomb& other) = delete;
@@ -23,7 +23,7 @@ private:
 class PowerUp_DecreaseBomb : public BasePowerUp
 {
 public:
-	PowerUp_DecreaseBomb(GridComponent* pGridComponent);
+	PowerUp_DecreaseBomb(GridComponent* pGridComponent, GridCell* pGridCell);
 	virtual ~PowerUp_DecreaseBomb() override = default;
 
 	PowerUp_DecreaseBomb(const PowerUp_DecreaseBomb& other) = delete;

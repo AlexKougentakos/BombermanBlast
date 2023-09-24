@@ -47,7 +47,7 @@ void BombPrefab::Update(const SceneContext& sceneContext)
 void BombPrefab::Explode(int explosionDistance)
 {
 	const auto bombPosition = GetTransform()->GetPosition();
-	const auto cell = m_pGrid->GetCell(bombPosition);
+	auto& cell = m_pGrid->GetCell(bombPosition);
 
 	std::vector<GridCell> affectedCells{};
 
@@ -56,6 +56,7 @@ void BombPrefab::Explode(int explosionDistance)
 	for (auto& affectedCell : affectedCells)
 	{
 		if (affectedCell.isValid)
+			m_pGrid->Explode(affectedCell);
 			m_pGrid->Explode(affectedCell);
 
 		if (affectedCell.isValid)
@@ -66,7 +67,8 @@ void BombPrefab::Explode(int explosionDistance)
 	m_pPlayerWhoPlacedBomb->GiveBackBomb();
 
 	SoundManager::Get()->Play(L"Explosion.wav", 0.5f);
-	m_pGrid->RemoveObject(this);
+	cell.Remove(this);
+	m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(this);
 }
 
 void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, std::vector<GridCell>& affectedCellsOut) const

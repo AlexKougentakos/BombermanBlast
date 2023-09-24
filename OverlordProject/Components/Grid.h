@@ -77,17 +77,8 @@ public:
 	void PlaceObject(GameObject* pObject, GridCell& cell);
 	void PlaceObject(GameObject* pObject, int row, int col);
 
-	/**
-	 * \brief Will attempt to remove all objects from the cell.
-	 * Does checking to see what type of object it is, and will remove it based on the logic
-	 * you provide inside of it.
-	 * \param cell The cell you want to remove all objects from
-	 */
 	void Explode(GridCell& cell);
 	void Explode( int row, int col);
-
-	//Uses no checking, deletes a specific object
-	void RemoveObject(GameObject* pObject);
 
 	GridCell& GetCell(const GameObject& gameObject);
 	GridCell& GetCell(const XMFLOAT3& position);

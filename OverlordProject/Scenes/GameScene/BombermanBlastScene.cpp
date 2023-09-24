@@ -68,7 +68,7 @@ void BombermanBlastScene::Initialize()
 	m_pLevel->AddComponent(new PowerUpManager(m_pLevel->GetComponent<GridComponent>()));
 	m_pLevel->AddComponent(new GameObjectManager());
 
-	constexpr unsigned int numOfPlayers{ 4 };
+	constexpr unsigned int numOfPlayers{ 1 };
 	DefinePlayerInputs();
 
 	AddCharacters(pDefaultMaterial, numOfPlayers);

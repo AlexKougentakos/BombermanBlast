@@ -34,6 +34,7 @@ void UIManager::Initialize(const SceneContext& sceneContext)
         {
             // For the first two players, add them normally
             AddChild(new CharacterPointDisplay(player, XMFLOAT2{ i * increment, 0.f }));
+            m_pTimer = AddChild(new Timer(120, XMFLOAT2{ i * increment, 0.f }));
         }
     }
 }
