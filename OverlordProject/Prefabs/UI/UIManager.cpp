@@ -11,32 +11,36 @@ UIManager::UIManager(std::vector<BombermanCharacter*> players)
 
 void UIManager::Initialize(const SceneContext& sceneContext)
 {
-    for (size_t i{}; i < m_pPlayers.size(); ++i)
+    for (size_t i = 0; i < m_pPlayers.size(); ++i) 
     {
         const auto player = m_pPlayers[i];
-        constexpr int maxPlayers{ 4 };
-        const float increment{ sceneContext.windowWidth / (maxPlayers + 1) + 2 };
+        const float segmentWidth = sceneContext.windowWidth / 5.0f;
 
-        if (i == 2)
+        // Calculate position based on player index, adjusting for the middle timer slot.
+        size_t adjustedIndex = i;
+        if (m_pPlayers.size() == 2) 
         {
-            // Add the timer where the third player would normally go
-            m_pTimer = AddChild(new Timer(120, XMFLOAT2{ i * increment, 0.f }));
+            // For two players, place the second player in the last segment.
+            adjustedIndex = i == 0 ? 0 : 4; // First player at 0, second player at 4.
+        }
+        else if (i >= 2) 
+        {
+            // For more than two players, skip the middle slot for players 3 and 4.
+            adjustedIndex++;
+        }
 
-            // Then add the actual third player one position to the right
-            AddChild(new CharacterPointDisplay(player, XMFLOAT2{ (i + 1) * increment, 0.f }));
-        }
-        else if (i > 2)
-        {
-            // For players after the third one, add them one position to the right
-            AddChild(new CharacterPointDisplay(player, XMFLOAT2{ (i + 1) * increment, 0.f }));
-        }
-        else
-        {
-            // For the first two players, add them normally
-            AddChild(new CharacterPointDisplay(player, XMFLOAT2{ i * increment, 0.f }));
-            m_pTimer = AddChild(new Timer(120, XMFLOAT2{ i * increment, 0.f }));
-        }
+        XMFLOAT2 playerPosition = XMFLOAT2(adjustedIndex * segmentWidth + segmentWidth / 2, 0.f); // Center in segment.
+        if (i == 0)
+            playerPosition = XMFLOAT2(adjustedIndex * segmentWidth, 0.f); // Keep the first player at the far left edge.
+
+        AddChild(new CharacterPointDisplay(player, playerPosition));
     }
+
+    // Place the timer in the middle segment, which is the 3rd spot (index 2 in 0-based indexing).
+    const XMFLOAT2 timerPosition = XMFLOAT2(2 * sceneContext.windowWidth / 5.0f + sceneContext.windowWidth / 10.0f, 0.f); // Centered in the 3rd segment.
+    m_pTimer = AddChild(new Timer(120, timerPosition));
+
+
 }
 
 void UIManager::ZeroTimer() const

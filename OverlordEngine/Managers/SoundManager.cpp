@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "SoundManager.h"
 
+#include <thread>
+
 SoundManager::SoundManager()
 {
 	Initialize();

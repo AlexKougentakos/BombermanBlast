@@ -68,7 +68,7 @@ void BombermanBlastScene::Initialize()
 	m_pLevel->AddComponent(new PowerUpManager(m_pLevel->GetComponent<GridComponent>()));
 	m_pLevel->AddComponent(new GameObjectManager());
 
-	constexpr unsigned int numOfPlayers{ 1 };
+	constexpr unsigned int numOfPlayers{ 4 };
 	DefinePlayerInputs();
 
 	AddCharacters(pDefaultMaterial, numOfPlayers);
@@ -188,17 +188,6 @@ void BombermanBlastScene::DefinePlayerInputs()
 {
 	InputAction inputAction{};
 	//P1
-	inputAction = InputAction(CharacterMoveLeft_P2, InputState::down, 'A');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterMoveRight_P2, InputState::down, 'D');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterMoveForward_P2, InputState::down, 'W');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterMoveBackward_P2, InputState::down, 'S');
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterPlaceBomb_P2, InputState::pressed, VK_SPACE, -1, XINPUT_GAMEPAD_A, GamepadIndex::playerTwo);
-	m_SceneContext.pInput->AddInputAction(inputAction);
-	//P2
 	inputAction = InputAction(CharacterMoveLeft_P1, InputState::down, 'J');
 	m_SceneContext.pInput->AddInputAction(inputAction);
 	inputAction = InputAction(CharacterMoveRight_P1, InputState::down, 'L');
@@ -208,6 +197,17 @@ void BombermanBlastScene::DefinePlayerInputs()
 	inputAction = InputAction(CharacterMoveBackward_P1, InputState::down, 'K');
 	m_SceneContext.pInput->AddInputAction(inputAction);
 	inputAction = InputAction(CharacterPlaceBomb_P1, InputState::pressed, 'H', -1, XINPUT_GAMEPAD_A, GamepadIndex::playerOne);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	//P2
+	inputAction = InputAction(CharacterMoveLeft_P2, InputState::down, 'A');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveRight_P2, InputState::down, 'D');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveForward_P2, InputState::down, 'W');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterMoveBackward_P2, InputState::down, 'S');
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(CharacterPlaceBomb_P2, InputState::pressed, VK_SPACE, -1, XINPUT_GAMEPAD_A, GamepadIndex::playerTwo);
 	m_SceneContext.pInput->AddInputAction(inputAction);
 
 	//P3

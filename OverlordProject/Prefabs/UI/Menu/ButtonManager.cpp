@@ -1,5 +1,8 @@
 ﻿#include "stdafx.h"
 #include "ButtonManager.h"
+
+#include <thread>
+
 #include "Button.h"
 
 ButtonManager::ButtonManager(const XMFLOAT2* pCustomCursor)

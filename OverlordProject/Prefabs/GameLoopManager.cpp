@@ -52,21 +52,22 @@ void GameLoopManager::SwitchToNextPhase()
 		m_ElapsedRoundTime = 0;
 		notifyObservers("Round Start");
 		return;
+
 	case GamePhase::Round:
 		if (m_pPlayers.size() > 1)
-			for (const auto& player : m_pPlayers)
-			{
-				if (player->IsDead()) return;
+		for (const auto& player : m_pPlayers)
+		{
+			if (player->IsDead()) return;
 
-				player->AddPoint();
-			}
-
+			player->AddPoint();
+		}
 
 		m_SceneContext.pInput->SetEnabled(false);
 		m_GamePhase = GamePhase::PostRound;
 		m_ElapsedRoundTime = 0;
 		notifyObservers("Post-Round Start");
 		return;
+
 	case GamePhase::PostRound:
 		m_SceneContext.pInput->SetEnabled(false);
 		m_GamePhase = GamePhase::PreRound;
