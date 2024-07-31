@@ -41,8 +41,8 @@ void BombermanBlastScene::Initialize()
 
 	//Fixed Camera
 	m_pMainCamera = new FixedCamera();
-	m_pMainCamera->GetTransform()->Translate(0, 85.f, -65.f);
-	m_pMainCamera->GetTransform()->Rotate(60, 0, 0);
+	m_pMainCamera->GetTransform()->Translate(0, 85.f, -40.f);
+	m_pMainCamera->GetTransform()->Rotate(66, 0, 0);
 	AddChild(m_pMainCamera);
 	SetActiveCamera(m_pMainCamera->GetComponent<CameraComponent>());
 	m_pMainCamera->GetComponent<CameraComponent>()->SetOrthoSize(25);
@@ -55,8 +55,8 @@ void BombermanBlastScene::Initialize()
 	//Light
 	m_SceneContext.pLights->SetDirectionalLight({ 0,20,0 }, { 0, -1, 0.001f });
 
-	m_MapBottomLeft = { -43.f,0,-35.443f };
-	m_MapTopRight = { 42.75f,0,34.f };
+	m_MapBottomLeft = { -43.f,0,-36.443f };
+	m_MapTopRight = { 42.75f,0,33.f };
 
 	const auto pDefaultMaterial = PxGetPhysics().createMaterial(0.9f, 0.9f, 0.5f);
 	//Level
@@ -173,8 +173,8 @@ void BombermanBlastScene::InitializeLevel(const PxMaterial* const pDefaultMateri
 	const auto levelRigidBody = m_pLevel->AddComponent(new RigidBodyComponent(true));
 
 	//Add collider to level
-	const auto pPxTriangleMesh = ContentManager::Load<PxTriangleMesh>(L"Meshes/Level.ovpt");
-	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 1.f,1.f,1.f })), *pDefaultMaterial);
+	const auto pPxTriangleMesh = ContentManager::Load<PxTriangleMesh>(L"Meshes/NewLevel.ovpt");
+	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 0.33f,0.33f,0.33f })), *pDefaultMaterial);
 	levelRigidBody->SetCollisionGroup(CollisionGroup::Level);
 
 	//Add model to the level
@@ -378,7 +378,6 @@ void BombermanBlastScene::Update()
 void BombermanBlastScene::Draw()
 {
 }
-
 
 void BombermanBlastScene::OnGUI()
 {

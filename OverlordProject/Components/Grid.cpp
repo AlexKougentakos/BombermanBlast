@@ -272,7 +272,7 @@ GridCell& GridComponent::GetCellOnTop(const GridCell& cell)
 GridCell& GridComponent::GetCellToTheRight(const GridCell& cell)
 {
     const int index = GetCellIndex(cell) + 1;
-    if (index > m_GridCells.size())
+    if (index >= m_GridCells.size())
         return m_InvalidCell;
 
     GridCell& cellToReturn = m_GridCells[index];
