@@ -56,7 +56,7 @@ void BombermanBlastScene::Initialize()
 	m_SceneContext.pLights->SetDirectionalLight({ 0,20,0 }, { 0, -1, 0.001f });
 
 	m_MapBottomLeft = { -43.f,0,-35.443f };
-	m_MapTopRight = { 49.9f,0,34.f };
+	m_MapTopRight = { 42.75f,0,34.f };
 
 	const auto pDefaultMaterial = PxGetPhysics().createMaterial(0.9f, 0.9f, 0.5f);
 	//Level
@@ -67,6 +67,7 @@ void BombermanBlastScene::Initialize()
 	m_pLevel->AddComponent(new GridComponent(m_Map, m_MapBottomLeft, m_MapTopRight, m_SingleBlockSize, m_SingleBlockScale));
 	m_pLevel->AddComponent(new PowerUpManager(m_pLevel->GetComponent<GridComponent>()));
 	m_pLevel->AddComponent(new GameObjectManager());
+	m_pLevel->GetTransform()->Scale({ 0.33f, 0.33f, 0.33f });
 
 	constexpr unsigned int numOfPlayers{ 4 };
 	DefinePlayerInputs();
@@ -83,7 +84,7 @@ void BombermanBlastScene::Initialize()
 }
 
 
-void BombermanBlastScene::AddCharacters(PxMaterial* const pDefaultMaterial, int numOfPlayers)
+void BombermanBlastScene::AddCharacters(PxMaterial* const pDefaultMaterial, const int numOfPlayers)
 {
 	CharacterDesc characterDesc{ pDefaultMaterial, 3.f, 10.f };
 
@@ -160,7 +161,7 @@ void BombermanBlastScene::PostInitialize()
 
 }
 
-void BombermanBlastScene::InitializeLevel(PxMaterial* const pDefaultMaterial)
+void BombermanBlastScene::InitializeLevel(const PxMaterial* const pDefaultMaterial)
 {
 	ShowCursor(true);
 
@@ -170,21 +171,20 @@ void BombermanBlastScene::InitializeLevel(PxMaterial* const pDefaultMaterial)
 	m_pLevel = new GameObject();
 	AddChild(m_pLevel);
 	const auto levelRigidBody = m_pLevel->AddComponent(new RigidBodyComponent(true));
-	m_pLevel->GetTransform()->Scale(10);
 
 	//Add collider to level
 	const auto pPxTriangleMesh = ContentManager::Load<PxTriangleMesh>(L"Meshes/Level.ovpt");
-	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 10.f,10.f,10.f })), *pDefaultMaterial);
+	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 1.f,1.f,1.f })), *pDefaultMaterial);
 	levelRigidBody->SetCollisionGroup(CollisionGroup::Level);
 
 	//Add model to the level
 	const auto pDiffuseMat2 = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow>();
-	pDiffuseMat2->SetDiffuseTexture(L"Textures/7EE07A6D_c.png");
-	const auto pModelCompo = m_pLevel->AddComponent(new ModelComponent(L"Meshes/Level.ovm", false));
+	pDiffuseMat2->SetDiffuseTexture(L"Textures/map001_f.png");
+	const auto pModelCompo = m_pLevel->AddComponent(new ModelComponent(L"Meshes/NewLevel.ovm", false));
 	pModelCompo->SetMaterial(pDiffuseMat2->GetMaterialId());
 }
 
-void BombermanBlastScene::DefinePlayerInputs()
+void BombermanBlastScene::DefinePlayerInputs() const
 {
 	InputAction inputAction{};
 	//P1
@@ -302,6 +302,8 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 			ResetLevel();
 			m_pUIManager->ResetTimer();
 		}
+
+		m_pUIManager->StartCountdown();
 	}
 
 	if (event == "Round Start")
@@ -339,6 +341,8 @@ void BombermanBlastScene::OnSceneActivated()
 	m_SceneContext.pInput->SetEnabled(false);
 	ShowCursor(true);
 	m_SceneContext.pInput->ForceMouseToCenter(true);
+
+	m_pGameLoopManager->StartGame();
 }
 
 

@@ -23,6 +23,7 @@ public:
 	void IncreaseRoundNumber() { ++m_RoundNumber; }
 
 	void DrawOnGUI();
+	void StartGame() { notifyObservers("Pre-Round Start"); }
 
 protected:
 	void Initialize(const SceneContext& sceneContext) override;

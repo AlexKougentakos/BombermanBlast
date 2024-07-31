@@ -13,10 +13,10 @@ void CharacterPointDisplay::Initialize(const SceneContext&)
 {
 	m_PlayerColourToSpritePathMap =
 	{
-	{PlayerColour::BLUE, L"Textures/UI/BlueBomberMan_HeadSprite.png"},
-	{PlayerColour::RED, L"Textures/UI/RedBomberMan_HeadSprite.png"},
-	{PlayerColour::WHITE, L"Textures/UI/WhiteBomberMan_HeadSprite.png"},
-	{PlayerColour::YELLOW, L"Textures/UI/YellowBomberMan_HeadSprite.png"}
+		{PlayerColour::BLUE, L"Textures/UI/BlueBomberMan_HeadSprite.png"},
+		{PlayerColour::RED, L"Textures/UI/RedBomberMan_HeadSprite.png"},
+		{PlayerColour::WHITE, L"Textures/UI/WhiteBomberMan_HeadSprite.png"},
+		{PlayerColour::YELLOW, L"Textures/UI/YellowBomberMan_HeadSprite.png"}
 	};
 
 	//Player Head

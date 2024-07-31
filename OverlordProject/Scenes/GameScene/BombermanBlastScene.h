@@ -73,8 +73,8 @@ private:
 	 */
 	void SpawnRocks() const;
 	void AddCharacters(PxMaterial* pDefaultMaterial, int numOfPlayers);
-	void InitializeLevel(PxMaterial* pDefaultMaterial);
-	void DefinePlayerInputs();
+	void InitializeLevel(const PxMaterial* pDefaultMaterial);
+	void DefinePlayerInputs() const;
 	void InitializeLevelNecessities();
 	void ResetLevel();
 
@@ -93,10 +93,11 @@ private:
 		'R','R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'R',
 		'R','R', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'O', 'R', 'R', 'O',
 		'O','R', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'R', 'O', 'O',
+		'O','R', 'R', 'O', 'O', 'O', 'O', 'O', 'O', 'O', 'R', 'O', 'O',
 	};
 
 	// Referring to the map above
-	int m_NumOfColumns{13}, m_NumOfRows{10};
+	int m_NumOfColumns{13}, m_NumOfRows{11};
 
 	//World
 	GameObject* m_pLevel{};

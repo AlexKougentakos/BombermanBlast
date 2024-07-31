@@ -64,6 +64,7 @@
     <ClCompile Include="Prefabs\UI\RoundWinners.cpp" />
     <ClCompile Include="Components\GameObjectManager.cpp" />
     <ClCompile Include="Helpers\ExplosionHandler.cpp" />
+    <ClCompile Include="Prefabs\UI\CountDown.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainGame.h" />
@@ -129,5 +130,6 @@
     <ClInclude Include="Components\GameObjectManager.h" />
     <ClInclude Include="Helpers\ExplosionHandler.h" />
     <ClInclude Include="Helpers\Visitor.h" />
+    <ClInclude Include="Prefabs\UI\CountDown.h" />
   </ItemGroup>
 </Project>

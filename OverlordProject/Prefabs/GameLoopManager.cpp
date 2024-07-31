@@ -15,7 +15,6 @@ GameLoopManager::GameLoopManager(const std::vector<BombermanCharacter*>& charact
 void GameLoopManager::Initialize(const SceneContext& sceneContext)
 {
 	m_SceneContext = sceneContext;
-	notifyObservers("Pre-Round Start");
 }
 
 void GameLoopManager::Update(const SceneContext& sceneContext)
@@ -46,7 +45,10 @@ void GameLoopManager::SwitchToNextPhase()
 {
 	switch (m_GamePhase)
 	{
+		//TODO: Fix weird bug in the timings of the phases. it switches from the pre-round to the round too quickly
 	case GamePhase::PreRound:
+		if (m_ElapsedRoundTime < m_PreRoundTime) return;
+
 		m_GamePhase = GamePhase::Round;
 		m_SceneContext.pInput->SetEnabled(true);
 		m_ElapsedRoundTime = 0;

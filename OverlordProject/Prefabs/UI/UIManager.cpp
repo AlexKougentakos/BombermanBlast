@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "UIManager.h"
 #include "CharacterPointDisplay.h"
+#include "CountDown.h"
 #include "Timer.h"
 
 UIManager::UIManager(std::vector<BombermanCharacter*> players)
@@ -40,6 +41,8 @@ void UIManager::Initialize(const SceneContext& sceneContext)
     const XMFLOAT2 timerPosition = XMFLOAT2(2 * sceneContext.windowWidth / 5.0f + sceneContext.windowWidth / 10.0f, 0.f); // Centered in the 3rd segment.
     m_pTimer = AddChild(new Timer(120, timerPosition));
 
+    m_pCountdown = AddChild(new CountDown(5, 
+        XMFLOAT2(sceneContext.windowWidth / 2, sceneContext.windowHeight / 2)));
 
 }
 
@@ -47,7 +50,6 @@ void UIManager::ZeroTimer() const
 {
     m_pTimer->ZeroTimer();
 }
-
 
 void UIManager::ResetTimer() const
 {
@@ -61,5 +63,10 @@ void UIManager::StartTimer() const
 
 void UIManager::Update(const SceneContext&)
 {
-	
+
+}
+
+void UIManager::StartCountdown() const
+{
+    m_pCountdown->StartCountDown();
 }
