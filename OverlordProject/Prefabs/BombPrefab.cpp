@@ -7,10 +7,9 @@
 #include "Explosion.h"
 #include "Components/GameObjectManager.h"
 
-BombPrefab::BombPrefab(int blastRadius, GridComponent* pGridComponent, BombermanCharacter* playerWhoPlacedBomb,float size)
+BombPrefab::BombPrefab(int blastRadius, GridComponent* pGridComponent, BombermanCharacter* playerWhoPlacedBomb)
 	:m_BlastRadius(blastRadius),
 	m_pGrid(pGridComponent),
-	m_Size(size),
 	m_pPlayerWhoPlacedBomb(playerWhoPlacedBomb)
 {
 	SetTag(L"Bomb");
@@ -19,14 +18,22 @@ BombPrefab::BombPrefab(int blastRadius, GridComponent* pGridComponent, Bomberman
 void BombPrefab::Initialize(const SceneContext& /*gameContext*/)
 {
 	const auto pDiffuseMat = MaterialManager::Get()->CreateMaterial<DiffuseMaterial>();
-	pDiffuseMat->SetDiffuseTexture(L"Textures/Bomb.png");
 
-	m_pModelComponent = AddComponent(new ModelComponent(L"Meshes/Bomb.ovm"));
-	[[maybe_unused]]const auto pRigidBody = AddComponent(new RigidBodyComponent(true));
-
-	GetTransform()->Scale(m_pGrid->GetScaleFactor());
-
-	m_pModelComponent->SetMaterial(pDiffuseMat);
+	const auto pBombBase = new GameObject();
+	pDiffuseMat->SetDiffuseTexture(L"Textures/Bomb/BombTexture.png");
+	m_pBombModelComponent = pBombBase->AddComponent(new ModelComponent(L"Meshes/Bomb/Bomb_Base.ovm"));
+	m_pBombModelComponent->SetMaterial(pDiffuseMat);
+	m_pBombModelComponent->GetTransform()->Scale(0.33f);
+	AddChild(pBombBase);
+	
+	m_pBombFuse = new GameObject();
+	pDiffuseMat->SetDiffuseTexture(L"Textures/Bomb/BombTexture.png");
+	m_pFuseModelComponent = m_pBombFuse->AddComponent(new ModelComponent(L"Meshes/Bomb/Bomb_Top.ovm"));
+	m_pFuseModelComponent->SetMaterial(pDiffuseMat);
+	m_pFuseModelComponent->GetTransform()->Scale(0.33f);
+	AddChild(m_pBombFuse);
+	
+	pBombBase->GetTransform()->Rotate(XMLoadFloat4(&GetScene()->GetActiveCamera()->GetTransform()->GetRotation()));
 
 	//todo: add collider after
 	//const auto physicsMat = PhysXManager::Get()->GetPhysics()->createMaterial(0.2f, 0.2f, 0.2f);
@@ -34,10 +41,75 @@ void BombPrefab::Initialize(const SceneContext& /*gameContext*/)
 	//pRigidBody->AddCollider(PxConvexMeshGeometry(pPxConvexMesh, PxMeshScale({ 1.f,1.f,1.f })), *physicsMat);
 }
 
+void BombPrefab::InitializeParticles()
+{	
+	// Flash Particle System
+	ParticleEmitterSettings settings{};
+	settings.velocity = { 0.f,0.f,0.f };
+	settings.minSize = 7.f;
+	settings.maxSize = 7.f;
+	settings.minEnergy = 0.f;
+	settings.maxEnergy = 0.1f;
+	settings.minScale = 1.f;
+	settings.maxScale = 2.f;
+	settings.minEmitterRadius = 0.f;
+	settings.maxEmitterRadius = 0.f;
+	settings.color = { 1.f,1.f,1.f,.3f };
+
+	const XMFLOAT3 bombPosition = GetTransform()->GetPosition();
+	const XMFLOAT3 placementPosition = { bombPosition.x, bombPosition.y + 10.f, bombPosition.z };
+	GameObject* pFlashContainer = new GameObject();
+	m_pBombFuse->AddChild(pFlashContainer);
+	pFlashContainer->GetTransform()->Translate(placementPosition);
+	pFlashContainer->AddComponent(new ParticleEmitterComponent(L"Textures/Bomb/FuseOrangeParticle.png", settings, 7));
+
+	// Flame Particle System #1
+	settings.velocity = { 0.f,0.f,0.f };
+	settings.minSize = 2.5f;
+	settings.maxSize = 2.5f;
+	settings.minEnergy = 0.f;
+	settings.maxEnergy = 0.1f;
+	settings.minScale = 1.f;
+	settings.maxScale = 2.f;
+	settings.minEmitterRadius = 0.f;
+	settings.maxEmitterRadius = 0.f;
+	settings.color = { 1.f,1.f,1.f,.7f };
+
+	GameObject* pFlameContainer = new GameObject();
+	m_pBombFuse->AddChild(pFlameContainer);
+	pFlameContainer->GetTransform()->Translate(placementPosition);
+	pFlameContainer->AddComponent(new ParticleEmitterComponent(L"Textures/Bomb/FuseYellowParticle_1.png", settings, 5));
+
+	// Flame Particle System #2
+	settings.velocity = { 0.f,0.f,0.f };
+	settings.minSize = 2.5f;
+	settings.maxSize = 2.5f;
+	settings.minEnergy = 0.f;
+	settings.maxEnergy = 0.5f;
+	settings.minScale = 2.f;
+	settings.maxScale = 1.f;
+	settings.minEmitterRadius = 0.f;
+	settings.maxEmitterRadius = 0.f;
+	settings.color = { 1.f,1.f,1.f,.35f };
+
+	GameObject* pFlame2Container = new GameObject();
+	m_pBombFuse->AddChild(pFlame2Container);
+	pFlame2Container->GetTransform()->Translate(placementPosition);
+	pFlame2Container->AddComponent(new ParticleEmitterComponent(L"Textures/Bomb/FuseYellowParticle_2.png", settings, 1));
+}
+
 void BombPrefab::Update(const SceneContext& sceneContext)
 {
 	m_FuseElapsedTime += sceneContext.pGameTime->GetElapsed();
 
+	//Initialize the particles here because the particle system cannot move during run time
+	//and the bomb is placed a frame after the initialization
+	if (!m_InitializedParticles && !GetTransform()->IsDirty())
+	{
+		InitializeParticles();
+		m_InitializedParticles = true;
+	}
+	
 	if (m_FuseElapsedTime >= m_ExplosionTime)
 	{
 		Explode(m_BlastRadius);

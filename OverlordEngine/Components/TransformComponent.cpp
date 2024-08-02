@@ -165,6 +165,18 @@ void TransformComponent::Rotate(const XMVECTOR& rotation, bool isQuaternion)
 	}
 }
 
+void TransformComponent::SetRotation(const XMFLOAT4& rotation)
+{
+	m_IsTransformChanged |= TransformChanged::ROTATION;
+	m_Rotation = rotation;
+}
+
+void TransformComponent::SetRotation(const FXMVECTOR& rotation)
+{
+	m_IsTransformChanged |= TransformChanged::ROTATION;
+	XMStoreFloat4(&m_Rotation, rotation);
+}
+
 void TransformComponent::Scale(float x, float y, float z)
 {
 	//if (!CheckConstraints())

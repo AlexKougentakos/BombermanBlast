@@ -23,6 +23,9 @@ public:
 	void Rotate(const XMFLOAT3& rotation, bool degrees = true);
 	void Rotate(const XMVECTOR& rotation, bool isQuaternion = true);
 
+	void SetRotation(const XMFLOAT4& rotation);
+	void SetRotation(const FXMVECTOR& rotation);
+
 	void Scale(float x, float y, float z);
 	void Scale(float s);
 	void Scale(const XMFLOAT3& scale);

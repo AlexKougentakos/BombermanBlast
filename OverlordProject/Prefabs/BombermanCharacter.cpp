@@ -135,15 +135,15 @@ void BombermanCharacter::SpawnBomb()
 	GridCell& playerCell = m_pGrid->GetCell(playerPos);
 
 	const auto gameObjectManager = m_pGrid->GetGameObject()->GetComponent<GameObjectManager>();
-
-	m_pGrid->PlaceObject(gameObjectManager->CreateGameObject<BombPrefab>(m_PlayerStats.blastRadius, m_pGrid, this), playerCell);
+	const auto bomb = gameObjectManager->CreateGameObject<BombPrefab>(m_PlayerStats.blastRadius, m_pGrid, this);
+	m_pGrid->PlaceObject(bomb, playerCell);
 	m_RemainingBombs--;
 }
 
 void BombermanCharacter::GiveBackBomb()
 {
 	//This will likely never be false, but just in case
-	if (m_RemainingBombs +1 <= m_PlayerStats.maxBombs)
+	if (m_RemainingBombs + 1 <= m_PlayerStats.maxBombs)
 		++m_RemainingBombs;
 }
 
