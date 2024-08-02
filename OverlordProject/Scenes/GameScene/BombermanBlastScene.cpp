@@ -150,7 +150,7 @@ void BombermanBlastScene::AddCharacters(PxMaterial* const pDefaultMaterial, cons
 		m_pLevel->GetComponent<GridComponent>()->PlaceObject(character, placementRow, placementColumn);
 		const auto characterTransform = character->GetTransform();
 
-		characterTransform->Scale(10.f);
+		characterTransform->Scale(0.33f);
 		//Slight offset to make sure the character is on the ground, otherwise he clips through
 		characterTransform->Translate(characterTransform->GetPosition().x , 10.f, characterTransform->GetPosition().z);
 	}
