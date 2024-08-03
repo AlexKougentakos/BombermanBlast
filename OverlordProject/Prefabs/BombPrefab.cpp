@@ -139,6 +139,7 @@ void BombPrefab::Explode(int explosionDistance)
 	auto& cell = m_pGrid->GetCell(bombPosition);
 
 	std::vector<GridCell> affectedCells{};
+	affectedCells.emplace_back(cell);
 
 	ExplodeRecursive(cell, explosionDistance, affectedCells);
 

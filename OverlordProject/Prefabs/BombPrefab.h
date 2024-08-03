@@ -30,7 +30,7 @@ private:
 	ModelComponent* m_pFuseModelComponent{};
 
 	//Explosion Settings
-	const float m_ExplosionTime{ 30.f };
+	const float m_ExplosionTime{ 3.f };
 	float m_FuseElapsedTime{0.f};
 	int m_BlastRadius{ 1 };
 
