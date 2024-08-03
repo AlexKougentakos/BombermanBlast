@@ -36,11 +36,12 @@ void BombPrefab::Initialize(const SceneContext& /*gameContext*/)
 	pBombBase->GetTransform()->Rotate(XMLoadFloat4(&GetScene()->GetActiveCamera()->GetTransform()->GetRotation()));
 
 	//todo: add collider after
-	const auto pRigidBody = new RigidBodyComponent();
-	AddComponent(pRigidBody);
+	m_pRigidBody = new RigidBodyComponent(true);
+	AddComponent(m_pRigidBody);
+	m_pRigidBody->SetCollisionGroup(CollisionGroup::Bomb_Inside); //This group gets ignored by the player
 	const auto physicsMat = PhysXManager::Get()->GetPhysics()->createMaterial(0.2f, 0.2f, 0.2f);
-	const auto pPxConvexMesh = ContentManager::Load<PxConvexMesh>(L"Meshes/Bomb.ovpc");
-	pRigidBody->AddCollider(PxConvexMeshGeometry(pPxConvexMesh, PxMeshScale({ 1.f,1.f,1.f })), *physicsMat);
+	const auto pPxConvexMesh = ContentManager::Load<PxConvexMesh>(L"Meshes/Bomb/Collider.ovpc");
+	m_pRigidBody->AddCollider(PxConvexMeshGeometry(pPxConvexMesh, PxMeshScale({ .03f,.03f,.03f })), *physicsMat);
 }
 
 void BombPrefab::InitializeParticles()
@@ -106,6 +107,16 @@ void BombPrefab::Update(const SceneContext& sceneContext)
 	const float elapsedSec = sceneContext.pGameTime->GetElapsed();
 	m_FuseElapsedTime += elapsedSec;
 
+	const XMFLOAT3 playerPosition = m_pPlayerWhoPlacedBomb->GetTransform()->GetPosition();
+	const XMFLOAT3 bombPosition = GetTransform()->GetPosition();
+	const double distance = sqrt(pow(playerPosition.x - bombPosition.x, 2) + pow(playerPosition.z - bombPosition.z, 2));
+	if (distance > 6.f && m_ExitedBomb == false)
+	{
+		m_ExitedBomb = true;
+		m_pRigidBody->SetCollisionGroup(CollisionGroup::Bomb_Outside); //This group is NOT ignored by the player
+	}
+		
+	
 	//Initialize the particles here because the particle system cannot move during run time
 	//and the bomb is placed a frame after the initialization
 	if (!m_InitializedParticles && !GetTransform()->IsDirty())

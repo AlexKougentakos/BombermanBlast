@@ -31,11 +31,12 @@ void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 	m_pControllerComponent->SetCollisionIgnoreGroup(CollisionGroup::Group5);
 
 	m_pControllerComponent->SetContactOffset(0.0001f);
-	m_pControllerComponent->SetStepOffset(0);
+	m_pControllerComponent->SetStepOffset(0.01f);
+	m_pControllerComponent->SetSlopeLimit(5.f);
 
 	const auto pModelForCharacter = new GameObject();
 	AddChild(pModelForCharacter);
-	pModelForCharacter->GetTransform()->Translate(0, -20.f, 0);
+	pModelForCharacter->GetTransform()->Translate(0, -25.f, 0);
 	//Add Model to Character
 	m_pMaterial = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Skinned>();
 	const auto pFaceMaterial = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Skinned>();

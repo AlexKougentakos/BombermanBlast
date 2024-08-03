@@ -30,7 +30,7 @@ private:
 	ModelComponent* m_pFuseModelComponent{};
 
 	//Explosion Settings
-	const float m_ExplosionTime{ 3.f };
+	const float m_ExplosionTime{ 30.f };
 	float m_FuseElapsedTime{0.f};
 	int m_BlastRadius{ 1 };
 
@@ -39,7 +39,10 @@ private:
 	const float m_ScaleSpeed{2.f};
 	float m_ScaleElapsedTime{ 0.f };
 
+	bool m_ExitedBomb{ false };
+
 	BombermanCharacter* m_pPlayerWhoPlacedBomb{};
+	RigidBodyComponent* m_pRigidBody{};
 
 	void Explode(int explosionDistance);
 	void ExplodeRecursive(const GridCell& cell, int explosionDistance, std::vector<GridCell>& affectedCellsOut) const;

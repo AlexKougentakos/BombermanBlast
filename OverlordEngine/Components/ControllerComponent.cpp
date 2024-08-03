@@ -207,3 +207,8 @@ void ControllerComponent::SetStepOffset(const float offset) const
 	m_pController->setStepOffset(offset);
 }
 
+void ControllerComponent::SetSlopeLimit(const float limit) const
+{
+	ASSERT_NULL_(m_pController);
+	m_pController->setSlopeLimit(limit);
+}

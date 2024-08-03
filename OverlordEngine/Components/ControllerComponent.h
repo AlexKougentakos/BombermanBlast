@@ -26,6 +26,7 @@ public:
 	PxController* GetPxController() const { return m_pController; }
 
 	void SetStepOffset(const float offset) const;
+	void SetSlopeLimit(float limit) const;
 	PxF32 GetStepOffset() const;
 
 	CollisionGroup GetCollisionGroup() const;
