@@ -19,5 +19,6 @@ private:
 
 	ParticleEmitterComponent* m_pEmitter{};
 	GameObject* m_pTeapot{};
+	GameObject* m_Object{};
 };
 

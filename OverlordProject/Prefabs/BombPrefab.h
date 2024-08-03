@@ -23,14 +23,21 @@ protected:
 
 private:
 	void InitializeParticles();
+	void AnimateBombScaling(float elapsedSec);
 	bool m_InitializedParticles{ false };
 	
 	ModelComponent* m_pBombModelComponent{};
 	ModelComponent* m_pFuseModelComponent{};
 
+	//Explosion Settings
 	const float m_ExplosionTime{ 3.f };
 	float m_FuseElapsedTime{0.f};
 	int m_BlastRadius{ 1 };
+
+	//Scale Animation Settings
+	const float m_Amplitude{ .1f };
+	const float m_ScaleSpeed{2.f};
+	float m_ScaleElapsedTime{ 0.f };
 
 	BombermanCharacter* m_pPlayerWhoPlacedBomb{};
 

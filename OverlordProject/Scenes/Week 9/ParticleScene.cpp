@@ -21,8 +21,8 @@ void ParticleScene::Initialize()
 	settings.maxEmitterRadius = .5f;
 	settings.color = { 1.f,1.f,1.f, .6f };
 
-	const auto pObject = AddChild(new GameObject);
-	m_pEmitter = pObject->AddComponent(new ParticleEmitterComponent(L"Textures/Smoke.png", settings, 200));
+	m_Object = AddChild(new GameObject);
+	m_pEmitter = m_Object->AddComponent(new ParticleEmitterComponent(L"Textures/Smoke.png", settings, 200));
 
 	//Teapot
 	m_pTeapot = AddChild(new GameObject());
@@ -40,7 +40,7 @@ void ParticleScene::Update()
 	m_pTeapot->GetTransform()->Rotate(.0f, XM_PIDIV2 * m_SceneContext.pGameTime->GetTotal(), .0f, false);
 
 	//Move Particle System
-	auto particlePosition = m_pEmitter->GetTransform()->GetPosition();
+	auto particlePosition = m_Object->GetTransform()->GetPosition();
 	const auto moveSpeed = 10.f * m_SceneContext.pGameTime->GetElapsed();
 
 	if(m_AutoMove)

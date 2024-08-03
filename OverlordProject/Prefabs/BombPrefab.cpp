@@ -36,9 +36,11 @@ void BombPrefab::Initialize(const SceneContext& /*gameContext*/)
 	pBombBase->GetTransform()->Rotate(XMLoadFloat4(&GetScene()->GetActiveCamera()->GetTransform()->GetRotation()));
 
 	//todo: add collider after
-	//const auto physicsMat = PhysXManager::Get()->GetPhysics()->createMaterial(0.2f, 0.2f, 0.2f);
-	//const auto pPxConvexMesh = ContentManager::Load<PxConvexMesh>(L"Meshes/Bomb.ovpc");
-	//pRigidBody->AddCollider(PxConvexMeshGeometry(pPxConvexMesh, PxMeshScale({ 1.f,1.f,1.f })), *physicsMat);
+	const auto pRigidBody = new RigidBodyComponent();
+	AddComponent(pRigidBody);
+	const auto physicsMat = PhysXManager::Get()->GetPhysics()->createMaterial(0.2f, 0.2f, 0.2f);
+	const auto pPxConvexMesh = ContentManager::Load<PxConvexMesh>(L"Meshes/Bomb.ovpc");
+	pRigidBody->AddCollider(PxConvexMeshGeometry(pPxConvexMesh, PxMeshScale({ 1.f,1.f,1.f })), *physicsMat);
 }
 
 void BombPrefab::InitializeParticles()
@@ -58,10 +60,10 @@ void BombPrefab::InitializeParticles()
 
 	const XMFLOAT3 bombPosition = GetTransform()->GetPosition();
 	const XMFLOAT3 placementPosition = { bombPosition.x, bombPosition.y + 10.f, bombPosition.z };
-	GameObject* pFlashContainer = new GameObject();
-	m_pBombFuse->AddChild(pFlashContainer);
-	pFlashContainer->GetTransform()->Translate(placementPosition);
-	pFlashContainer->AddComponent(new ParticleEmitterComponent(L"Textures/Bomb/FuseOrangeParticle.png", settings, 7));
+	GameObject* pFuseOrangeParticleContainer = new GameObject();
+	AddChild(pFuseOrangeParticleContainer);
+	pFuseOrangeParticleContainer->GetTransform()->Translate(placementPosition);
+	pFuseOrangeParticleContainer->AddComponent(new ParticleEmitterComponent(L"Textures/Bomb/FuseOrangeParticle.png", settings, 7));
 
 	// Flame Particle System #1
 	settings.velocity = { 0.f,0.f,0.f };
@@ -75,10 +77,10 @@ void BombPrefab::InitializeParticles()
 	settings.maxEmitterRadius = 0.f;
 	settings.color = { 1.f,1.f,1.f,.7f };
 
-	GameObject* pFlameContainer = new GameObject();
-	m_pBombFuse->AddChild(pFlameContainer);
-	pFlameContainer->GetTransform()->Translate(placementPosition);
-	pFlameContainer->AddComponent(new ParticleEmitterComponent(L"Textures/Bomb/FuseYellowParticle_1.png", settings, 5));
+	GameObject* pFuseYellowParticle1Container = new GameObject();
+	AddChild(pFuseYellowParticle1Container);
+	pFuseYellowParticle1Container->GetTransform()->Translate(placementPosition);
+	pFuseYellowParticle1Container->AddComponent(new ParticleEmitterComponent(L"Textures/Bomb/FuseYellowParticle_1.png", settings, 5));
 
 	// Flame Particle System #2
 	settings.velocity = { 0.f,0.f,0.f };
@@ -92,15 +94,17 @@ void BombPrefab::InitializeParticles()
 	settings.maxEmitterRadius = 0.f;
 	settings.color = { 1.f,1.f,1.f,.35f };
 
-	GameObject* pFlame2Container = new GameObject();
-	m_pBombFuse->AddChild(pFlame2Container);
-	pFlame2Container->GetTransform()->Translate(placementPosition);
-	pFlame2Container->AddComponent(new ParticleEmitterComponent(L"Textures/Bomb/FuseYellowParticle_2.png", settings, 1));
+	GameObject* pFuseYellowParticle2Container = new GameObject();
+	AddChild(pFuseYellowParticle2Container);
+	pFuseYellowParticle2Container->GetTransform()->Translate(placementPosition);
+	pFuseYellowParticle2Container->AddComponent(
+		new ParticleEmitterComponent(L"Textures/Bomb/FuseYellowParticle_2.png", settings, 1));
 }
 
 void BombPrefab::Update(const SceneContext& sceneContext)
 {
-	m_FuseElapsedTime += sceneContext.pGameTime->GetElapsed();
+	const float elapsedSec = sceneContext.pGameTime->GetElapsed();
+	m_FuseElapsedTime += elapsedSec;
 
 	//Initialize the particles here because the particle system cannot move during run time
 	//and the bomb is placed a frame after the initialization
@@ -109,6 +113,8 @@ void BombPrefab::Update(const SceneContext& sceneContext)
 		InitializeParticles();
 		m_InitializedParticles = true;
 	}
+	
+	AnimateBombScaling(elapsedSec);
 	
 	if (m_FuseElapsedTime >= m_ExplosionTime)
 	{
@@ -141,6 +147,18 @@ void BombPrefab::Explode(int explosionDistance)
 	SoundManager::Get()->Play(L"Explosion.wav", 0.5f);
 	cell.Remove(this);
 	m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(this);
+}
+
+void BombPrefab::AnimateBombScaling(const float elapsedSec)
+{
+	m_ScaleElapsedTime += elapsedSec * m_ScaleSpeed;
+
+	//Use a sin wave to animate the bomb scale
+	const float scaleFactor = sinf(m_ScaleElapsedTime * XM_PI) * 0.5f + 0.5f;
+	const float newScale = (1 - m_Amplitude) + (scaleFactor * m_Amplitude);
+	
+	const XMFLOAT3 mScale = GetTransform()->GetScale();
+	GetTransform()->Scale(mScale.x, newScale, mScale.z);
 }
 
 void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, std::vector<GridCell>& affectedCellsOut) const

@@ -34,6 +34,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR /*pCmdLine*/, int /*nC
 	//	//_CrtSetBreakAlloc(10725);
 	//#endif
 
+	//const auto pGame = new MainGame();
 	const auto pGame = new MainGame();
 	auto result = pGame->Run(hInstance);
 	UNREFERENCED_PARAMETER(result);
