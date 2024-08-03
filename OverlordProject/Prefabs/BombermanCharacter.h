@@ -96,7 +96,7 @@ public:
 	void ApplyPowerup(PlayerStatIncrease increase)
 	{
 		m_PlayerStats += increase;
-		m_RemainingBombs += increase.bombs;
+		m_RemainingBombs = std::max(1, m_RemainingBombs + increase.bombs);
 	}
 	void AddPoint();
 	PlayerColour GetPlayerColour() const
