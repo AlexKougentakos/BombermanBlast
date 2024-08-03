@@ -210,7 +210,7 @@ void GridComponent::MoveObject(GameObject* pObject, GridCell& newGridCell)
 }
 
 
-char GridComponent::GetCharOfObject(const GameObject* const gameObject) const
+char GridComponent::GetCharOfObject(GameObject* const gameObject) const
 {
     if (gameObject->GetTag() == L"Player")
         return 'P';
@@ -221,7 +221,9 @@ char GridComponent::GetCharOfObject(const GameObject* const gameObject) const
     if (gameObject->GetTag() == L"Bomb")
         return 'B';
     if (gameObject->GetTag() == L"Rock")
-		return 'R';
+    {
+        return static_cast<RockPrefab*>(gameObject)->GetType() == RockType::UNBREAKABLE ? 'S' : 'R';
+    }
     if (gameObject->GetTag() == L"PowerUp")
         return 'U';
 

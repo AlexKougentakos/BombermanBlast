@@ -146,11 +146,10 @@ void BombPrefab::Explode(int explosionDistance)
 	for (auto& affectedCell : affectedCells)
 	{
 		if (affectedCell.isValid)
+		{
 			m_pGrid->Explode(affectedCell);
-			m_pGrid->Explode(affectedCell);
-
-		if (affectedCell.isValid)
 			m_pGrid->PlaceObject(m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->CreateGameObject<Explosion>(m_pGrid), affectedCell);
+		}
 	}
 
 	//Recharge player bomb
@@ -181,7 +180,7 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
 		GridCell leftCell = m_pGrid->GetCellToTheLeft(cell);
-		if (leftCell.isValid)
+		if (leftCell.isValid && !leftCell.Contains(L"UnbreakableRock"))
 		{
 			affectedCellsOut.emplace_back(leftCell);
 			findLeft(leftCell, distance - 1, affectedCellsOut);
@@ -196,7 +195,7 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
 		GridCell leftCell = m_pGrid->GetCellOnTop(cell);
-		if (leftCell.isValid)
+		if (leftCell.isValid && !leftCell.Contains(L"UnbreakableRock"))
 		{
 			affectedCellsOut.emplace_back(leftCell);
 			findUp(leftCell, distance - 1, affectedCellsOut);
@@ -211,7 +210,7 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
 		GridCell leftCell = m_pGrid->GetCellUnder(cell);
-		if (leftCell.isValid)
+		if (leftCell.isValid && !leftCell.Contains(L"UnbreakableRock"))
 		{
 			affectedCellsOut.emplace_back(leftCell);
 			findDown(leftCell, distance - 1, affectedCellsOut);
@@ -226,7 +225,7 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
 		GridCell leftCell = m_pGrid->GetCellToTheRight(cell);
-		if (leftCell.isValid)
+		if (leftCell.isValid && !leftCell.Contains(L"UnbreakableRock"))
 		{
 			affectedCellsOut.emplace_back(leftCell);
 			findRight(leftCell, distance - 1, affectedCellsOut);

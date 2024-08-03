@@ -332,6 +332,10 @@ void BombermanBlastScene::SpawnRocks() const
 			{
 				grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
 			}
+			else if (m_StartingLayout[index] == 'S')
+			{
+				grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::UNBREAKABLE, m_SingleBlockScale), currentRow, currentCol);
+			}
 		}
 	}
 }
@@ -433,6 +437,9 @@ void BombermanBlastScene::OnGUI()
 			{
 			case 'R':
 				buttonColor = ImVec4(0.6f, 0.4f, 0.2f, 1.0f);  // Brownish color
+				break;
+			case 'S':
+				buttonColor = ImVec4(0.8f, 0.6f, 0.4f, 1.0f); //Light brown 
 				break;
 			case 'P':
 				buttonColor = ImVec4(0.86f, 0.08f, 0.24f, 1.0f);  // Crimson color

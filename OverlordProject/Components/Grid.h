@@ -29,12 +29,12 @@ public:
 			return obj->GetTag() == objectTag;
 		};
 
-		return std::any_of(objects.begin(), objects.end(), isSameTag);
+		return std::ranges::any_of(objects, isSameTag);
 	}
 
 	void Remove(const GameObject* gameObj)
 	{
-		objects.erase(std::remove(objects.begin(), objects.end(), gameObj), objects.end());
+		objects.erase(std::ranges::remove(objects, gameObj).begin(), objects.end());
 	}
 
 	void Add(GameObject* gameObj)
@@ -127,5 +127,5 @@ private:
 	float m_CellScaleFactor{};
 
 	void InitializeCells();
-	char GetCharOfObject(const GameObject* const gameObject) const;
+	char GetCharOfObject(GameObject* const gameObject) const;
 };
