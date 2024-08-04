@@ -62,9 +62,8 @@ GridCell& GridComponent::GetCell(int row, int col)
 {
     row -= 1;
     col -= 1;
-    const int numOfRows = static_cast<int>((m_TopRight.x - m_BottomLeft.x) / m_CellSize);
 
-    return m_GridCells[row * numOfRows + col];
+    return m_GridCells[row * m_NumOfColumns + col];
 }
 
 void GridComponent::Draw(const SceneContext& sceneContext)
@@ -288,8 +287,8 @@ GridCell& GridComponent::GetCellToTheRight(const GridCell& cell)
 void GridComponent::InitializeCells()
 {
     // Calculate the number of cells in x and y directions
-    m_NumOfColumns = static_cast<int>((m_TopRight.x - m_BottomLeft.x) / m_CellSize);
-    m_NumOfRows = static_cast<int>((m_TopRight.z - m_BottomLeft.z) / m_CellSize) + 1;
+    m_NumOfColumns = static_cast<int>(std::round((m_TopRight.x - m_BottomLeft.x) / m_CellSize));
+    m_NumOfRows = static_cast<int>(std::round((m_TopRight.z - m_BottomLeft.z) / m_CellSize));
     //todo: fix the rows/ columns issue
 
     m_GridCells.reserve(m_NumOfColumns * m_NumOfRows);

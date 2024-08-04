@@ -102,7 +102,7 @@ public:
 	float GetCellSize() const { return m_CellSize / 2.f; }
 	void UpdateCharacterOnMap(std::vector<BombermanCharacter*>& players);
 
-	float GetScaleFactor() const { return m_CellScaleFactor; }
+	float GetScaleFactor() const { return m_CellScaleFactor * 30; }
 
 	void ClearGrid();
 

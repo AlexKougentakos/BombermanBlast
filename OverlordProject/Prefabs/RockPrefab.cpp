@@ -15,9 +15,9 @@ void RockPrefab::Initialize(const SceneContext& /*gameContext*/)
 	if (m_Type == RockType::BREAKABLE)
 	{
 		const auto pDiffuseMat = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_ShadowFixed>(XMFLOAT3{0, -1, -1});
-		pDiffuseMat->SetDiffuseTexture(L"Textures/brick.png");
+		pDiffuseMat->SetDiffuseTexture(L"Textures/BrickTexture.png");
 
-		m_pModelComponent = AddComponent(new ModelComponent(L"Meshes/Brick.ovm"));
+		m_pModelComponent = AddComponent(new ModelComponent(L"Meshes/BrickMesh.ovm"));
 		const auto pRigidBody = AddComponent(new RigidBodyComponent(true));
 
 		pRigidBody->SetCollisionGroup(CollisionGroup::Brick);
@@ -26,7 +26,7 @@ void RockPrefab::Initialize(const SceneContext& /*gameContext*/)
 
 		const auto physicsMat = PhysXManager::Get()->GetPhysics()->createMaterial(0.2f, 0.2f, 0.2f);
 
-		const auto pPxConvexMesh = ContentManager::Load<PxConvexMesh>(L"Meshes/Brick.ovpc");
+		const auto pPxConvexMesh = ContentManager::Load<PxConvexMesh>(L"Meshes/BrickMesh.ovpc");
 		pRigidBody->AddCollider(PxConvexMeshGeometry(pPxConvexMesh, PxMeshScale({ m_Scale,m_Scale,m_Scale })), *physicsMat);
 
 		//Scale if necessary

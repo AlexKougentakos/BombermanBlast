@@ -13,10 +13,6 @@
 #include "Materials/Shadow/DiffuseMaterial_Shadow.h"
 #include "Prefabs/GameLoopManager.h"
 #include "Prefabs/UI/UIManager.h"
-#include "Prefabs/UI/Menu/ButtonManager.h"
-#include "Prefabs/UI/Menu/Buttons/MenuButton.h"
-#include "Prefabs/UI/Menu/Buttons/QuitButton.h"
-
 
 BombermanBlastScene::BombermanBlastScene() :
 	GameScene(L"BombermanBlastScene") {}
@@ -81,6 +77,8 @@ void BombermanBlastScene::Initialize()
 	//Post Processing
 	const auto vignette = MaterialManager::Get()->CreateMaterial<Vignette>();
 	AddPostProcessingEffect(vignette);
+
+	const auto grid = m_pLevel->GetComponent<GridComponent>()->GetCell(1, 4);
 }
 
 
