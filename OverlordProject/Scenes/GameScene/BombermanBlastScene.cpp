@@ -49,7 +49,7 @@ void BombermanBlastScene::Initialize()
 	AddChild(m_pDebugCamera);
 
 	//Light
-	m_SceneContext.pLights->SetDirectionalLight({ 0,20,0 }, { 0, -1, 0.001f });
+	m_SceneContext.pLights->SetDirectionalLight({ 0,300,0 }, { 0, -1, -0.01f });
 
 	m_MapBottomLeft = { -43.f,0,-36.443f };
 	m_MapTopRight = { 42.75f,0,33.f };

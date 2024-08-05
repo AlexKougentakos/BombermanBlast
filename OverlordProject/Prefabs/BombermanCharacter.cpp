@@ -10,6 +10,8 @@
 #include "Prefabs/BombPrefab.h"
 #include <Components/GameObjectManager.h>
 
+#include "Materials/DiffuseMaterial.h"
+
 int BombermanCharacter::m_InstanceCounter = 0;
 
 BombermanCharacter::BombermanCharacter(const CharacterDesc& characterDesc, GridComponent* const pGrid) :
@@ -74,10 +76,11 @@ void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 	const auto modelComp = pShadowBlobObject->AddComponent(new ModelComponent(L"Meshes/Sphere.ovm"));
 
 	auto mat = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Shadow>();
+	mat->SetDiffuseTexture(L"Textures/GroundBrick.jpg");
 	modelComp->SetMaterial(mat);
 
-	modelComp->GetTransform()->Scale(0.3f);
-	modelComp->GetTransform()->Translate(0.f, 0.f, 20.f);
+	modelComp->GetTransform()->Scale(10.f);
+	modelComp->GetTransform()->Translate(-1.5f, 255.f, 0.f);
 }
 
 void BombermanCharacter::Reset()
