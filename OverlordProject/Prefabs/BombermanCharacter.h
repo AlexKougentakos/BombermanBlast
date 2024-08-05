@@ -127,6 +127,7 @@ private:
 	ModelAnimator* m_pModelAnimator{};
 	ModelComponent* m_pModelComponent{};
 	DiffuseMaterial_Skinned* m_pMaterial{};
+	DiffuseMaterial_Skinned* m_pFaceMaterial{};
 	UINT m_AnimationClipId{ 0 };
 
 	PlayerStats m_PlayerStats{};
@@ -134,7 +135,7 @@ private:
 
 	PlayerState m_PlayerState{ PlayerState::Idle };
 
-	const int m_DeathFlickerSpeed{ 10 }; //Flickers per second
+	const float m_DeathFlickerSpeed{ 10 }; //Flickers per second
 	const float m_DeathAnimTime{ 1.f };
 	float m_ElapsedDeathTimer{ 0.f };
 	bool m_IsDead{ false };

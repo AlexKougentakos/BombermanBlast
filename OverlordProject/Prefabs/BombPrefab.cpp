@@ -27,15 +27,15 @@ void BombPrefab::Initialize(const SceneContext& /*gameContext*/)
 	AddChild(pBombBase);
 	
 	m_pBombFuse = new GameObject();
-	pDiffuseMat->SetDiffuseTexture(L"Textures/Bomb/BombTexture.png");
 	m_pFuseModelComponent = m_pBombFuse->AddComponent(new ModelComponent(L"Meshes/Bomb/Bomb_Top.ovm"));
 	m_pFuseModelComponent->SetMaterial(pDiffuseMat);
 	m_pFuseModelComponent->GetTransform()->Scale(0.33f);
 	AddChild(m_pBombFuse);
-	
+
+	//Rotate the bomb to face the camera
 	pBombBase->GetTransform()->Rotate(XMLoadFloat4(&GetScene()->GetActiveCamera()->GetTransform()->GetRotation()));
 
-	//todo: add collider after
+	//Set up collision
 	m_pRigidBody = new RigidBodyComponent(true);
 	AddComponent(m_pRigidBody);
 	m_pRigidBody->SetCollisionGroup(CollisionGroup::Bomb_Inside); //This group gets ignored by the player

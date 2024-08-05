@@ -39,8 +39,8 @@ void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 	pModelForCharacter->GetTransform()->Translate(0, -25.f, 0);
 	//Add Model to Character
 	m_pMaterial = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Skinned>();
-	const auto pFaceMaterial = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Skinned>();
-	pFaceMaterial->SetDiffuseTexture(L"Textures/bom_face01.png");
+	m_pFaceMaterial = MaterialManager::Get()->CreateMaterial<DiffuseMaterial_Skinned>();
+	m_pFaceMaterial->SetDiffuseTexture(L"Textures/bom_face01.png");
 
 	m_pModelComponent = pModelForCharacter->AddComponent(new ModelComponent(L"Meshes/CharacterFixed.ovm", false));
 
@@ -61,7 +61,7 @@ void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 	}
 
 	m_pModelComponent->SetMaterial(m_pMaterial);
-	m_pModelComponent->SetMaterial(pFaceMaterial, 0);
+	m_pModelComponent->SetMaterial(m_pFaceMaterial, 0);
 	
 
 	m_pModelAnimator = m_pModelComponent->GetAnimator();
@@ -110,18 +110,18 @@ void BombermanCharacter::Update(const SceneContext& sceneContext)
 				m_ElapsedDeathTimer += sceneContext.pGameTime->GetElapsed();
 
 			//Player flickering
-				const float flickerDuration = 1.0f / m_DeathFlickerSpeed;
-				const float flickerProgress = fmod(m_ElapsedDeathTimer, flickerDuration) / flickerDuration;
-				[[maybe_unused]]const float flickerOpacity = (flickerProgress < 0.5f) ? 0.1f : 1.0f;
+			const float flickerDuration = 1.0f / m_DeathFlickerSpeed;
+			const float flickerProgress = fmod(m_ElapsedDeathTimer, flickerDuration) / flickerDuration;
+			const float flickerOpacity = (flickerProgress < 0.5f) ? 0.1f : 1.0f;
 
-				//m_pMaterial->SetOpacity(flickerOpacity);
+			m_pMaterial->SetOpacity(flickerOpacity);
+			m_pFaceMaterial->SetOpacity(flickerOpacity);
 
 				if (m_ElapsedDeathTimer >= m_DeathAnimTime)
 				{
 					notifyObservers("Player Death");
 					m_IsDead = true;
 					m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(this);
-					//m_pGrid->DeleteSpecificObject(this);
 				}
 				break;
 		}
