@@ -33,6 +33,7 @@ protected:
 private:
 	//Characters
 	std::vector<BombermanCharacter*> m_pCharacters{};
+	const short unsigned int m_NumOfPlayers{2};
 
 	//Cameras
 	CameraComponent* m_pCamera{ nullptr };

@@ -116,9 +116,6 @@ void GridComponent::ClearGrid()
     for (auto& cell : m_GridCells)
         for (const auto& object : cell.objects)
         {
-            if (object->GetTag() == L"Player")
-                continue;
-
             cell.Remove(object);
             GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(object);
         }

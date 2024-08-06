@@ -66,11 +66,10 @@ void BombermanBlastScene::Initialize()
 	m_pLevel->AddComponent(new PowerUpManager(m_pLevel->GetComponent<GridComponent>()));
 	m_pLevel->AddComponent(new GameObjectManager());
 	m_pLevel->GetTransform()->Scale({ 0.33f, 0.33f, 0.33f });
-
-	constexpr unsigned int numOfPlayers{ 2 };
+	
 	DefinePlayerInputs();
-
-	AddCharacters(pDefaultMaterial, numOfPlayers);
+	
+	AddCharacters(pDefaultMaterial, m_NumOfPlayers);
 
 	InitializeLevelNecessities();
 
@@ -245,16 +244,9 @@ void BombermanBlastScene::ResetLevel()
 {
 	m_pLevel->GetComponent<GridComponent>()->ClearGrid();
 	m_pLevel->GetComponent<PowerUpManager>()->RemovePowerUps();
-
-	//Todo: Rework this to not use dead characters
-	//for (const auto & pCharacter : m_pDeadCharacters)
-	//{
-	//	pCharacter->Reset();
-	//	m_pLevel->GetComponent<GridComponent>()->PlaceObject(pCharacter, 1, 1);
-	//}
-
-	//m_pCharacters.insert(m_pCharacters.end(), m_pDeadCharacters.begin(), m_pDeadCharacters.end());
-	//m_pDeadCharacters.clear();
+	
+	const auto pDefaultMaterial = PxGetPhysics().createMaterial(0.9f, 0.9f, 0.01f);
+	AddCharacters(pDefaultMaterial, m_NumOfPlayers);
 
 	int placementRow{}, placementColumn{};
 	for (size_t i{}; i < m_pCharacters.size(); ++i)
