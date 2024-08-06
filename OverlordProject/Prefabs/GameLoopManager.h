@@ -34,7 +34,7 @@ protected:
 
 private:
 	const float m_PreRoundTime{ 5.f }; //Seconds
-	const float m_RoundTime{ 120.f }; //Seconds
+	const float m_RoundTime{ 10.f }; //Seconds
 	const float m_PostRoundTime{ 5.f }; //Seconds
 
 	float m_ElapsedRoundTime{0.f};

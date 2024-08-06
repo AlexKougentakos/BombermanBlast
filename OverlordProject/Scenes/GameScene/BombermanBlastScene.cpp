@@ -172,7 +172,7 @@ void BombermanBlastScene::InitializeLevel(const PxMaterial* const pDefaultMateri
 	const auto levelRigidBody = m_pLevel->AddComponent(new RigidBodyComponent(true));
 
 	//Add collider to level
-	const auto pPxTriangleMesh = ContentManager::Load<PxTriangleMesh>(L"Meshes/NewLevel.ovpt");
+	const auto pPxTriangleMesh = ContentManager::Load<PxTriangleMesh>(L"Meshes/MapHitbox.ovpt");
 	levelRigidBody->AddCollider(PxTriangleMeshGeometry(pPxTriangleMesh, PxMeshScale({ 0.33f,0.33f,0.33f })), *pDefaultMaterial);
 	levelRigidBody->SetCollisionGroup(CollisionGroup::Level);
 
@@ -243,6 +243,7 @@ void BombermanBlastScene::InitializeLevelNecessities()
 void BombermanBlastScene::ResetLevel()
 {
 	m_pLevel->GetComponent<GridComponent>()->ClearGrid();
+	m_pLevel->GetComponent<PowerUpManager>()->RemovePowerUps();
 
 	//Todo: Rework this to not use dead characters
 	//for (const auto & pCharacter : m_pDeadCharacters)
@@ -294,8 +295,8 @@ void BombermanBlastScene::ResetLevel()
 void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::string& event)
 {
 	if (event == "Pre-Round Start")
-		std::cout << "Gaming Starting.... \n";
 	{
+		std::cout << "Game Starting.... \n";
 		if (m_IsGameOver)
 		{
 			ResetLevel();
@@ -307,11 +308,13 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 
 	if (event == "Round Start")
 	{
+		std::cout << "Round started.... \n";
 		m_pUIManager->StartTimer();
 	}
 
 	if (event == "Post-Round Start")
 	{
+		std::cout << "Round Ended.... \n";
 		m_pUIManager->ZeroTimer();
 		m_IsGameOver = true;
 	}
@@ -328,14 +331,7 @@ void BombermanBlastScene::SpawnRocks() const
 		{
 			const int index = (currentRow - 1) * m_NumOfColumns + (currentCol - 1);
 			if (m_StartingLayout[index] == 'R')
-			{
-				
-				{
-					auto skullBox = gameObjectManager->CreateGameObject<SkullBox>(m_SingleBlockScale, grid);
-					grid->PlaceObject(skullBox, currentRow, currentCol);
-					skullBox->PlacedInGrid();
-				}
-				
+			{				
 				grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
 			}
 			else if (m_StartingLayout[index] == 'S')

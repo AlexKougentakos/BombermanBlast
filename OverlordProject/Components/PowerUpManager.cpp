@@ -70,6 +70,14 @@ void PowerUpManager::RemovePowerUp(BasePowerUp* pPowerUp)
 	
 }
 
+void PowerUpManager::RemovePowerUps()
+{
+	for (const auto& pPowerUp : m_pPowerUps)
+	{
+		RemovePowerUp(pPowerUp);
+	}
+}
+
 
 void PowerUpManager::UpdatePowerUps()
 {

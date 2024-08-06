@@ -30,6 +30,8 @@ public:
 	void TriggerPowerUpSpawn(GridCell& cell);
 	BasePowerUp* GetPowerUpByType(PowerUpType type, GridCell* pGridCell) const;
 	void RemovePowerUp(BasePowerUp* pPowerUp);
+	void RemovePowerUps();
+	
 
 	void UpdatePowerUps();
 private:
