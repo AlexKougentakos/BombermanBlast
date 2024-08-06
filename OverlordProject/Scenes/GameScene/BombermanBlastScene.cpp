@@ -8,6 +8,7 @@
 #include "Components/GameObjectManager.h"
 
 #include <Windows.h>
+#include <cmath>
 
 #include "Materials/Post/Vignette.h"
 #include "Materials/Shadow/DiffuseMaterial_Shadow.h"
@@ -296,7 +297,6 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 {
 	if (event == "Pre-Round Start")
 	{
-		std::cout << "Game Starting.... \n";
 		if (m_IsGameOver)
 		{
 			ResetLevel();
@@ -308,13 +308,20 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 
 	if (event == "Round Start")
 	{
-		std::cout << "Round started.... \n";
 		m_pUIManager->StartTimer();
+	}
+
+	if (event == "Round-With-Skull-Boxes-Start")
+	{
+		m_StartedDropping = true;
 	}
 
 	if (event == "Post-Round Start")
 	{
-		std::cout << "Round Ended.... \n";
+		m_StartedDropping = false;
+		m_ElapsedDroppingTime = 0.f;
+		m_CurrentIndex = 0;
+		
 		m_pUIManager->ZeroTimer();
 		m_IsGameOver = true;
 	}
@@ -374,6 +381,38 @@ void BombermanBlastScene::Update()
 
 		if (!player || player->IsDead())
 			std::erase(m_pCharacters, player);
+	}
+
+	if (m_StartedDropping)
+	{
+		m_ElapsedDroppingTime += m_SceneContext.pGameTime->GetElapsed();
+		if (m_ElapsedDroppingTime >= m_BoxDropInterval)
+		{
+			auto pGrid = m_pLevel->GetComponent<GridComponent>();
+			const int currentRow = m_CurrentIndex / m_NumOfColumns;
+			const int currentCol = m_CurrentIndex % m_NumOfColumns;
+    
+			if (currentRow < m_NumOfRows && currentCol < m_NumOfColumns)
+			{
+				if (pGrid->GetCell(currentRow + 1, currentCol + 1).Contains(L"UnbreakableRock"))
+				{
+					m_CurrentIndex++;
+					return;
+				}
+				const auto pSkullBox = new SkullBox(m_SingleBlockScale, pGrid);
+				pGrid->PlaceObject(pSkullBox, currentRow + 1, currentCol + 1);
+				pSkullBox->PlacedInGrid();
+				
+				m_CurrentIndex++;
+				m_ElapsedDroppingTime = 0.f;
+			}
+			else
+			{
+				m_StartedDropping = false;
+				m_ElapsedDroppingTime = 0.f;
+				m_CurrentIndex = 0;
+			}
+		}
 	}
 		
 

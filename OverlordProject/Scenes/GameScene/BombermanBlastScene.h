@@ -108,6 +108,13 @@ private:
 
 	ParticleEmitterComponent* m_pEmitter{};
 
+	//Skull boxes
+	const float m_BoxDropDuration{ 20.f };
+	const float m_BoxDropInterval{ 0.2f };
+	float m_ElapsedDroppingTime{ 0.f };
+	bool m_StartedDropping{ false };
+	int m_CurrentIndex{ 0 };
+
 	//Debug
 	bool m_IsDebugCameraActive{ false };
 

@@ -6,6 +6,7 @@ enum class GamePhase
 {
 	PreRound,
 	Round,
+	RoundWithSkullBoxes,
 	PostRound
 };
 
@@ -33,8 +34,12 @@ protected:
 
 
 private:
+	/*
+	 * TIMERS
+	 */
 	const float m_PreRoundTime{ 5.f }; //Seconds
-	const float m_RoundTime{ 10.f }; //Seconds
+	const float m_RoundTime{ 3.f }; //Seconds
+	const float m_BoxDropDuration{ 43.f }; //Seconds
 	const float m_PostRoundTime{ 5.f }; //Seconds
 
 	float m_ElapsedRoundTime{0.f};
@@ -44,6 +49,11 @@ private:
 	const std::vector<BombermanCharacter*>& m_pPlayers{};
 
 	void SwitchToNextPhase();
+	void SwitchToPreRound();
+	void SwitchToRound();
+	void SwitchToRoundWithSkullBoxes();
+	void SwitchToPostRound();
+	
 
 	GamePhase m_GamePhase{ GamePhase::PreRound };
 	SceneContext m_SceneContext{};

@@ -22,7 +22,7 @@ private:
 	ModelComponent* m_pModelComponent{};
 	GridComponent* m_pGridComponent{};
 	float m_Scale{};
-	float m_FallingSpeed{ 10.f };
+	float m_FallingSpeed{ 30.f };
 
 	bool m_OnGround {false};
 	bool m_InitializedCollision{false};
