@@ -77,8 +77,8 @@ public:
 	void PlaceObject(GameObject* pObject, GridCell& cell);
 	void PlaceObject(GameObject* pObject, int row, int col);
 
-	void Explode(GridCell& cell);
-	void Explode( int row, int col);
+	void Explode(GridCell& cell, bool allowDropsFromStones = true);
+	void Explode(int row, int col, bool allowDropsFromStones = true);
 
 	GridCell& GetCell(const GameObject& gameObject);
 	GridCell& GetCell(const XMFLOAT3& position);

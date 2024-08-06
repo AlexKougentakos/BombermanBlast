@@ -20,7 +20,6 @@ public:
 	RockPrefab& operator=(RockPrefab&& other) noexcept = delete;
 
 	void Initialize(const SceneContext& gameContext) override;
-	void Update(const SceneContext&) override {};
 
 	RockType GetType() const { return m_Type; }
 	void Explode(GridCell* gridCell) const;

@@ -124,12 +124,12 @@ void GridComponent::ClearGrid()
 }
 
 
-void GridComponent::Explode(int row, int col)
+void GridComponent::Explode(int row, int col, bool allowDropsFromStones)
 {
-    Explode(GetCell(row, col));
+    Explode(GetCell(row, col), allowDropsFromStones);
 }
 
-void GridComponent::Explode(GridCell& cell)
+void GridComponent::Explode(GridCell& cell, bool allowDropsFromStones)
 {
 	auto& vec = m_GridCells[GetCellIndex(cell)].objects;
     std::vector<GameObject*> objectsToKeep{}; //Hot fix to prevent the player from being removed. Should
@@ -149,7 +149,7 @@ void GridComponent::Explode(GridCell& cell)
 
 	    if (object->GetTag() == L"Player")
 	    {
-            dynamic_cast<BombermanCharacter*>(object)->Kill();
+	        explosionHandler.Visit(dynamic_cast<BombermanCharacter*>(object), &cell);
             objectsToKeep.emplace_back(object);
             continue;
 	    }
@@ -157,7 +157,8 @@ void GridComponent::Explode(GridCell& cell)
         if (object->GetTag() == L"Rock")
         {
             //don't add when iterating over
-            cellsForPowerUpSpawn.emplace_back(cell);
+            if (allowDropsFromStones)
+                cellsForPowerUpSpawn.emplace_back(cell);
             explosionHandler.Visit(dynamic_cast<RockPrefab*>(object), &cell);
         }
 
@@ -167,6 +168,12 @@ void GridComponent::Explode(GridCell& cell)
             explosionHandler.Visit(dynamic_cast<BasePowerUp*>(object), &cell);
 			continue;
 		}
+
+        if (object->GetTag() == L"SkullBoxFalling" || object->GetTag() == L"SkullBoxLanded")
+        {
+            objectsToKeep.emplace_back(object);
+            continue;
+        }
 
         GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(object);
     }

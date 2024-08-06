@@ -12,6 +12,7 @@
 #include "Materials/Post/Vignette.h"
 #include "Materials/Shadow/DiffuseMaterial_Shadow.h"
 #include "Prefabs/GameLoopManager.h"
+#include "Prefabs/SkullBox.h"
 #include "Prefabs/UI/UIManager.h"
 
 BombermanBlastScene::BombermanBlastScene() :
@@ -54,7 +55,7 @@ void BombermanBlastScene::Initialize()
 	m_MapBottomLeft = { -43.f,0,-36.443f };
 	m_MapTopRight = { 42.75f,0,33.f };
 
-	const auto pDefaultMaterial = PxGetPhysics().createMaterial(0.9f, 0.9f, 0.5f);
+	const auto pDefaultMaterial = PxGetPhysics().createMaterial(0.9f, 0.9f, 0.01f);
 	//Level
 	InitializeLevel(pDefaultMaterial);
 
@@ -65,7 +66,7 @@ void BombermanBlastScene::Initialize()
 	m_pLevel->AddComponent(new GameObjectManager());
 	m_pLevel->GetTransform()->Scale({ 0.33f, 0.33f, 0.33f });
 
-	constexpr unsigned int numOfPlayers{ 4 };
+	constexpr unsigned int numOfPlayers{ 2 };
 	DefinePlayerInputs();
 
 	AddCharacters(pDefaultMaterial, numOfPlayers);
@@ -328,6 +329,13 @@ void BombermanBlastScene::SpawnRocks() const
 			const int index = (currentRow - 1) * m_NumOfColumns + (currentCol - 1);
 			if (m_StartingLayout[index] == 'R')
 			{
+				
+				{
+					auto skullBox = gameObjectManager->CreateGameObject<SkullBox>(m_SingleBlockScale, grid);
+					grid->PlaceObject(skullBox, currentRow, currentCol);
+					skullBox->PlacedInGrid();
+				}
+				
 				grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
 			}
 			else if (m_StartingLayout[index] == 'S')
