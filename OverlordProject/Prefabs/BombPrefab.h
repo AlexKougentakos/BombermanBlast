@@ -1,4 +1,5 @@
 #pragma once
+#include "Components/Grid.h"
 
 class BombermanCharacter;
 struct GridCell;
@@ -46,6 +47,7 @@ private:
 
 	void Explode(int explosionDistance);
 	void ExplodeRecursive(const GridCell& cell, int explosionDistance, std::vector<GridCell>& affectedCellsOut) const;
+	bool CanContinueExplosion(const GridCell& cell) const;
 	GridComponent* m_pGrid{};
 	const XMFLOAT3& m_CameraPosition{};
 

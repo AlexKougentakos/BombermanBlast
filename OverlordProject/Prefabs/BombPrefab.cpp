@@ -234,3 +234,8 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 
 	findRight(cell, explosionDistance, affectedCellsOut);
 }
+
+bool BombPrefab::CanContinueExplosion(const GridCell& cell) const
+{
+	return cell.isValid && !cell.Contains(L"UnbreakableRock") && !cell.Contains(L"SkullBoxLanded");
+}

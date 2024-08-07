@@ -73,7 +73,15 @@ void GameLoopManager::SwitchToPreRound()
 	m_SceneContext.pInput->SetEnabled(false);
 	m_GamePhase = GamePhase::PreRound;
 	m_ElapsedRoundTime = 0;
+	
 	notifyObservers("Pre-Round Start");
+
+	//Brand new players are created so we need to register to their deaths again
+	//This is done in the round start because the players are created in the pre-round
+	for (BombermanCharacter* pPlayer : m_pPlayers)
+	{
+		pPlayer->registerObserver(this);
+	}
 }
 
 void GameLoopManager::SwitchToRound()
@@ -83,6 +91,7 @@ void GameLoopManager::SwitchToRound()
 	m_GamePhase = GamePhase::Round;
 	m_SceneContext.pInput->SetEnabled(true);
 	m_ElapsedRoundTime = 0;
+	
 	notifyObservers("Round Start");
 }
 

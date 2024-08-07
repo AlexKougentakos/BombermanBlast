@@ -119,13 +119,20 @@ void GridComponent::ClearGrid()
             cell.Remove(object);
             GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(object);
         }
-    
 }
 
 
 void GridComponent::Explode(int row, int col, bool allowDropsFromStones)
 {
     Explode(GetCell(row, col), allowDropsFromStones);
+}
+
+void GridComponent::RemoveObject(GameObject* pObject)
+{
+    const GridCell containingCell = GetCell(*pObject);
+    const int containingCellIndex = GetCellIndex(containingCell);
+    m_GridCells[containingCellIndex].Remove(pObject);
+    GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(pObject);
 }
 
 void GridComponent::Explode(GridCell& cell, bool allowDropsFromStones)

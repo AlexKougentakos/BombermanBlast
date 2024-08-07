@@ -30,12 +30,19 @@ void BombermanBlastScene::Initialize()
 
 	// SceneSettings
 	m_SceneContext.settings.clearColor = XMFLOAT4{ 0,0,0,1 };
+#ifdef _DEBUG
 	m_SceneContext.settings.drawGrid = false;
 	m_SceneContext.settings.showInfoOverlay = true;
 	m_SceneContext.settings.drawPhysXDebug = true;
-	//m_SceneContext.settings.drawGrid = true;
-	m_SceneContext.settings.inDebug = false;
 	m_SceneContext.settings.enableOnGUI = true;
+#else
+	m_SceneContext.settings.drawGrid = false;
+	m_SceneContext.settings.showInfoOverlay = false;
+	m_SceneContext.settings.drawPhysXDebug = false;
+	m_SceneContext.settings.inDebug = false;
+	m_SceneContext.settings.enableOnGUI = false;
+#endif
+	
 
 	//Fixed Camera
 	m_pMainCamera = new FixedCamera();
@@ -78,8 +85,6 @@ void BombermanBlastScene::Initialize()
 	//Post Processing
 	const auto vignette = MaterialManager::Get()->CreateMaterial<Vignette>();
 	AddPostProcessingEffect(vignette);
-
-	const auto grid = m_pLevel->GetComponent<GridComponent>()->GetCell(1, 4);
 }
 
 
@@ -87,6 +92,7 @@ void BombermanBlastScene::AddCharacters(PxMaterial* const pDefaultMaterial, cons
 {
 	CharacterDesc characterDesc{ pDefaultMaterial, 3.f, 10.f };
 
+	m_pCharacters.clear();
 	for (int i{}; i < numOfPlayers; ++i)
 	{
 		//Character
@@ -144,7 +150,7 @@ void BombermanBlastScene::AddCharacters(PxMaterial* const pDefaultMaterial, cons
 		characterDesc.maxMoveSpeed = 15.f;
 		characterDesc.moveAccelerationTime = 0.01f;
 
-		const auto character = m_pLevel->GetComponent<GameObjectManager>()->CreateGameObject<BombermanCharacter>(characterDesc, m_pLevel->GetComponent<GridComponent>());
+		const auto character = m_pLevel->GetComponent<GameObjectManager>()->CreateGameObject<BombermanCharacter>(characterDesc, m_pLevel->GetComponent<GridComponent>(), i + 1);
 		m_pCharacters.emplace_back(character);
 		m_pLevel->GetComponent<GridComponent>()->PlaceObject(character, placementRow, placementColumn);
 		const auto characterTransform = character->GetTransform();
@@ -314,6 +320,13 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 		m_ElapsedDroppingTime = 0.f;
 		m_CurrentIndex = 0;
 		
+		const auto grid = m_pLevel->GetComponent<GridComponent>();
+		for (const auto& skullBox : m_pSkullBoxes)
+		{
+			if (skullBox->GetTag() == L"SkullBoxFalling")
+				grid->RemoveObject(skullBox);
+		}
+		
 		m_pUIManager->ZeroTimer();
 		m_IsGameOver = true;
 	}
@@ -392,6 +405,7 @@ void BombermanBlastScene::Update()
 					return;
 				}
 				const auto pSkullBox = new SkullBox(m_SingleBlockScale, pGrid);
+				m_pSkullBoxes.emplace_back(pSkullBox);
 				pGrid->PlaceObject(pSkullBox, currentRow + 1, currentCol + 1);
 				pSkullBox->PlacedInGrid();
 				

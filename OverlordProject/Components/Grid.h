@@ -80,6 +80,8 @@ public:
 	void Explode(GridCell& cell, bool allowDropsFromStones = true);
 	void Explode(int row, int col, bool allowDropsFromStones = true);
 
+	void RemoveObject(GameObject* pObject);
+
 	GridCell& GetCell(const GameObject& gameObject);
 	GridCell& GetCell(const XMFLOAT3& position);
 	//Assume that the bottom left one is [1,1]

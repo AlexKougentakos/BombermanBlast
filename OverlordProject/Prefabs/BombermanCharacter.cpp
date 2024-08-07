@@ -12,16 +12,13 @@
 
 #include "Materials/DiffuseMaterial.h"
 
-int BombermanCharacter::m_InstanceCounter = 0;
-
-BombermanCharacter::BombermanCharacter(const CharacterDesc& characterDesc, GridComponent* const pGrid) :
+BombermanCharacter::BombermanCharacter(const CharacterDesc& characterDesc, GridComponent* const pGrid, const int characterInstance) :
 	m_CharacterDesc{ characterDesc },
 	m_MoveAcceleration(characterDesc.maxMoveSpeed / characterDesc.moveAccelerationTime),
 	m_FallAcceleration(characterDesc.maxFallSpeed / characterDesc.fallAccelerationTime),
-	m_pGrid(pGrid)
+	m_pGrid(pGrid),
+	m_PlayerIndex(characterInstance)
 {
-	++m_InstanceCounter;
-	m_PlayerIndex = m_InstanceCounter;
 	SetTag(L"Player");
 }
 
@@ -83,19 +80,10 @@ void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 	modelComp->GetTransform()->Translate(-1.5f, 255.f, 0.f);
 }
 
-void BombermanCharacter::Reset()
-{
-	m_IsDead = false;
-	m_PlayerState = PlayerState::Idle;
-	m_PlayerStats = PlayerStats{};
-	m_RemainingBombs = m_PlayerStats.maxBombs;
-}
-
-
 void BombermanCharacter::Update(const SceneContext& sceneContext)
 {
 	if (!sceneContext.settings.inDebug)
-	{
+{
 		HandleInputAndMovement(sceneContext);
 
 		switch (m_PlayerState)

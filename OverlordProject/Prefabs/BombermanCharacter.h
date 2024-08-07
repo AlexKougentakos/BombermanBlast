@@ -78,7 +78,7 @@ enum class PlayerState : UINT
 class BombermanCharacter : public GameObject, public Subject<BombermanCharacter>
 {
 public:
-	BombermanCharacter(const CharacterDesc& characterDesc, GridComponent* const pGrid);
+	BombermanCharacter(const CharacterDesc& characterDesc, GridComponent* const pGrid, const int characterInstance);
 	~BombermanCharacter() override = default;
 
 	BombermanCharacter(const BombermanCharacter& other) = delete;
@@ -103,8 +103,6 @@ public:
 	{
 		return PlayerColour(m_PlayerIndex);
 	}
-
-	void Reset();
 
 protected:
 	void Initialize(const SceneContext&) override;
@@ -143,8 +141,7 @@ private:
 	int m_RemainingBombs{ m_PlayerStats.maxBombs };
 
 	void ChangeAnimationClip(UINT animationID);
-
-	static int m_InstanceCounter;
+	
 	int m_PlayerIndex{0};
 	int m_PlayerScore{0};
 };
