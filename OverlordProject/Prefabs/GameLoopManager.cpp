@@ -15,6 +15,12 @@ GameLoopManager::GameLoopManager(const std::vector<BombermanCharacter*>& charact
 void GameLoopManager::Initialize(const SceneContext& sceneContext)
 {
 	m_SceneContext = sceneContext;
+
+	//Initialize the map with the player index and their score
+	for (const auto player : m_pPlayers)
+	{
+		m_PlayerScores[player->GetIndex()] = 0;
+	}
 }
 
 void GameLoopManager::Update(const SceneContext& sceneContext)
@@ -104,15 +110,6 @@ void GameLoopManager::SwitchToRoundWithSkullBoxes()
 
 void GameLoopManager::SwitchToPostRound()
 {
-	if (m_pPlayers.size() > 1)
-		for (const auto& player : m_pPlayers)
-		{
-			if (player->IsDead()) return;
-
-			player->AddPoint();
-		}
-		
-		
 	m_GamePhase = GamePhase::PostRound;
 	m_ElapsedRoundTime = 0;
 	m_SceneContext.pInput->SetEnabled(false);
@@ -133,6 +130,13 @@ void GameLoopManager::OnNotify(BombermanCharacter* source, const std::string& fi
 			SwitchToPostRound();
 		}
 	}
+	else if (field == "Score Increase")
+	{
+		const int currentScore = m_PlayerScores[source->GetIndex()];
+		m_PlayerScores[source->GetIndex()] = currentScore + 1;
+		notifyObservers("Player Score Increase");
+	}
+	
 }
 
 void GameLoopManager::DrawOnGUI()

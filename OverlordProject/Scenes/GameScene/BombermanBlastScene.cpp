@@ -8,7 +8,6 @@
 #include "Components/GameObjectManager.h"
 
 #include <Windows.h>
-#include <cmath>
 
 #include "Materials/Post/Vignette.h"
 #include "Materials/Shadow/DiffuseMaterial_Shadow.h"
@@ -240,10 +239,11 @@ void BombermanBlastScene::DefinePlayerInputs() const
 }
 
 void BombermanBlastScene::InitializeLevelNecessities()
-{
-	m_pUIManager = AddChild(new UIManager(m_pCharacters));
+{	
 	m_pGameLoopManager = AddChild(new GameLoopManager(m_pCharacters));
 	m_pGameLoopManager->registerObserver(this);
+	
+	m_pUIManager = AddChild(new UIManager(m_pCharacters, m_pGameLoopManager));
 }
 
 void BombermanBlastScene::ResetLevel()
@@ -287,7 +287,7 @@ void BombermanBlastScene::ResetLevel()
 
 		m_pLevel->GetComponent<GridComponent>()->MoveObject(m_pCharacters[i], placementRow, placementColumn);
 	}
-
+	
 	SpawnRocks();
 }
 

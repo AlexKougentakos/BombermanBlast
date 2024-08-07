@@ -3,9 +3,11 @@
 #include "CharacterPointDisplay.h"
 #include "CountDown.h"
 #include "Timer.h"
+#include "Prefabs/BombermanCharacter.h"
 
-UIManager::UIManager(std::vector<BombermanCharacter*> players)
-	:m_pPlayers(players)
+UIManager::UIManager(std::vector<BombermanCharacter*> players, GameLoopManager* pGameLoopManager)
+	:m_pPlayers(players),
+    m_pGameLoopManager(pGameLoopManager)
 {
 
 }
@@ -30,11 +32,11 @@ void UIManager::Initialize(const SceneContext& sceneContext)
             adjustedIndex++;
         }
 
-        XMFLOAT2 playerPosition = XMFLOAT2(adjustedIndex * segmentWidth + segmentWidth / 2, 0.f); // Center in segment.
+        XMFLOAT2 screenPosition = XMFLOAT2(adjustedIndex * segmentWidth + segmentWidth / 2, 0.f); // Center in segment.
         if (i == 0)
-            playerPosition = XMFLOAT2(adjustedIndex * segmentWidth, 0.f); // Keep the first player at the far left edge.
-
-        AddChild(new CharacterPointDisplay(player, playerPosition));
+            screenPosition = XMFLOAT2(adjustedIndex * segmentWidth, 0.f); // Keep the first player at the far left edge.
+        
+        AddChild(new CharacterPointDisplay(player->GetIndex(), m_pGameLoopManager, screenPosition));
     }
 
     // Place the timer in the middle segment, which is the 3rd spot (index 2 in 0-based indexing).
@@ -43,7 +45,6 @@ void UIManager::Initialize(const SceneContext& sceneContext)
 
     m_pCountdown = AddChild(new CountDown(5, 
         XMFLOAT2(sceneContext.windowWidth / 2, sceneContext.windowHeight / 2)));
-
 }
 
 void UIManager::ZeroTimer() const

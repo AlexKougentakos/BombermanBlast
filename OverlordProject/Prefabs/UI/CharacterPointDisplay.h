@@ -1,12 +1,13 @@
 ﻿#pragma once
 
+class GameLoopManager;
 class BombermanCharacter;
 enum class PlayerColour;
 
-class CharacterPointDisplay : public GameObject, public Observer<BombermanCharacter>
+class CharacterPointDisplay : public GameObject, public Observer<GameLoopManager>
 {
 public:
-	CharacterPointDisplay(BombermanCharacter* bombermanCharacter, const XMFLOAT2& position);
+	CharacterPointDisplay(const int characterIndex, GameLoopManager* pGameLoopManager, const XMFLOAT2& position);
 	virtual ~CharacterPointDisplay() override = default;
 
 	CharacterPointDisplay(const CharacterPointDisplay& other) = delete;
@@ -17,21 +18,21 @@ public:
 	virtual void Initialize(const SceneContext& sceneContext) override;
 
 protected:
-	virtual void Update(const SceneContext& sceneContext) override;
-	virtual void OnNotify(BombermanCharacter* source, const std::string& field) override;
+	void Draw(const SceneContext&) override;
+	virtual void OnNotify(GameLoopManager* source, const std::string& field) override;
 private:
-
 
 	std::map<PlayerColour, std::wstring> m_PlayerColourToSpritePathMap{};
 
 	SpriteComponent* m_pSpriteComponent{};
-	BombermanCharacter* m_pBombermanCharacter{};
+	GameLoopManager* m_pGameLoopManager{};
 	PlayerColour m_PlayerColour{};
 
 	XMFLOAT2 m_SpritePosition{};
 	XMFLOAT2 m_TextPosition{};
 
 	int m_ScoreToDisplay{};
+	int m_CharacterIndex{};
 
 	SpriteFont* m_pFont{};
 };

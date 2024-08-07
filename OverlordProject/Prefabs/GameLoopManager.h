@@ -26,6 +26,8 @@ public:
 	void DrawOnGUI();
 	void StartGame() { notifyObservers("Pre-Round Start"); }
 
+	std::map<int, int> GetPlayerScores() const { return m_PlayerScores; }
+
 protected:
 	void Initialize(const SceneContext& sceneContext) override;
 	void Update(const SceneContext& sceneContext) override;
@@ -53,7 +55,9 @@ private:
 	void SwitchToRound();
 	void SwitchToRoundWithSkullBoxes();
 	void SwitchToPostRound();
-	
+
+	//Player index, score
+	std::map<int, int> m_PlayerScores{};
 
 	GamePhase m_GamePhase{ GamePhase::PreRound };
 	SceneContext m_SceneContext{};

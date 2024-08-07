@@ -104,6 +104,8 @@ public:
 		return PlayerColour(m_PlayerIndex);
 	}
 
+
+	int GetIndex() const { return m_PlayerIndex; }
 protected:
 	void Initialize(const SceneContext&) override;
 	void HandleInputAndMovement(const SceneContext& sceneContext);

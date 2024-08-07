@@ -1,12 +1,14 @@
 ﻿#include "stdafx.h"
 #include "CharacterPointDisplay.h"
 #include "Prefabs/BombermanCharacter.h"
+#include "Prefabs/GameLoopManager.h"
 
-CharacterPointDisplay::CharacterPointDisplay(BombermanCharacter* bombermanCharacter, const XMFLOAT2& position):
-	m_pBombermanCharacter(bombermanCharacter),
+CharacterPointDisplay::CharacterPointDisplay(const int characterIndex, GameLoopManager* pGameLoopManager, const XMFLOAT2& position):
+	m_CharacterIndex(characterIndex),
+	m_pGameLoopManager(pGameLoopManager),
 	m_SpritePosition(position)
 {
-	m_pBombermanCharacter->registerObserver(this);
+	pGameLoopManager->registerObserver(this);
 }
 
 void CharacterPointDisplay::Initialize(const SceneContext&)
@@ -20,7 +22,7 @@ void CharacterPointDisplay::Initialize(const SceneContext&)
 	};
 
 	//Player Head
-	m_PlayerColour = m_pBombermanCharacter->GetPlayerColour();
+	m_PlayerColour = PlayerColour(m_CharacterIndex);
 	m_pSpriteComponent = AddComponent(new SpriteComponent(m_PlayerColourToSpritePathMap[m_PlayerColour]));
 	m_pSpriteComponent->GetTransform()->Translate(m_SpritePosition.x, m_SpritePosition.y , 0.9f);
 
@@ -35,16 +37,17 @@ void CharacterPointDisplay::Initialize(const SceneContext&)
 	};
 }
 
-void CharacterPointDisplay::Update(const SceneContext&)
+void CharacterPointDisplay::Draw(const SceneContext&)
 {
 	TextRenderer::Get()->DrawText(m_pFont, StringUtil::utf8_decode(std::to_string(m_ScoreToDisplay)), m_TextPosition);
-	m_pFont = ContentManager::Load<SpriteFont>(L"./SpriteFonts/Bomberman.fnt");
+	
 }
 
-void CharacterPointDisplay::OnNotify(BombermanCharacter*, const std::string& field)
+
+void CharacterPointDisplay::OnNotify(GameLoopManager*, const std::string& field)
 {
-	if (field == "Score Increase")
+	if (field == "Player Score Increase")
 	{
-		++m_ScoreToDisplay;
+		m_ScoreToDisplay = m_pGameLoopManager->GetPlayerScores()[m_CharacterIndex];
 	}
 }

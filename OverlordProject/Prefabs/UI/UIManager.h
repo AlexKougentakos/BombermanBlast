@@ -8,7 +8,7 @@ class Timer;
 class UIManager : public GameObject
 {
 public:
-	UIManager(std::vector<BombermanCharacter*> players);
+	UIManager(std::vector<BombermanCharacter*> players, GameLoopManager* pGameLoopManager);
 	virtual ~UIManager() override = default;
 
 	UIManager(const UIManager& other) = delete;
@@ -28,6 +28,7 @@ protected:
 
 private:
 	std::vector<BombermanCharacter*> m_pPlayers{};
+	GameLoopManager* m_pGameLoopManager{ nullptr };
 	Timer* m_pTimer{ nullptr };
 	CountDown* m_pCountdown{ nullptr };
 };
