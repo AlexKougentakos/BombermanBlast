@@ -22,4 +22,3 @@ void StartButton::OnHoverExit() const
 {
 	m_pSpriteComponent->SetColor(m_NormalColour);
 }
-

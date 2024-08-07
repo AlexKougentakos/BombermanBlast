@@ -46,13 +46,13 @@ void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 	switch (GetPlayerColour())
 	{
 	case PlayerColour::RED:
-		m_pMaterial->SetDiffuseTexture(L"Textures/bomberman00.png");
+		m_pMaterial->SetDiffuseTexture(L"Textures/bomberman_red.png");
 		break;
 	case PlayerColour::YELLOW:
-		m_pMaterial->SetDiffuseTexture(L"Textures/bomberman00.png");
+		m_pMaterial->SetDiffuseTexture(L"Textures/bomberman_yellow.png");
 		break;
 	case PlayerColour::BLUE:
-		m_pMaterial->SetDiffuseTexture(L"Textures/bomberman00.png");
+		m_pMaterial->SetDiffuseTexture(L"Textures/bomberman_blue.png");
 		break;
 	case PlayerColour::WHITE:
 		m_pMaterial->SetDiffuseTexture(L"Textures/bomberman00.png");
