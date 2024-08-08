@@ -354,7 +354,6 @@ void BombermanBlastScene::SpawnRocks() const
 
 void BombermanBlastScene::OnSceneActivated()
 {
-	m_SceneContext.pInput->SetEnabled(false);
 	ShowCursor(true);
 	m_SceneContext.pInput->ForceMouseToCenter(true);
 

@@ -112,7 +112,7 @@ void BombermanCharacter::Update(const SceneContext& sceneContext)
 				{
 					notifyObservers("Player Death");
 					m_IsDead = true;
-					m_pGrid->GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(this);
+					m_pGrid->RemoveObject(this);
 				}
 				break;
 		}
@@ -151,7 +151,7 @@ void BombermanCharacter::ChangeAnimationClip(UINT animationID)
 
 void BombermanCharacter::HandleInputAndMovement(const SceneContext& sceneContext)
 {
-    if (m_PlayerState == PlayerState::Dead)
+    if (m_PlayerState == PlayerState::Dead || !m_CanMove)
         return;
 
     const float elapsedSec{ sceneContext.pGameTime->GetElapsed() };

@@ -105,6 +105,7 @@ public:
 	}
 
 	void RoundEnded();
+	void SetInputEnabled(bool enabled) { m_CanMove = enabled; }
 
 	int GetIndex() const { return m_PlayerIndex; }
 protected:
@@ -141,6 +142,7 @@ private:
 	float m_ElapsedDeathTimer{ 0.f };
 	bool m_IsDead{ false };
 	bool m_RoundEnded{ false };
+	bool m_CanMove{false};
 
 	int m_RemainingBombs{ m_PlayerStats.maxBombs };
 
