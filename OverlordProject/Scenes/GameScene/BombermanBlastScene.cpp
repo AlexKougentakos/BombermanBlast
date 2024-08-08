@@ -319,13 +319,11 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 		m_StartedDropping = false;
 		m_ElapsedDroppingTime = 0.f;
 		m_CurrentIndex = 0;
-		
-		const auto grid = m_pLevel->GetComponent<GridComponent>();
-		for (const auto& skullBox : m_pSkullBoxes)
-		{
-			if (skullBox->GetTag() == L"SkullBoxFalling")
-				grid->RemoveObject(skullBox);
-		}
+
+		GridComponent* pGrid = m_pLevel->GetComponent<GridComponent>();
+
+		pGrid->DeleteAllObjectsWithTag(L"SkullBoxFalling");
+		pGrid->DeleteAllObjectsWithTag(L"Bomb");
 		
 		m_pUIManager->ZeroTimer();
 		m_IsGameOver = true;
@@ -344,8 +342,7 @@ void BombermanBlastScene::SpawnRocks() const
 			const int index = (currentRow - 1) * m_NumOfColumns + (currentCol - 1);
 			if (m_StartingLayout[index] == 'R')
 			{				
-				//grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
-				grid->PlaceObject(gameObjectManager->CreateGameObject<SkullBox>(m_SingleBlockScale, grid), currentRow, currentCol);
+				grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
 			}
 			else if (m_StartingLayout[index] == 'S')
 			{
@@ -457,12 +454,12 @@ void BombermanBlastScene::OnGUI()
 			m_pLevel->GetComponent<GridComponent>()->GetCellOnTop(1, 1));
 		
 	}
-
+	
 	for (const auto player : m_pCharacters)
 	{
 		player->DrawImGui();
 	}
-
+	
 	m_pGameLoopManager->DrawOnGUI();
 
 	//Display the map

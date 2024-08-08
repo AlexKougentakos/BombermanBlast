@@ -44,7 +44,7 @@ void SkullBox::Update(const SceneContext& sceneContext)
 	{
 		const XMFLOAT3 currentPos = GetTransform()->GetPosition();
 		GetTransform()->Translate(currentPos.x, currentPos.y - m_FallingSpeed * sceneContext.pGameTime->GetElapsed(), currentPos.z);
-		if (currentPos.y < 8.f && !m_OnGround)
+		if (currentPos.y < 8.f && !m_OnGround && m_PlacedInSky)
 		{
 			m_pGridComponent->Explode(m_pGridComponent->GetCell(*this), false);
 		}
@@ -61,5 +61,6 @@ void SkullBox::PlacedInGrid()
 {
 	const XMFLOAT3 currentPos = GetTransform()->GetPosition();
 	GetTransform()->Translate(currentPos.x, 86.f, currentPos.z);
+	m_PlacedInSky = true;
 	
 }

@@ -34,12 +34,11 @@ protected:
 private:
 	//Characters
 	std::vector<BombermanCharacter*> m_pCharacters{};
-	const short unsigned int m_NumOfPlayers{4};
+	const short unsigned int m_NumOfPlayers{2};
 
 	std::vector<SkullBox*> m_pSkullBoxes{};
 
 	//Cameras
-	CameraComponent* m_pCamera{ nullptr };
 	FixedCamera* m_pMainCamera{ nullptr };
 	FreeCamera* m_pDebugCamera{ nullptr };
 
@@ -121,6 +120,7 @@ private:
 
 	//Debug
 	bool m_IsDebugCameraActive{ false };
+	PxVec3 m_OnGuiCameraRotation{0.f, 0.f, 0.f};
 
 	GameLoopManager* m_pGameLoopManager{ nullptr };
 	UIManager* m_pUIManager{ nullptr };

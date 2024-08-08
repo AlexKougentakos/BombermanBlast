@@ -80,6 +80,8 @@ public:
 	void Explode(GridCell& cell, bool allowDropsFromStones = true);
 	void Explode(int row, int col, bool allowDropsFromStones = true);
 
+	void DeleteAllObjectsWithTag(const std::wstring& tag);
+
 	void RemoveObject(GameObject* pObject);
 
 	GridCell& GetCell(const GameObject& gameObject);

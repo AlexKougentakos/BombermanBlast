@@ -270,6 +270,8 @@ void BombermanCharacter::HandleInputAndMovement(const SceneContext& sceneContext
 
 void BombermanCharacter::Kill()
 {
+	if (m_RoundEnded) return;
+	
 	m_PlayerState = PlayerState::Dead;
 }
 
@@ -277,6 +279,11 @@ void BombermanCharacter::AddPoint()
 {
 	++m_PlayerScore;
 	notifyObservers("Score Increase");
+}
+
+void BombermanCharacter::RoundEnded()
+{
+	m_RoundEnded = true;
 }
 
 void BombermanCharacter::DrawImGui()

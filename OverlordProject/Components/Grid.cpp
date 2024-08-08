@@ -116,15 +116,22 @@ void GridComponent::ClearGrid()
     for (auto& cell : m_GridCells)
         for (const auto& object : cell.objects)
         {
-            cell.Remove(object);
-            GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(object);
+            RemoveObject(object);
         }
 }
 
 
-void GridComponent::Explode(int row, int col, bool allowDropsFromStones)
+
+void GridComponent::DeleteAllObjectsWithTag(const std::wstring& tag)
 {
-    Explode(GetCell(row, col), allowDropsFromStones);
+    for (const auto cell : m_GridCells)
+    {
+        for (const auto object : cell.objects)
+        {
+            if (object->GetTag() == tag)
+                RemoveObject(object);
+        }
+    }
 }
 
 void GridComponent::RemoveObject(GameObject* pObject)
@@ -133,6 +140,10 @@ void GridComponent::RemoveObject(GameObject* pObject)
     const int containingCellIndex = GetCellIndex(containingCell);
     m_GridCells[containingCellIndex].Remove(pObject);
     GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(pObject);
+}
+void GridComponent::Explode(int row, int col, bool allowDropsFromStones)
+{
+    Explode(GetCell(row, col), allowDropsFromStones);
 }
 
 void GridComponent::Explode(GridCell& cell, bool allowDropsFromStones)
@@ -154,7 +165,7 @@ void GridComponent::Explode(GridCell& cell, bool allowDropsFromStones)
         }
 
 	    if (object->GetTag() == L"Player")
-	    {
+	    {	        
 	        explosionHandler.Visit(dynamic_cast<BombermanCharacter*>(object), &cell);
             objectsToKeep.emplace_back(object);
             continue;
@@ -181,7 +192,7 @@ void GridComponent::Explode(GridCell& cell, bool allowDropsFromStones)
             continue;
         }
 
-        GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(object);
+        RemoveObject(object);
     }
 
     vec = std::move(objectsToKeep);

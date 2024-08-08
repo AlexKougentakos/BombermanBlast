@@ -77,6 +77,7 @@ void GameLoopManager::SwitchToNextPhase()
 void GameLoopManager::SwitchToPreRound()
 {
 	m_SceneContext.pInput->SetEnabled(false);
+	m_SceneContext.pInput->UpdateInputStates(true);
 	m_GamePhase = GamePhase::PreRound;
 	m_ElapsedRoundTime = 0;
 	
@@ -113,12 +114,31 @@ void GameLoopManager::SwitchToPostRound()
 	m_GamePhase = GamePhase::PostRound;
 	m_ElapsedRoundTime = 0;
 	m_SceneContext.pInput->SetEnabled(false);
+	m_SceneContext.pInput->UpdateInputStates(true);
+
+	for (const auto player : m_pPlayers)
+	{
+		player->RoundEnded();
+	}
 	notifyObservers("Post-Round Start");
 }
 
 void GameLoopManager::OnNotify(BombermanCharacter* source, const std::string& field)
 {
 	if (field == "Player Death")
+	{
+		if (m_pPlayers.size() == 2)
+		{
+			//Whoever is NOT the source of the DEATH event gets a point
+			if (m_pPlayers[0] == source) 
+				m_pPlayers[1]->AddPoint();
+			else m_pPlayers[0]->AddPoint();
+
+			SwitchToPostRound();
+		}
+	}
+
+	if (field == "Player Death End")
 	{
 		if (m_pPlayers.size() == 2)
 		{

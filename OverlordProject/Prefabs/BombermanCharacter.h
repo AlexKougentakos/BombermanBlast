@@ -104,6 +104,7 @@ public:
 		return PlayerColour(m_PlayerIndex);
 	}
 
+	void RoundEnded();
 
 	int GetIndex() const { return m_PlayerIndex; }
 protected:
@@ -139,6 +140,7 @@ private:
 	const float m_DeathAnimTime{ 1.f };
 	float m_ElapsedDeathTimer{ 0.f };
 	bool m_IsDead{ false };
+	bool m_RoundEnded{ false };
 
 	int m_RemainingBombs{ m_PlayerStats.maxBombs };
 
