@@ -344,7 +344,8 @@ void BombermanBlastScene::SpawnRocks() const
 			const int index = (currentRow - 1) * m_NumOfColumns + (currentCol - 1);
 			if (m_StartingLayout[index] == 'R')
 			{				
-				grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
+				//grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
+				grid->PlaceObject(gameObjectManager->CreateGameObject<SkullBox>(m_SingleBlockScale, grid), currentRow, currentCol);
 			}
 			else if (m_StartingLayout[index] == 'S')
 			{

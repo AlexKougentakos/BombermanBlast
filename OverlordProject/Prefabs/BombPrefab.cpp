@@ -180,7 +180,7 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
 		GridCell leftCell = m_pGrid->GetCellToTheLeft(cell);
-		if (leftCell.isValid && !leftCell.Contains(L"UnbreakableRock"))
+		if (CanContinueExplosion(leftCell))
 		{
 			affectedCellsOut.emplace_back(leftCell);
 			findLeft(leftCell, distance - 1, affectedCellsOut);
@@ -194,11 +194,11 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 	{
 		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
-		GridCell leftCell = m_pGrid->GetCellOnTop(cell);
-		if (leftCell.isValid && !leftCell.Contains(L"UnbreakableRock"))
+		GridCell upperCell = m_pGrid->GetCellOnTop(cell);
+		if (CanContinueExplosion(upperCell))
 		{
-			affectedCellsOut.emplace_back(leftCell);
-			findUp(leftCell, distance - 1, affectedCellsOut);
+			affectedCellsOut.emplace_back(upperCell);
+			findUp(upperCell, distance - 1, affectedCellsOut);
 		}
 	};
 
@@ -209,11 +209,11 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 	{
 		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
-		GridCell leftCell = m_pGrid->GetCellUnder(cell);
-		if (leftCell.isValid && !leftCell.Contains(L"UnbreakableRock"))
+		GridCell lowerCell = m_pGrid->GetCellUnder(cell);
+		if (CanContinueExplosion(lowerCell))
 		{
-			affectedCellsOut.emplace_back(leftCell);
-			findDown(leftCell, distance - 1, affectedCellsOut);
+			affectedCellsOut.emplace_back(lowerCell);
+			findDown(lowerCell, distance - 1, affectedCellsOut);
 		}
 	};
 
@@ -224,11 +224,11 @@ void BombPrefab::ExplodeRecursive(const GridCell& cell, int explosionDistance, s
 	{
 		if (distance <= 0 || cell.Contains(L"Rock"))
 			return;
-		GridCell leftCell = m_pGrid->GetCellToTheRight(cell);
-		if (leftCell.isValid && !leftCell.Contains(L"UnbreakableRock"))
+		GridCell rightCell = m_pGrid->GetCellToTheRight(cell);
+		if (CanContinueExplosion(rightCell))
 		{
-			affectedCellsOut.emplace_back(leftCell);
-			findRight(leftCell, distance - 1, affectedCellsOut);
+			affectedCellsOut.emplace_back(rightCell);
+			findRight(rightCell, distance - 1, affectedCellsOut);
 		}
 	};
 
