@@ -7,6 +7,20 @@
 
 void ControlsScene::Initialize()
 {
+#ifdef _DEBUG
+	m_SceneContext.settings.drawGrid = false;
+	m_SceneContext.settings.showInfoOverlay = true;
+	m_SceneContext.settings.drawPhysXDebug = true;
+	m_SceneContext.settings.enableOnGUI = true;
+#else
+	m_SceneContext.settings.drawGrid = false;
+	m_SceneContext.settings.showInfoOverlay = false;
+	m_SceneContext.settings.drawPhysXDebug = false;
+	m_SceneContext.settings.inDebug = false;
+	m_SceneContext.settings.enableOnGUI = false;
+#endif
+	
+	
 	m_pButtonManager = new ButtonManager(&m_GameCursorPosition);
 	AddChild(m_pButtonManager);
 
