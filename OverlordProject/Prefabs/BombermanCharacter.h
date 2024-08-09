@@ -43,6 +43,7 @@ struct CharacterDesc
 	int actionId_MoveForward{ -1 };
 	int actionId_MoveBackward{ -1 };
 	int actionId_PlaceBomb{ -1 };
+	int actionId_Pause{ -1 };
 };
 
 struct PlayerStatIncrease //To be used for PowerUps

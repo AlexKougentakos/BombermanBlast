@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "StartButton.h"
 
+#include "Scenes/GameScene/BombermanBlastScene.h"
+
 StartButton::StartButton(const XMFLOAT2& pos, const std::wstring& coverImagePath):
 Button(pos, coverImagePath)
 {
@@ -10,6 +12,14 @@ Button(pos, coverImagePath)
 
 void StartButton::OnClick() const
 {
+	//Remove the scene if it already exists
+	if (GameScene* scene = SceneManager::Get()->GetGameScene(L"BombermanBlastScene"))
+	{
+		SceneManager::Get()->RemoveGameScene(scene, true);
+	}
+
+	//Create a new one
+	SceneManager::Get()->AddGameScene(new BombermanBlastScene());
 	SceneManager::Get()->SetActiveGameScene(L"BombermanBlastScene");
 }
 

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "SkullBox.h"
 
-#include "BombermanCharacter.h"
 #include "Components/Grid.h"
 #include "Materials/Shadow/DiffuseMaterial_ShadowFixed.h"
 

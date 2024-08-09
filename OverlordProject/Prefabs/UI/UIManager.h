@@ -5,7 +5,7 @@ class GameLoopManager;
 
 class Timer;
 
-class UIManager : public GameObject
+class UIManager : public GameObject, public Observer<BombermanCharacter>
 {
 public:
 	UIManager(std::vector<BombermanCharacter*> players, GameLoopManager* pGameLoopManager);
@@ -17,18 +17,28 @@ public:
 	UIManager& operator=(UIManager&& other) noexcept = delete;
 
 	virtual void Initialize(const SceneContext& sceneContext) override;
+	void OnNotify(BombermanCharacter* source, const std::string& field) override;
 
 	void StartTimer() const;
 	void ResetTimer() const;
 	void ZeroTimer() const;
 	void StartCountdown() const;
 
-protected:
-	virtual void Update(const SceneContext& sceneContext) override;
-
 private:
 	std::vector<BombermanCharacter*> m_pPlayers{};
 	GameLoopManager* m_pGameLoopManager{ nullptr };
 	Timer* m_pTimer{ nullptr };
 	CountDown* m_pCountdown{ nullptr };
+
+	GameObject* m_pPauseMenuContainer{};
+	GameObject* m_pCursor{};
+	XMFLOAT2 m_GameCursorPosition{};
+	ButtonManager* m_pButtonManager{};
+
+	XMFLOAT2 m_StartButtonPos{};
+	XMFLOAT2 m_ContinueButtonPos{};
+	
+	void AddPlayerHeads(const SceneContext& sceneContext);
+	void ShowPauseMenu();
+	void AddTimer(const SceneContext& sceneContext);
 };

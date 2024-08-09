@@ -20,18 +20,8 @@ protected:
 	void OnSceneActivated() override;
 
 private:
-	SpriteFont* m_pFont{};
-
-	GameObject* m_SelectedButton{};
-
 	GameObject* m_pCursor{};
 	XMFLOAT2 m_GameCursorPosition{};
 
 	ButtonManager* m_pButtonManager{};
-
-	enum InputIds
-	{
-		ControllerMenuPress
-	};
-
 };

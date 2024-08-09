@@ -151,8 +151,30 @@ void BombermanCharacter::ChangeAnimationClip(UINT animationID)
 
 void BombermanCharacter::HandleInputAndMovement(const SceneContext& sceneContext)
 {
-    if (m_PlayerState == PlayerState::Dead || !m_CanMove)
+
+	
+    if (m_PlayerState == PlayerState::Dead )
         return;
+
+	//Escape button pressed
+	if (sceneContext.pInput->IsActionTriggered(m_CharacterDesc.actionId_Pause) && m_PlayerIndex == 1)
+	{
+		GameTime* pGameTime = sceneContext.pGameTime;
+		if (pGameTime->IsRunning())
+		{
+			pGameTime->Stop();
+			notifyObservers("Game Pause");
+			SetInputEnabled(false);
+		}
+		else
+		{
+			pGameTime->Start();
+			notifyObservers("Game UnPause");
+			SetInputEnabled(true);
+		}
+	}
+
+	if (!m_CanMove) return;
 
     const float elapsedSec{ sceneContext.pGameTime->GetElapsed() };
 
@@ -169,6 +191,7 @@ void BombermanCharacter::HandleInputAndMovement(const SceneContext& sceneContext
 
     if (sceneContext.pInput->IsActionTriggered(m_CharacterDesc.actionId_PlaceBomb))
         SpawnBomb();
+	
 
     if (InputManager::IsGamepadConnected(GamepadIndex(m_PlayerIndex - 1))) //-1 because they start at 0
     {

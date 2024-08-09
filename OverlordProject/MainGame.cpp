@@ -147,7 +147,7 @@ void MainGame::Initialize()
 	SceneManager::Get()->AddGameScene(new MainMenuScene());
 	SceneManager::Get()->AddGameScene(new ControlsScene());
 
-	SceneManager::Get()->AddGameScene(new BombermanBlastScene());
+	//SceneManager::Get()->AddGameScene(new BombermanBlastScene());
 
 #endif
 

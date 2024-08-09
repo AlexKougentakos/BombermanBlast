@@ -1,5 +1,4 @@
 #pragma once
-#include "Prefabs/CubePrefab.h"
 class SkullBox;
 class MenuButton;
 class QuitButton;
@@ -50,6 +49,7 @@ private:
 		CharacterMoveForward_P1,
 		CharacterMoveBackward_P1,
 		CharacterPlaceBomb_P1,
+		PauseGame,
 
 		CharacterMoveLeft_P2,
 		CharacterMoveRight_P2,

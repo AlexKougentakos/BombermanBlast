@@ -15,6 +15,7 @@ public:
 	virtual void Initialize(const SceneContext& sceneContext) override;
 
 	void StartCountDown() { m_CountdownActive = true; m_ElapsedTime = 0; }
+	void SetActive(const bool active) { m_CountdownActive = active; }
 
 protected:
 	virtual void Update(const SceneContext& sceneContext) override;
@@ -23,6 +24,7 @@ private:
 	const float m_TimeInSeconds{ 0 };
 
 	bool m_CountdownActive{ false };
+	bool m_CountdownFinished{ false };
 
 	XMFLOAT2 m_Position{};
 	SpriteFont* m_pFont{};

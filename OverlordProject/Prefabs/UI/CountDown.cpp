@@ -15,7 +15,7 @@ void CountDown::Initialize(const SceneContext&)
 
 void CountDown::Update(const SceneContext& sceneContext)
 {
-	if (!m_CountdownActive) return;
+	if (!m_CountdownActive || m_CountdownFinished) return;
 
 	TextRenderer::Get()->DrawText(m_pFont, StringUtil::utf8_decode(std::to_string(
 		static_cast<int>(m_TimeInSeconds - static_cast<int>(m_ElapsedTime)))), m_Position);
@@ -24,6 +24,6 @@ void CountDown::Update(const SceneContext& sceneContext)
 
 	if (m_ElapsedTime >= m_TimeInSeconds)
 	{
-		m_CountdownActive = false;
+		m_CountdownFinished = true;
 	}
 }

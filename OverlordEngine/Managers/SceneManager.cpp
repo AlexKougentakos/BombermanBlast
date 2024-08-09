@@ -2,6 +2,8 @@
 #include "SceneManager.h"
 #include <algorithm>
 
+#include "../../OverlordProject/Scenes/GameScene/BombermanBlastScene.h"
+
 
 void SceneManager::Initialize()
 {
@@ -51,6 +53,7 @@ void SceneManager::RemoveGameScene(GameScene* pScene, bool deleteObject)
 	}
 }
 
+
 void SceneManager::NextScene()
 {
 	for (unsigned int i = 0; i < m_pScenes.size(); ++i)
@@ -79,6 +82,7 @@ void SceneManager::PreviousScene()
 	}
 }
 
+
 void SceneManager::SetActiveGameScene(const std::wstring& sceneName)
 {
 	const auto it = std::ranges::find_if(m_pScenes, [sceneName](const GameScene* pScene)
@@ -90,6 +94,21 @@ void SceneManager::SetActiveGameScene(const std::wstring& sceneName)
 	{
 		m_NewActiveScene = *it;
 	}
+}
+
+GameScene* SceneManager::GetGameScene(const std::wstring& sceneName) const
+{
+	const auto it = std::ranges::find_if(m_pScenes, [sceneName](const GameScene* pScene)
+{
+	return wcscmp(pScene->m_SceneName.c_str(), sceneName.c_str()) == 0;
+});
+
+	if (it != m_pScenes.end())
+	{
+		return *it;
+	}
+
+	return nullptr;
 }
 
 void SceneManager::WindowStateChanged(int state, bool active) const

@@ -42,7 +42,6 @@ void BombermanBlastScene::Initialize()
 	m_SceneContext.settings.enableOnGUI = false;
 #endif
 	
-
 	//Fixed Camera
 	m_pMainCamera = new FixedCamera();
 	m_pMainCamera->GetTransform()->Translate(0, 85.f, -40.f);
@@ -108,6 +107,7 @@ void BombermanBlastScene::AddCharacters(PxMaterial* const pDefaultMaterial, cons
 			characterDesc.actionId_MoveLeft = CharacterMoveLeft_P1;
 			characterDesc.actionId_MoveRight = CharacterMoveRight_P1;
 			characterDesc.actionId_PlaceBomb = CharacterPlaceBomb_P1;
+			characterDesc.actionId_Pause = PauseGame;
 			break;
 		case 2:
 			//Bottom right
@@ -201,6 +201,8 @@ void BombermanBlastScene::DefinePlayerInputs() const
 	inputAction = InputAction(CharacterMoveBackward_P1, InputState::down, 'K');
 	m_SceneContext.pInput->AddInputAction(inputAction);
 	inputAction = InputAction(CharacterPlaceBomb_P1, InputState::pressed, 'H', -1, XINPUT_GAMEPAD_A, GamepadIndex::playerOne);
+	m_SceneContext.pInput->AddInputAction(inputAction);
+	inputAction = InputAction(PauseGame, InputState::pressed, VK_ESCAPE, -1, XINPUT_GAMEPAD_START, GamepadIndex::playerOne);
 	m_SceneContext.pInput->AddInputAction(inputAction);
 	//P2
 	inputAction = InputAction(CharacterMoveLeft_P2, InputState::down, 'A');
@@ -377,7 +379,7 @@ void BombermanBlastScene::CalculateNeededBlockSize()
 void BombermanBlastScene::Update()
 {
 	//m_SceneContext.pInput->ForceMouseToCenter(true);
-
+	
 	for (const auto player : m_pCharacters)
 	{
 

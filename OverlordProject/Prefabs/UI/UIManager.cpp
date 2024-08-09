@@ -3,16 +3,67 @@
 #include "CharacterPointDisplay.h"
 #include "CountDown.h"
 #include "Timer.h"
+#include "Menu/ButtonManager.h"
+#include "Menu/Buttons/BackButton.h"
+#include "Menu/Buttons/ContinueButton.h"
 #include "Prefabs/BombermanCharacter.h"
 
 UIManager::UIManager(std::vector<BombermanCharacter*> players, GameLoopManager* pGameLoopManager)
 	:m_pPlayers(players),
     m_pGameLoopManager(pGameLoopManager)
 {
-
+    for (const auto player : m_pPlayers)
+    {
+        player->registerObserver(this);
+    }
 }
 
 void UIManager::Initialize(const SceneContext& sceneContext)
+{
+    AddPlayerHeads(sceneContext);
+    AddTimer(sceneContext);
+    
+
+    m_StartButtonPos = { sceneContext.windowWidth / 2.f, sceneContext.windowHeight / 1.5f - 125 };
+    m_ContinueButtonPos = { sceneContext.windowWidth / 2.f, sceneContext.windowHeight / 1.5f };
+}
+
+void UIManager::OnNotify(BombermanCharacter*, const std::string& field)
+{
+    if (field == "Game Pause")
+    {
+        ShowPauseMenu();
+    }
+    else if (field == "Game UnPause")
+    {
+        RemoveChild(m_pPauseMenuContainer, true);
+        m_pCountdown->SetActive(true);
+    }
+}
+
+void UIManager::ShowPauseMenu()
+{
+    m_pPauseMenuContainer = new GameObject();
+    AddChild(m_pPauseMenuContainer);
+    
+    m_pButtonManager = new ButtonManager(&m_GameCursorPosition);
+    m_pPauseMenuContainer->AddChild(m_pButtonManager);
+        
+    // m_pCursor = new GameObject();
+    // m_pPauseMenuContainer->AddChild(m_pCursor);
+    // m_pCursor->AddComponent(new SpriteComponent(L"Textures/UI/Cursor.png"));
+    // m_pCursor->GetTransform()->Scale(0.25f);
+
+    const auto continueButton = new ContinueButton(m_ContinueButtonPos, L"Textures/UI/PlayButton.png");
+    const auto startButton = new BackButton(m_StartButtonPos, L"Textures/UI/MainMenuButton.png");
+
+    m_pButtonManager->AddButton(startButton);
+    m_pButtonManager->AddButton(continueButton);
+
+    m_pCountdown->SetActive(false);
+}
+
+void UIManager::AddPlayerHeads(const SceneContext& sceneContext)
 {
     for (size_t i = 0; i < m_pPlayers.size(); ++i) 
     {
@@ -38,13 +89,16 @@ void UIManager::Initialize(const SceneContext& sceneContext)
         
         AddChild(new CharacterPointDisplay(player->GetIndex(), m_pGameLoopManager, screenPosition));
     }
+}
 
+void UIManager::AddTimer(const SceneContext& sceneContext)
+{
     // Place the timer in the middle segment, which is the 3rd spot (index 2 in 0-based indexing).
     const XMFLOAT2 timerPosition = XMFLOAT2(2 * sceneContext.windowWidth / 5.0f + sceneContext.windowWidth / 10.0f, 0.f); // Centered in the 3rd segment.
     m_pTimer = AddChild(new Timer(120, timerPosition));
 
     m_pCountdown = AddChild(new CountDown(5, 
-        XMFLOAT2(sceneContext.windowWidth / 2, sceneContext.windowHeight / 2)));
+                                          XMFLOAT2(sceneContext.windowWidth / 2, sceneContext.windowHeight / 2)));
 }
 
 void UIManager::ZeroTimer() const
@@ -60,11 +114,6 @@ void UIManager::ResetTimer() const
 void UIManager::StartTimer() const
 {
     m_pTimer->StartTimer();
-}
-
-void UIManager::Update(const SceneContext&)
-{
-
 }
 
 void UIManager::StartCountdown() const

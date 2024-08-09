@@ -37,6 +37,8 @@ void GameTime::Reset()
 
 void GameTime::Update()
 {
+	std::cout << m_IsStopped << std::endl;
+	
 	if(m_IsStopped)
 	{
 		m_FPS = 0;
