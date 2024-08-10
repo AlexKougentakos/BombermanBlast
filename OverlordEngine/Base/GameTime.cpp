@@ -35,18 +35,8 @@ void GameTime::Reset()
 	m_IsStopped = false;
 }
 
-void GameTime::Update()
+void GameTime::CalculateElapsedTime()
 {
-	std::cout << m_IsStopped << std::endl;
-	
-	if(m_IsStopped)
-	{
-		m_FPS = 0;
-		m_ElapsedGameTime = 0.0f;
-		m_TotalGameTime = static_cast<float>((m_StopTime - m_PausedTime - m_BaseTime) * m_BaseTime);
-		return;
-	}
-
 	__int64 currTime{};
 	QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&currTime));
 	m_CurrTime = currTime;
@@ -61,6 +51,21 @@ void GameTime::Update()
 	{
 		m_ElapsedGameTime = m_ElapsedUpperBound;
 	}
+}
+
+void GameTime::Update()
+{	
+	CalculateElapsedTime();
+	
+	if(m_IsStopped)
+	{
+		m_FPS = 0;
+		m_ElapsedUnpaused = m_ElapsedGameTime;
+		m_ElapsedGameTime = 0.0f;
+		m_TotalGameTime = static_cast<float>((m_StopTime - m_PausedTime - m_BaseTime) * m_BaseTime);
+		return;
+	}
+
 
 	m_TotalGameTime = static_cast<float>(((m_CurrTime - m_PausedTime) - m_BaseTime) * m_SecondsPerCount);
 

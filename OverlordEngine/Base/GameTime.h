@@ -11,9 +11,11 @@ public:
 	~GameTime() = default;
 
 	void Reset();
+	void CalculateElapsedTime();
 	void Update();
 
 	float GetElapsed() const { return m_ElapsedGameTime; }
+	float GetElapsedUnpaused() const { return m_ElapsedUnpaused; }
 	float GetTotal() const { return m_TotalGameTime; }
 	int GetFPS() const { return m_FPS; }
 	void ForceElapsedUpperbound(bool force, float upperBound = 0.03f){m_ForceElapsedUpperBound = force; m_ElapsedUpperBound = upperBound;}
@@ -26,6 +28,7 @@ private:
 
 	float m_TotalGameTime;
 	float m_ElapsedGameTime;
+	float m_ElapsedUnpaused;
 	float m_SecondsPerCount;
 
 	bool m_ForceElapsedUpperBound;

@@ -76,26 +76,6 @@ void MainMenuScene::Update()
 
 void MainMenuScene::UpdateCustomCursor()
 {
-	//const XMFLOAT2 mousePos = XMFLOAT2{ static_cast<float>(InputManager::GetMousePosition().x),
-	//	static_cast<float>(InputManager::GetMousePosition().y) };
-
-	//const float halfWidth = m_pCursor->GetComponent<SpriteComponent>()->GetDimensions().x / 2.f;
-	//const float halfHeight = m_pCursor->GetComponent<SpriteComponent>()->GetDimensions().y / 2.f;
-
-	//if (InputManager::GetMouseMovementNormalized().x != 0 || InputManager::GetMouseMovementNormalized().y != 0)
-	//	m_GameCursorPosition = mousePos;
-	//	
-
-	//constexpr float controllerMouseMoveSpeed{500.f};
-
-	//m_GameCursorPosition.x += InputManager::GetThumbstickPosition().x * controllerMouseMoveSpeed * m_SceneContext.pGameTime->GetElapsed();
-	//m_GameCursorPosition.y -= InputManager::GetThumbstickPosition().y * controllerMouseMoveSpeed * m_SceneContext.pGameTime->GetElapsed();
-
-	//m_GameCursorPosition.x = std::clamp(m_GameCursorPosition.x, halfWidth, m_SceneContext.windowWidth - halfWidth);
-	//m_GameCursorPosition.y = std::clamp(m_GameCursorPosition.y, halfHeight, m_SceneContext.windowHeight - halfHeight);
-
-	//m_pCursor->GetTransform()->Translate(m_GameCursorPosition.x - halfWidth, m_GameCursorPosition.y - halfHeight , 0.f);
-
 	const XMFLOAT2 mousePos = XMFLOAT2{ static_cast<float>(InputManager::GetMousePosition().x),
 									   static_cast<float>(InputManager::GetMousePosition().y) };
 

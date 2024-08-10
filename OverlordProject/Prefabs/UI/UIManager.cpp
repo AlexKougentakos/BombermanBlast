@@ -6,6 +6,7 @@
 #include "Menu/ButtonManager.h"
 #include "Menu/Buttons/BackButton.h"
 #include "Menu/Buttons/ContinueButton.h"
+#include "Menu/Buttons/QuitButton.h"
 #include "Prefabs/BombermanCharacter.h"
 
 UIManager::UIManager(std::vector<BombermanCharacter*> players, GameLoopManager* pGameLoopManager)
@@ -33,12 +34,41 @@ void UIManager::OnNotify(BombermanCharacter*, const std::string& field)
     if (field == "Game Pause")
     {
         ShowPauseMenu();
+        m_ShowingPauseMenu = true;
     }
     else if (field == "Game UnPause")
     {
+        m_ShowingPauseMenu = false;
         RemoveChild(m_pPauseMenuContainer, true);
         m_pCountdown->SetActive(true);
     }
+}
+
+void UIManager::Update(const SceneContext& sceneContext)
+{
+    if (!m_ShowingPauseMenu) return;
+    
+    const XMFLOAT2 mousePos = XMFLOAT2{ static_cast<float>(InputManager::GetMousePosition().x),
+                                   static_cast<float>(InputManager::GetMousePosition().y) };
+
+    if (InputManager::GetMouseMovementNormalized().x != 0 || InputManager::GetMouseMovementNormalized().y != 0)
+        m_GameCursorPosition = mousePos;
+
+    constexpr float controllerMouseMoveSpeed{ 500.f };
+
+    std::cout << InputManager::GetThumbstickPosition().x << " " << InputManager::GetThumbstickPosition().y << std::endl;
+    m_GameCursorPosition.x += InputManager::GetThumbstickPosition().x * controllerMouseMoveSpeed * sceneContext.pGameTime->GetElapsedUnpaused();
+    m_GameCursorPosition.y -= InputManager::GetThumbstickPosition().y * controllerMouseMoveSpeed * sceneContext.pGameTime->GetElapsedUnpaused();
+
+    // Clamp values to the screen boundaries
+    const float width = m_pCursor->GetComponent<SpriteComponent>()->GetDimensions().x;
+    const float height = m_pCursor->GetComponent<SpriteComponent>()->GetDimensions().y;
+
+    m_GameCursorPosition.x = std::clamp(m_GameCursorPosition.x, 0.f, sceneContext.windowWidth - width);
+    m_GameCursorPosition.y = std::clamp(m_GameCursorPosition.y, 0.f, sceneContext.windowHeight - height);
+
+    constexpr float smallOffset{8.f}; //To match up the cursor tip with the actual mouse position
+    m_pCursor->GetTransform()->Translate(m_GameCursorPosition.x - smallOffset, m_GameCursorPosition.y - smallOffset, 0.f);
 }
 
 void UIManager::ShowPauseMenu()
@@ -49,13 +79,15 @@ void UIManager::ShowPauseMenu()
     m_pButtonManager = new ButtonManager(&m_GameCursorPosition);
     m_pPauseMenuContainer->AddChild(m_pButtonManager);
         
-    // m_pCursor = new GameObject();
-    // m_pPauseMenuContainer->AddChild(m_pCursor);
-    // m_pCursor->AddComponent(new SpriteComponent(L"Textures/UI/Cursor.png"));
-    // m_pCursor->GetTransform()->Scale(0.25f);
+    m_pCursor = new GameObject();
+    m_pPauseMenuContainer->AddChild(m_pCursor);
+    m_pCursor->AddComponent(new SpriteComponent(L"Textures/UI/Cursor.png"));
+    m_pCursor->GetTransform()->Scale(0.25f);
+    const XMFLOAT2 mousePos = XMFLOAT2{ static_cast<float>(InputManager::GetMousePosition().x),
+                                   static_cast<float>(InputManager::GetMousePosition().y) };
 
-    const auto continueButton = new ContinueButton(m_ContinueButtonPos, L"Textures/UI/PlayButton.png");
-    const auto startButton = new BackButton(m_StartButtonPos, L"Textures/UI/MainMenuButton.png");
+    const auto continueButton = new QuitButton(m_ContinueButtonPos, L"Textures/UI/PlayButton.png");
+    const auto startButton = new BackButton(m_StartButtonPos, L"Textures/UI/QuitButton.png");
 
     m_pButtonManager->AddButton(startButton);
     m_pButtonManager->AddButton(continueButton);

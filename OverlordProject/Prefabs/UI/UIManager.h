@@ -18,6 +18,7 @@ public:
 
 	virtual void Initialize(const SceneContext& sceneContext) override;
 	void OnNotify(BombermanCharacter* source, const std::string& field) override;
+	void Update(const SceneContext&) override;
 
 	void StartTimer() const;
 	void ResetTimer() const;
@@ -31,6 +32,8 @@ private:
 	GameLoopManager* m_pGameLoopManager{ nullptr };
 	Timer* m_pTimer{ nullptr };
 	CountDown* m_pCountdown{ nullptr };
+
+	bool m_ShowingPauseMenu{ false };
 
 	GameObject* m_pPauseMenuContainer{};
 	GameObject* m_pCursor{};
