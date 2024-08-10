@@ -40,8 +40,8 @@ private:
 	XMFLOAT2 m_GameCursorPosition{};
 	ButtonManager* m_pButtonManager{};
 
-	XMFLOAT2 m_StartButtonPos{};
-	XMFLOAT2 m_ContinueButtonPos{};
+	XMFLOAT2 m_MenuButtonPos{};
+	XMFLOAT2 m_QuitButtonPos{};
 	
 	void AddPlayerHeads(const SceneContext& sceneContext);
 	void ShowPauseMenu();

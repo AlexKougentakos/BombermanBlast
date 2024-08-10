@@ -25,8 +25,8 @@ void UIManager::Initialize(const SceneContext& sceneContext)
     AddTimer(sceneContext);
     
 
-    m_StartButtonPos = { sceneContext.windowWidth / 2.f, sceneContext.windowHeight / 1.5f - 125 };
-    m_ContinueButtonPos = { sceneContext.windowWidth / 2.f, sceneContext.windowHeight / 1.5f };
+    m_MenuButtonPos = { sceneContext.windowWidth / 2.f, sceneContext.windowHeight / 1.5f - 200 };
+    m_QuitButtonPos = { sceneContext.windowWidth / 2.f, sceneContext.windowHeight / 1.5f - 50};
 }
 
 void UIManager::OnNotify(BombermanCharacter*, const std::string& field)
@@ -82,14 +82,12 @@ void UIManager::ShowPauseMenu()
     m_pPauseMenuContainer->AddChild(m_pCursor);
     m_pCursor->AddComponent(new SpriteComponent(L"Textures/UI/Cursor.png"));
     m_pCursor->GetTransform()->Scale(0.25f);
-    const XMFLOAT2 mousePos = XMFLOAT2{ static_cast<float>(InputManager::GetMousePosition().x),
-                                   static_cast<float>(InputManager::GetMousePosition().y) };
 
-    const auto continueButton = new QuitButton(m_ContinueButtonPos, L"Textures/UI/PlayButton.png");
-    const auto startButton = new BackButton(m_StartButtonPos, L"Textures/UI/QuitButton.png");
+    const auto quitButton = new QuitButton(m_QuitButtonPos, L"Textures/UI/QuitButton.png");
+    const auto mainMenuButton = new BackButton(m_MenuButtonPos, L"Textures/UI/MainMenuButton.png");
 
-    m_pButtonManager->AddButton(startButton);
-    m_pButtonManager->AddButton(continueButton);
+    m_pButtonManager->AddButton(mainMenuButton);
+    m_pButtonManager->AddButton(quitButton);
 
     m_pCountdown->SetActive(false);
 }
