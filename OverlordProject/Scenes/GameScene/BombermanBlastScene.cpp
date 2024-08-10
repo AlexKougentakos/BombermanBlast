@@ -301,6 +301,7 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 		{
 			ResetLevel();
 			m_pUIManager->ResetTimer();
+			m_pUIManager->UpdatePlayers(m_pCharacters);
 		}
 
 		m_pUIManager->StartCountdown();

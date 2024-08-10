@@ -27,3 +27,10 @@ void CountDown::Update(const SceneContext& sceneContext)
 		m_CountdownFinished = true;
 	}
 }
+
+void CountDown::StartCountDown()
+{
+	m_CountdownActive = true;
+	m_CountdownFinished = false;
+	m_ElapsedTime = 0;
+}

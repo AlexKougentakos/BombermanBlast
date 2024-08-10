@@ -34,13 +34,12 @@ protected:
 
 	void OnNotify(BombermanCharacter* source, const std::string& field) override;
 
-
 private:
 	/*
 	 * TIMERS
 	 */
 	const float m_PreRoundTime{ 5.f }; //Seconds
-	const float m_RoundTime{ 120.f }; //Seconds
+	const float m_RoundTime{ 1.f }; //Seconds
 	const float m_BoxDropDuration{ 43.f }; //Seconds
 	const float m_PostRoundTime{ 5.f }; //Seconds
 

@@ -24,6 +24,8 @@ public:
 	void ZeroTimer() const;
 	void StartCountdown() const;
 
+	void UpdatePlayers(const std::vector<BombermanCharacter*>& players);
+
 private:
 	std::vector<BombermanCharacter*> m_pPlayers{};
 	GameLoopManager* m_pGameLoopManager{ nullptr };

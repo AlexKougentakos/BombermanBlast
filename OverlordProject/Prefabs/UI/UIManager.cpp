@@ -120,3 +120,12 @@ void UIManager::StartCountdown() const
 {
     m_pCountdown->StartCountDown();
 }
+
+void UIManager::UpdatePlayers(const std::vector<BombermanCharacter*>& players)
+{
+    m_pPlayers = players;
+    for (const auto player : m_pPlayers)
+    {
+        player->registerObserver(this);
+    }
+}

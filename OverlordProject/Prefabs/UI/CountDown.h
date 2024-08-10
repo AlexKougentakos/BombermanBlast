@@ -14,7 +14,7 @@ public:
 
 	virtual void Initialize(const SceneContext& sceneContext) override;
 
-	void StartCountDown() { m_CountdownActive = true; m_ElapsedTime = 0; }
+	void StartCountDown();
 	void SetActive(const bool active) { m_CountdownActive = active; }
 
 protected:
