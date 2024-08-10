@@ -55,8 +55,7 @@ void UIManager::Update(const SceneContext& sceneContext)
         m_GameCursorPosition = mousePos;
 
     constexpr float controllerMouseMoveSpeed{ 500.f };
-
-    std::cout << InputManager::GetThumbstickPosition().x << " " << InputManager::GetThumbstickPosition().y << std::endl;
+    
     m_GameCursorPosition.x += InputManager::GetThumbstickPosition().x * controllerMouseMoveSpeed * sceneContext.pGameTime->GetElapsedUnpaused();
     m_GameCursorPosition.y -= InputManager::GetThumbstickPosition().y * controllerMouseMoveSpeed * sceneContext.pGameTime->GetElapsedUnpaused();
 

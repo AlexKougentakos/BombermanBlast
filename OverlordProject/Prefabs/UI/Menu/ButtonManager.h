@@ -28,5 +28,5 @@ private:
 	const XMFLOAT2* m_pCustomCursorPos;
 
 	SceneContext m_SceneContext{};
-	InputAction m_ControllerClick{};
+	int m_ControllerClickId{};
 };

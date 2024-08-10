@@ -39,6 +39,7 @@ public:
 	//Instance Interface
 	void Update();
 	bool AddInputAction(InputAction action);
+	int NumberOfActions() const { return static_cast<int>(m_InputActions.size()); }
 	bool IsActionTriggered(int actionID) const;
 
 private:

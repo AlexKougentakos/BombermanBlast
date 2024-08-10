@@ -18,7 +18,8 @@ void ButtonManager::Initialize(const SceneContext& sceneContext)
 {
     m_SceneContext = sceneContext;
 
-    m_ControllerClick = sceneContext.pInput->AddInputAction(InputAction(1, InputState::pressed, VK_SPACE, -1, XINPUT_GAMEPAD_A));
+	m_ControllerClickId = sceneContext.pInput->NumberOfActions() + 1;
+ 	sceneContext.pInput->AddInputAction(InputAction(sceneContext.pInput->NumberOfActions() + 1, InputState::pressed, VK_SPACE, -1, XINPUT_GAMEPAD_A));
 }
 
 void ButtonManager::Update(const SceneContext&)
@@ -71,7 +72,7 @@ void ButtonManager::UpdateButtons(const XMFLOAT2& mousePos, const XMFLOAT2& cust
 
             if (!InputManager::IsMouseButton(InputState::pressed, 2) &&
                 !InputManager::IsMouseButton(InputState::pressed, 1) &&
-                !m_SceneContext.pInput->IsActionTriggered(m_ControllerClick.actionID)) return;
+                !m_SceneContext.pInput->IsActionTriggered(m_ControllerClickId)) return;
 
             
 
