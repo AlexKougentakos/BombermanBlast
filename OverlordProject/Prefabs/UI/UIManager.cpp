@@ -2,6 +2,7 @@
 #include "UIManager.h"
 #include "CharacterPointDisplay.h"
 #include "CountDown.h"
+#include "RoundWinners.h"
 #include "Timer.h"
 #include "Menu/ButtonManager.h"
 #include "Menu/Buttons/BackButton.h"
@@ -155,4 +156,23 @@ void UIManager::UpdatePlayers(const std::vector<BombermanCharacter*>& players)
     {
         player->registerObserver(this);
     }
+}
+
+void UIManager::ShowRoundWinners()
+{
+    std::vector<int> winningPlayerIndices{};
+    for (BombermanCharacter* const player : m_pPlayers)
+    {
+        if (player && !player->IsDead())
+        {
+            winningPlayerIndices.emplace_back(player->GetIndex());
+        }
+    }
+
+    m_pRoundWinners = AddChild(new RoundWinners(winningPlayerIndices));
+}
+
+void UIManager::HideRoundWinners()
+{
+    RemoveChild(m_pRoundWinners, true);
 }

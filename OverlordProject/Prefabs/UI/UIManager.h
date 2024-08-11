@@ -1,4 +1,5 @@
 ﻿#pragma once
+class RoundWinners;
 class CountDown;
 class BombermanCharacter;
 class GameLoopManager;
@@ -26,12 +27,15 @@ public:
 	void StartCountdown() const;
 
 	void UpdatePlayers(const std::vector<BombermanCharacter*>& players);
+	void ShowRoundWinners();
+	void HideRoundWinners();
 
 private:
 	std::vector<BombermanCharacter*> m_pPlayers{};
 	GameLoopManager* m_pGameLoopManager{ nullptr };
 	Timer* m_pTimer{ nullptr };
 	CountDown* m_pCountdown{ nullptr };
+	RoundWinners* m_pRoundWinners{ nullptr };
 
 	bool m_ShowingPauseMenu{ false };
 

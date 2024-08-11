@@ -117,10 +117,12 @@ void GameLoopManager::SwitchToPostRound()
 	m_GamePhase = GamePhase::PostRound;
 	m_ElapsedRoundTime = 0;
 
+	std::vector<int> winningPlayerIndices{};
 	for (const auto player : m_pPlayers)
 	{
 		player->RoundEnded();
 		player->SetInputEnabled(false);
+		winningPlayerIndices.emplace_back(player->GetIndex());
 	}
 	notifyObservers("Post-Round Start");
 }

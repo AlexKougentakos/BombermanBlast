@@ -43,7 +43,6 @@ void CharacterPointDisplay::Draw(const SceneContext&)
 	
 }
 
-
 void CharacterPointDisplay::OnNotify(GameLoopManager*, const std::string& field)
 {
 	if (field == "Player Score Increase")

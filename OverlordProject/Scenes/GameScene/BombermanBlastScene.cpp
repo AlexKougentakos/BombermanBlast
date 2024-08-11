@@ -301,6 +301,7 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 		{
 			ResetLevel();
 			m_pUIManager->ResetTimer();
+			m_pUIManager->HideRoundWinners();
 			m_pUIManager->UpdatePlayers(m_pCharacters);
 		}
 
@@ -325,6 +326,7 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 		
 		m_pGrid->DeleteAllObjectsWithTag(L"SkullBoxFalling");
 		m_pGrid->DeleteAllObjectsWithTag(L"Bomb");
+		m_pUIManager->ShowRoundWinners();
 		
 		m_pUIManager->ZeroTimer();
 		m_IsGameOver = true;
