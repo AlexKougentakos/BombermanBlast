@@ -67,8 +67,8 @@ void BombermanBlastScene::Initialize()
 
 	CalculateNeededBlockSize();
 
-	m_pLevel->AddComponent(new GridComponent(m_Map, m_MapBottomLeft, m_MapTopRight, m_SingleBlockSize, m_SingleBlockScale));
-	m_pLevel->AddComponent(new PowerUpManager(m_pLevel->GetComponent<GridComponent>()));
+	m_pGrid = m_pLevel->AddComponent(new GridComponent(m_Map, m_MapBottomLeft, m_MapTopRight, m_SingleBlockSize, m_SingleBlockScale));
+	m_pLevel->AddComponent(new PowerUpManager(m_pGrid));
 	m_pLevel->AddComponent(new GameObjectManager());
 	m_pLevel->GetTransform()->Scale({ 0.33f, 0.33f, 0.33f });
 	
@@ -149,9 +149,9 @@ void BombermanBlastScene::AddCharacters(PxMaterial* const pDefaultMaterial, cons
 		characterDesc.maxMoveSpeed = 15.f;
 		characterDesc.moveAccelerationTime = 0.01f;
 
-		const auto character = m_pLevel->GetComponent<GameObjectManager>()->CreateGameObject<BombermanCharacter>(characterDesc, m_pLevel->GetComponent<GridComponent>(), i + 1);
+		const auto character = m_pLevel->GetComponent<GameObjectManager>()->CreateGameObject<BombermanCharacter>(characterDesc, m_pGrid, i + 1);
 		m_pCharacters.emplace_back(character);
-		m_pLevel->GetComponent<GridComponent>()->PlaceObject(character, placementRow, placementColumn);
+		m_pGrid->PlaceObject(character, placementRow, placementColumn);
 		const auto characterTransform = character->GetTransform();
 
 		characterTransform->Scale(0.33f);
@@ -250,7 +250,7 @@ void BombermanBlastScene::InitializeLevelNecessities()
 
 void BombermanBlastScene::ResetLevel()
 {
-	m_pLevel->GetComponent<GridComponent>()->ClearGrid();
+	m_pGrid->ClearGrid();
 	m_pLevel->GetComponent<PowerUpManager>()->RemovePowerUps();
 	
 	const auto pDefaultMaterial = PxGetPhysics().createMaterial(0.9f, 0.9f, 0.01f);
@@ -287,7 +287,7 @@ void BombermanBlastScene::ResetLevel()
 			break;
 		}
 
-		m_pLevel->GetComponent<GridComponent>()->MoveObject(m_pCharacters[i], placementRow, placementColumn);
+		m_pGrid->MoveObject(m_pCharacters[i], placementRow, placementColumn);
 	}
 	
 	SpawnRocks();
@@ -322,11 +322,9 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 		m_StartedDropping = false;
 		m_ElapsedDroppingTime = 0.f;
 		m_CurrentIndex = 0;
-
-		GridComponent* pGrid = m_pLevel->GetComponent<GridComponent>();
-
-		pGrid->DeleteAllObjectsWithTag(L"SkullBoxFalling");
-		pGrid->DeleteAllObjectsWithTag(L"Bomb");
+		
+		m_pGrid->DeleteAllObjectsWithTag(L"SkullBoxFalling");
+		m_pGrid->DeleteAllObjectsWithTag(L"Bomb");
 		
 		m_pUIManager->ZeroTimer();
 		m_IsGameOver = true;
@@ -335,7 +333,6 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 
 void BombermanBlastScene::SpawnRocks() const 
 {
-	const auto grid = m_pLevel->GetComponent<GridComponent>();
 	const auto gameObjectManager = m_pLevel->GetComponent<GameObjectManager>();
 
 	for (int currentRow = 1; currentRow <= m_NumOfRows; ++currentRow)
@@ -345,11 +342,11 @@ void BombermanBlastScene::SpawnRocks() const
 			const int index = (currentRow - 1) * m_NumOfColumns + (currentCol - 1);
 			if (m_StartingLayout[index] == 'R')
 			{				
-				grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
+				m_pGrid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::BREAKABLE, m_SingleBlockScale), currentRow, currentCol);
 			}
 			else if (m_StartingLayout[index] == 'S')
 			{
-				grid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::UNBREAKABLE, m_SingleBlockScale), currentRow, currentCol);
+				m_pGrid->PlaceObject(gameObjectManager->CreateGameObject<RockPrefab>(RockType::UNBREAKABLE, m_SingleBlockScale), currentRow, currentCol);
 			}
 		}
 	}
@@ -387,8 +384,7 @@ void BombermanBlastScene::Update()
 		if (!player || player->IsDead())
 		{
 			std::erase(m_pCharacters, player);
-			const auto pGrid = m_pLevel->GetComponent<GridComponent>();
-			pGrid->RemoveObject(player);
+			m_pGrid->RemoveObject(player);
 		}
 	}
 
@@ -397,20 +393,19 @@ void BombermanBlastScene::Update()
 		m_ElapsedDroppingTime += m_SceneContext.pGameTime->GetElapsed();
 		if (m_ElapsedDroppingTime >= m_BoxDropInterval)
 		{
-			auto pGrid = m_pLevel->GetComponent<GridComponent>();
 			const int currentRow = m_CurrentIndex / m_NumOfColumns;
 			const int currentCol = m_CurrentIndex % m_NumOfColumns;
     
 			if (currentRow < m_NumOfRows && currentCol < m_NumOfColumns)
 			{
-				if (pGrid->GetCell(currentRow + 1, currentCol + 1).Contains(L"UnbreakableRock"))
+				if (m_pGrid->GetCell(currentRow + 1, currentCol + 1).Contains(L"UnbreakableRock"))
 				{
 					m_CurrentIndex++;
 					return;
 				}
-				const auto pSkullBox = new SkullBox(m_SingleBlockScale, pGrid);
+				const auto pSkullBox = new SkullBox(m_SingleBlockScale, m_pGrid);
 				m_pSkullBoxes.emplace_back(pSkullBox);
-				pGrid->PlaceObject(pSkullBox, currentRow + 1, currentCol + 1);
+				m_pGrid->PlaceObject(pSkullBox, currentRow + 1, currentCol + 1);
 				pSkullBox->PlacedInGrid();
 				
 				m_CurrentIndex++;
@@ -426,7 +421,7 @@ void BombermanBlastScene::Update()
 	}
 		
 
-	m_pLevel->GetComponent<GridComponent>()->UpdateCharacterOnMap(m_pCharacters);
+	m_pGrid->UpdateCharacterOnMap(m_pCharacters);
 	m_pLevel->GetComponent<PowerUpManager>()->UpdatePowerUps();
 }
 
@@ -456,8 +451,8 @@ void BombermanBlastScene::OnGUI()
 
 	if (ImGui::Button("Add Object"))
 	{
-		m_pLevel->GetComponent<GridComponent>()->PlaceObject(new RockPrefab(RockType::BREAKABLE),
-			m_pLevel->GetComponent<GridComponent>()->GetCellOnTop(1, 1));
+		m_pGrid->PlaceObject(new RockPrefab(RockType::BREAKABLE),
+			m_pGrid->GetCellOnTop(1, 1));
 		
 	}
 	
@@ -526,8 +521,7 @@ void BombermanBlastScene::OnGUI()
 				std::string tooltipText = "Current Index: " + std::to_string(index) + "\n";
 
 				// Append the vector of objects as strings to the tooltip
-				const auto grid = m_pLevel->GetComponent<GridComponent>();
-				const auto& cellObjects = grid->GetCell(index).objects;
+				const auto& cellObjects = m_pGrid->GetCell(index).objects;
 				tooltipText += "Cell Objects:\n";
 				for (const auto& item : cellObjects)
 				{

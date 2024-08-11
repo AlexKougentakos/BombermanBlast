@@ -99,7 +99,7 @@ public:
 		m_PlayerStats += increase;
 		m_RemainingBombs = std::max(1, m_RemainingBombs + increase.bombs);
 	}
-	void AddPoint();
+	
 	PlayerColour GetPlayerColour() const
 	{
 		return PlayerColour(m_PlayerIndex);
@@ -150,5 +150,4 @@ private:
 	void ChangeAnimationClip(UINT animationID);
 	
 	int m_PlayerIndex{0};
-	int m_PlayerScore{0};
 };

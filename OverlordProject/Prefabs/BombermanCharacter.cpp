@@ -294,12 +294,6 @@ void BombermanCharacter::Kill()
 	m_PlayerState = PlayerState::Dead;
 }
 
-void BombermanCharacter::AddPoint()
-{
-	++m_PlayerScore;
-	notifyObservers("Score Increase");
-}
-
 void BombermanCharacter::RoundEnded()
 {
 	m_RoundEnded = true;

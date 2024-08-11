@@ -120,6 +120,7 @@
     <ClCompile Include="Prefabs\UI\Menu\Buttons\ControllsButton.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\QuitButton.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\StartButton.cpp" />
+    <ClCompile Include="Prefabs\UI\RoundWinner.cpp" />
     <ClCompile Include="Prefabs\UI\RoundWinners.cpp" />
     <ClCompile Include="Prefabs\UI\Timer.cpp" />
     <ClCompile Include="Prefabs\UI\UIManager.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="Prefabs\UI\Menu\Buttons\ControllsButton.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\QuitButton.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\StartButton.h" />
+    <ClInclude Include="Prefabs\UI\RoundWinner.h" />
     <ClInclude Include="Prefabs\UI\RoundWinners.h" />
     <ClInclude Include="Prefabs\UI\Timer.h" />
     <ClInclude Include="Prefabs\UI\UIManager.h" />

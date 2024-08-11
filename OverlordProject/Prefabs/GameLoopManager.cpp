@@ -132,20 +132,20 @@ void GameLoopManager::OnNotify(BombermanCharacter* source, const std::string& fi
 		if (m_pPlayers.size() == 2)
 		{
 			//Whoever is NOT the source of the DEATH event gets a point
-			if (m_pPlayers[0] == source) 
-				m_pPlayers[1]->AddPoint();
-			else m_pPlayers[0]->AddPoint();
+			int winningPlayerIndex{};
+			if (m_pPlayers[0] == source)
+			{
+				winningPlayerIndex = m_pPlayers[1]->GetIndex();
+			}
+			else winningPlayerIndex = m_pPlayers[0]->GetIndex();
 
+			const int currentScore = m_PlayerScores[winningPlayerIndex];
+			m_PlayerScores[winningPlayerIndex] = currentScore + 1;
+			
+			notifyObservers("Player Score Increase");
 			SwitchToPostRound();
 		}
 	}
-	else if (field == "Score Increase")
-	{
-		const int currentScore = m_PlayerScores[source->GetIndex()];
-		m_PlayerScores[source->GetIndex()] = currentScore + 1;
-		notifyObservers("Player Score Increase");
-	}
-	
 }
 
 void GameLoopManager::DrawOnGUI()

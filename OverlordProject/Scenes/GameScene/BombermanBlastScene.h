@@ -1,4 +1,5 @@
 #pragma once
+class GridComponent;
 class SkullBox;
 class MenuButton;
 class QuitButton;
@@ -36,6 +37,7 @@ private:
 	const short unsigned int m_NumOfPlayers{2};
 
 	std::vector<SkullBox*> m_pSkullBoxes{};
+	GridComponent* m_pGrid{};
 
 	//Cameras
 	FixedCamera* m_pMainCamera{ nullptr };

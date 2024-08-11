@@ -1,7 +1,7 @@
 #pragma once
 class BombermanCharacter;
 
-class CountDown : public GameObject, public Subject<CountDown>
+class CountDown : public GameObject
 {
 public:
 	CountDown(float timeInSeconds, const XMFLOAT2& position);
