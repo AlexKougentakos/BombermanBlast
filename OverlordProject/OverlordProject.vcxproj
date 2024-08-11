@@ -117,9 +117,7 @@
     <ClCompile Include="Prefabs\RockPrefab.cpp" />
     <ClCompile Include="Prefabs\UI\CharacterPointDisplay.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\BackButton.cpp" />
-    <ClCompile Include="Prefabs\UI\Menu\Buttons\ContinueButton.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\ControllsButton.cpp" />
-    <ClCompile Include="Prefabs\UI\Menu\Buttons\MenuButton.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\QuitButton.cpp" />
     <ClCompile Include="Prefabs\UI\Menu\Buttons\StartButton.cpp" />
     <ClCompile Include="Prefabs\UI\RoundWinners.cpp" />
@@ -203,9 +201,7 @@
     <ClInclude Include="Prefabs\RockPrefab.h" />
     <ClInclude Include="Prefabs\UI\CharacterPointDisplay.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\BackButton.h" />
-    <ClInclude Include="Prefabs\UI\Menu\Buttons\ContinueButton.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\ControllsButton.h" />
-    <ClInclude Include="Prefabs\UI\Menu\Buttons\MenuButton.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\QuitButton.h" />
     <ClInclude Include="Prefabs\UI\Menu\Buttons\StartButton.h" />
     <ClInclude Include="Prefabs\UI\RoundWinners.h" />

@@ -385,7 +385,11 @@ void BombermanBlastScene::Update()
 	{
 
 		if (!player || player->IsDead())
+		{
 			std::erase(m_pCharacters, player);
+			const auto pGrid = m_pLevel->GetComponent<GridComponent>();
+			pGrid->RemoveObject(player);
+		}
 	}
 
 	if (m_StartedDropping)

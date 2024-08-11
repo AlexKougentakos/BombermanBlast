@@ -5,7 +5,6 @@
 #include "Timer.h"
 #include "Menu/ButtonManager.h"
 #include "Menu/Buttons/BackButton.h"
-#include "Menu/Buttons/ContinueButton.h"
 #include "Menu/Buttons/QuitButton.h"
 #include "Prefabs/BombermanCharacter.h"
 
@@ -24,7 +23,6 @@ void UIManager::Initialize(const SceneContext& sceneContext)
     AddPlayerHeads(sceneContext);
     AddTimer(sceneContext);
     
-
     m_MenuButtonPos = { sceneContext.windowWidth / 2.f, sceneContext.windowHeight / 1.5f - 200 };
     m_QuitButtonPos = { sceneContext.windowWidth / 2.f, sceneContext.windowHeight / 1.5f - 50};
 }

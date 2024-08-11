@@ -82,40 +82,36 @@ void BombermanCharacter::Initialize(const SceneContext& /*sceneContext*/)
 
 void BombermanCharacter::Update(const SceneContext& sceneContext)
 {
-	if (!sceneContext.settings.inDebug)
-{
-		HandleInputAndMovement(sceneContext);
+	HandleInputAndMovement(sceneContext);
 
-		switch (m_PlayerState)
-		{
-			case PlayerState::Idle:
-				ChangeAnimationClip(1);
-			m_pModelAnimator->SetAnimationSpeed(1.5f);
-				break;
-			case PlayerState::Moving:
-				ChangeAnimationClip(2);
-			m_pModelAnimator->SetAnimationSpeed(3.5f);
-				break;
-			case PlayerState::Dead:
-				ChangeAnimationClip(5);
-				m_ElapsedDeathTimer += sceneContext.pGameTime->GetElapsed();
+	switch (m_PlayerState)
+	{
+		case PlayerState::Idle:
+			ChangeAnimationClip(1);
+		m_pModelAnimator->SetAnimationSpeed(1.5f);
+			break;
+		case PlayerState::Moving:
+			ChangeAnimationClip(2);
+		m_pModelAnimator->SetAnimationSpeed(3.5f);
+			break;
+		case PlayerState::Dead:
+			ChangeAnimationClip(5);
+			m_ElapsedDeathTimer += sceneContext.pGameTime->GetElapsed();
 
-			//Player flickering
-			const float flickerDuration = 1.0f / m_DeathFlickerSpeed;
-			const float flickerProgress = fmod(m_ElapsedDeathTimer, flickerDuration) / flickerDuration;
-			const float flickerOpacity = (flickerProgress < 0.5f) ? 0.1f : 1.0f;
+		//Player flickering
+		const float flickerDuration = 1.0f / m_DeathFlickerSpeed;
+		const float flickerProgress = fmod(m_ElapsedDeathTimer, flickerDuration) / flickerDuration;
+		const float flickerOpacity = (flickerProgress < 0.5f) ? 0.1f : 1.0f;
 
-			m_pMaterial->SetOpacity(flickerOpacity);
-			m_pFaceMaterial->SetOpacity(flickerOpacity);
+		m_pMaterial->SetOpacity(flickerOpacity);
+		m_pFaceMaterial->SetOpacity(flickerOpacity);
 
-				if (m_ElapsedDeathTimer >= m_DeathAnimTime)
-				{
-					notifyObservers("Player Death");
-					m_IsDead = true;
-					m_pGrid->RemoveObject(this);
-				}
-				break;
-		}
+			if (m_ElapsedDeathTimer >= m_DeathAnimTime)
+			{
+				notifyObservers("Player Death");
+				m_IsDead = true;
+			}
+			break;
 	}
 }
 
