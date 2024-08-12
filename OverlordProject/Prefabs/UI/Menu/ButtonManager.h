@@ -23,8 +23,7 @@ private:
 
 	bool m_ExecutedOnHoverEnter{ false };
 	bool m_ExecutedOnHoverExit{ false };
-
-	bool m_UsingCustomCursor{false};
+	
 	const XMFLOAT2* m_pCustomCursorPos;
 
 	SceneContext m_SceneContext{};

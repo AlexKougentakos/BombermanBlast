@@ -28,7 +28,6 @@ BombermanBlastScene::BombermanBlastScene() :
 	m_NumOfPlayers = std::clamp(m_NumOfPlayers, 2, 4);
 }
 
-
 BombermanBlastScene::~BombermanBlastScene()
 {
 }
