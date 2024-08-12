@@ -26,7 +26,7 @@ public:
 
 	std::map<int, int> GetPlayerScores() const { return m_PlayerScores; }
 
-protected:
+protected:	
 	void Initialize(const SceneContext& sceneContext) override;
 	void Update(const SceneContext& sceneContext) override;
 

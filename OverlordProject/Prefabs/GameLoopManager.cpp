@@ -116,35 +116,28 @@ void GameLoopManager::SwitchToPostRound()
 {
 	m_GamePhase = GamePhase::PostRound;
 	m_ElapsedRoundTime = 0;
-
-	std::vector<int> winningPlayerIndices{};
+			
+	
 	for (const auto player : m_pPlayers)
 	{
 		player->RoundEnded();
 		player->SetInputEnabled(false);
-		winningPlayerIndices.emplace_back(player->GetIndex());
+		if (player && !player->IsDead())
+		{
+			const int currentScore = m_PlayerScores[player->GetIndex()];
+			m_PlayerScores[player->GetIndex()] = currentScore + 1;
+		}
 	}
 	notifyObservers("Post-Round Start");
+	notifyObservers("Player Score Increase");
 }
 
-void GameLoopManager::OnNotify(BombermanCharacter* source, const std::string& field)
+void GameLoopManager::OnNotify(BombermanCharacter*, const std::string& field)
 {
 	if (field == "Player Death")
 	{
 		if (m_pPlayers.size() == 2)
 		{
-			//Whoever is NOT the source of the DEATH event gets a point
-			int winningPlayerIndex{};
-			if (m_pPlayers[0] == source)
-			{
-				winningPlayerIndex = m_pPlayers[1]->GetIndex();
-			}
-			else winningPlayerIndex = m_pPlayers[0]->GetIndex();
-
-			const int currentScore = m_PlayerScores[winningPlayerIndex];
-			m_PlayerScores[winningPlayerIndex] = currentScore + 1;
-			
-			notifyObservers("Player Score Increase");
 			SwitchToPostRound();
 		}
 	}
