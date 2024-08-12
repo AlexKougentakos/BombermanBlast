@@ -39,9 +39,9 @@ private:
 	 * TIMERS
 	 */
 	const float m_PreRoundTime{ 3.f }; //Seconds
-	const float m_RoundTime{ 1.f }; //Seconds
+	const float m_RoundTime{ 100.f }; //Seconds
 	const float m_BoxDropDuration{ 43.f }; //Seconds
-	const float m_PostRoundTime{ 5.f }; //Seconds
+	const float m_PostRoundTime{ 4.f }; //Seconds
 
 	float m_ElapsedRoundTime{0.f};
 

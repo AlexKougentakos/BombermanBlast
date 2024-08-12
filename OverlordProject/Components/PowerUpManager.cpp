@@ -64,23 +64,30 @@ void PowerUpManager::AddPowerUp(BasePowerUp* pPowerUp, GridCell& cell)
 
 void PowerUpManager::RemovePowerUp(BasePowerUp* pPowerUp)
 {
-	m_pPowerUps.erase(std::remove(m_pPowerUps.begin(), m_pPowerUps.end(), pPowerUp), m_pPowerUps.end());
-
-	GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(pPowerUp);
-	
+	const auto it = std::find(m_pPowerUps.begin(), m_pPowerUps.end(), pPowerUp);
+	if (it != m_pPowerUps.end())
+	{
+		GetGameObject()->GetComponent<GameObjectManager>()->RemoveGameObject(*it);
+		m_pPowerUps.erase(it);
+	}
+	else
+	{
+		std::cerr << "Warning: Attempted to remove non-existent power-up." << std::endl;
+	}
 }
 
 void PowerUpManager::RemovePowerUps()
 {
-	for (const auto& pPowerUp : m_pPowerUps)
+	const auto gameObjectManager = GetGameObject()->GetComponent<GameObjectManager>();
+        
+	for (auto it = m_pPowerUps.begin(); it != m_pPowerUps.end(); )
 	{
-		RemovePowerUp(pPowerUp);
+		gameObjectManager->RemoveGameObject(*it);
+		it = m_pPowerUps.erase(it);
 	}
 }
-
-
 void PowerUpManager::UpdatePowerUps()
-{
+{	
 	for (const auto& pPowerUp : m_pPowerUps)
 	{
 		if (pPowerUp->IsMarkedForRemoval())

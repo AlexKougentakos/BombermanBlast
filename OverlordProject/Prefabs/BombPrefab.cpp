@@ -42,6 +42,8 @@ void BombPrefab::Initialize(const SceneContext& /*gameContext*/)
 	const auto physicsMat = PhysXManager::Get()->GetPhysics()->createMaterial(0.2f, 0.2f, 0.2f);
 	const auto pPxConvexMesh = ContentManager::Load<PxConvexMesh>(L"Meshes/Bomb/Collider.ovpc");
 	m_pRigidBody->AddCollider(PxConvexMeshGeometry(pPxConvexMesh, PxMeshScale({ .03f,.03f,.03f })), *physicsMat);
+
+	SoundManager::Get()->Play(L"BombPlace.wav", 0.6f);
 }
 
 void BombPrefab::InitializeParticles()

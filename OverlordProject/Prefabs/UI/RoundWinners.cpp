@@ -35,7 +35,7 @@ void RoundWinners::Initialize(const SceneContext& sceneContext)
 	const auto tempSprite = tempObject->AddComponent(new SpriteComponent(m_PlayerColourToSpritePathMap[PlayerColour{1}]));
 	tempSprite->GetTransform()->Scale(1.33f);
 	const XMFLOAT2 headSize = tempSprite->GetDimensions();
-	tempObject->RemoveComponent(tempSprite);
+	tempObject->RemoveComponent(tempSprite, true);
 	delete tempObject;
 
 	// Calculate total width of all player heads including margins

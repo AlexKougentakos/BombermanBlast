@@ -11,6 +11,11 @@ BasePowerUp::BasePowerUp(GridComponent* pGridComponent, GridCell* pGridCell):
 	SetTag(L"PowerUp");
 }
 
+BasePowerUp::~BasePowerUp()
+{
+	SetTag(L"test");
+}
+
 void BasePowerUp::Initialize(const SceneContext& /*sceneContext*/)
 {
 	//All of the powerUps will have the same model. Material needs to be set in the derived class.
@@ -38,6 +43,7 @@ void BasePowerUp::Initialize(const SceneContext& /*sceneContext*/)
 void BasePowerUp::OnCollisionRoot(GameObject* trigger, GameObject* other, PxTriggerAction action)
 {
 	//m_pGridCell->Remove(this);
+	SoundManager::Get()->Play(L"Pickup.wav", 0.6f);
 	OnCollision(trigger, other, action);
 }
 

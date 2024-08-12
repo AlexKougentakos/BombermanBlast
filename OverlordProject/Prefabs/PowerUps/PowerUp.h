@@ -8,7 +8,7 @@ class GridComponent;
 class BasePowerUp : public GameObject
 {
 public:
-	virtual ~BasePowerUp() override = default;
+	virtual ~BasePowerUp() override;
 
 	BasePowerUp(const BasePowerUp& other) = delete;
 	BasePowerUp(BasePowerUp&& other) noexcept = delete;

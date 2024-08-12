@@ -28,7 +28,7 @@ BombermanBlastScene::BombermanBlastScene() :
 	m_NumOfPlayers = std::clamp(m_NumOfPlayers, 2, 4);
 
 #ifdef _DEBUG
-	m_NumOfPlayers = 4;
+	m_NumOfPlayers = 2;
 #endif
 }
 
@@ -400,7 +400,6 @@ void BombermanBlastScene::Update()
 	
 	for (const auto player : m_pCharacters)
 	{
-
 		if (!player || player->IsDead())
 		{
 			std::erase(m_pCharacters, player);
