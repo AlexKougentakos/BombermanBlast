@@ -18,6 +18,8 @@ void StartButton::OnClick() const
 		SceneManager::Get()->RemoveGameScene(scene, true);
 	}
 
+	SoundManager::Get()->StopMusic();
+	
 	//Create a new one
 	SceneManager::Get()->AddGameScene(new BombermanBlastScene());
 	SceneManager::Get()->SetActiveGameScene(L"BombermanBlastScene");

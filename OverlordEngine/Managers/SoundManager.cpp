@@ -108,3 +108,81 @@ void SoundManager::Play(const std::wstring& soundPath, float volume, bool isLoop
     result = sound->release();
         }).detach();
 }
+
+void SoundManager::PlayMusic(const std::wstring& musicPath, float volume, bool overrideTrack )
+{
+	// If not overriding and the same music is already playing, do nothing
+	if (!overrideTrack && musicPath == m_CurrentMusicPath)
+	{
+		return;
+	}
+	// Stop and release any currently playing music
+	if (m_pMusicChannel)
+	{
+		m_pMusicChannel->stop();
+		m_pMusicChannel = nullptr;
+	}
+	if (m_pCurrentMusic)
+	{
+		m_pCurrentMusic->release();
+		m_pCurrentMusic = nullptr;
+	}
+
+	if (musicPath.empty())
+	{
+		// If no new music path is provided, just stop the current music
+		return;
+	}
+
+	const std::wstring fullPath = m_GameContext.contentRoot + L"Sounds/" + musicPath;
+    
+	// Convert wide string to multi-byte string
+	const int narrowStrSize = WideCharToMultiByte(CP_UTF8, 0, fullPath.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	std::string narrowStr(narrowStrSize, '\0');
+	WideCharToMultiByte(CP_UTF8, 0, fullPath.c_str(), -1, &narrowStr[0], narrowStrSize, nullptr, nullptr);
+
+	FMOD_RESULT result = m_pFmodSystem->createSound(narrowStr.c_str(), FMOD_DEFAULT | FMOD_LOOP_NORMAL, 0, &m_pCurrentMusic);
+	if (result != FMOD_OK)
+	{
+		std::wcerr << L"Cannot load music: " << fullPath << L". Error: " << result << std::endl;
+		return;
+	}
+
+	result = m_pFmodSystem->playSound(m_pCurrentMusic, nullptr, false, &m_pMusicChannel);
+	if (result != FMOD_OK)
+	{
+		std::wcerr << L"Cannot play music: " << fullPath << L". Error: " << result << std::endl;
+		m_pCurrentMusic->release();
+		m_pCurrentMusic = nullptr;
+		m_CurrentMusicPath = L"NoPath.NoPath";
+		return;
+	}
+
+	m_pMusicChannel->setVolume(volume);
+	m_CurrentMusicPath = musicPath;
+}
+
+void SoundManager::StopMusic()
+{
+	if (m_pMusicChannel)
+	{
+		FMOD_RESULT result = m_pMusicChannel->stop();
+		if (result != FMOD_OK)
+		{
+			std::wcerr << L"Failed to stop music channel. Error: " << result << std::endl;
+		}
+		m_pMusicChannel = nullptr;
+	}
+
+	if (m_pCurrentMusic)
+	{
+		FMOD_RESULT result = m_pCurrentMusic->release();
+		if (result != FMOD_OK)
+		{
+			std::wcerr << L"Failed to release music sound. Error: " << result << std::endl;
+		}
+		m_pCurrentMusic = nullptr;
+	}
+
+	m_CurrentMusicPath.clear();
+}

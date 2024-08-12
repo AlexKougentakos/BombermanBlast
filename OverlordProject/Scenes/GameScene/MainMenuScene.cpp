@@ -67,6 +67,8 @@ void MainMenuScene::OnSceneActivated()
 	ShowCursor(FALSE);
 #endif 
 	m_SceneContext.pInput->SetEnabled(true);
+	
+	SoundManager::Get()->PlayMusic(L"MenuMusic.mp3", 0.65f, false);
 }
 
 void MainMenuScene::Update()

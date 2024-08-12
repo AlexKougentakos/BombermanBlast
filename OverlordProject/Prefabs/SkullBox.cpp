@@ -52,6 +52,7 @@ void SkullBox::Update(const SceneContext& sceneContext)
 			m_OnGround = true;
 			GetTransform()->Translate(currentPos.x, 0.f, currentPos.z);
 			SetTag(L"SkullBoxLanded");
+			SoundManager::Get()->Play(L"BlockFall.wav");
 		}
 	}
 }

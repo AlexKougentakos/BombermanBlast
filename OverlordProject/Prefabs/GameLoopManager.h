@@ -24,6 +24,8 @@ public:
 	void DrawOnGUI();
 	void StartGame() { notifyObservers("Pre-Round Start"); }
 
+	float GetPreRoundTime() const { return m_PreRoundTime; }
+	
 	std::map<int, int> GetPlayerScores() const { return m_PlayerScores; }
 
 protected:	
@@ -36,7 +38,7 @@ private:
 	/*
 	 * TIMERS
 	 */
-	const float m_PreRoundTime{ 5.f }; //Seconds
+	const float m_PreRoundTime{ 3.f }; //Seconds
 	const float m_RoundTime{ 1.f }; //Seconds
 	const float m_BoxDropDuration{ 43.f }; //Seconds
 	const float m_PostRoundTime{ 5.f }; //Seconds

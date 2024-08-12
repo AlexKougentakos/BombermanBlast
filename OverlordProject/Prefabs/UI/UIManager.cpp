@@ -8,6 +8,7 @@
 #include "Menu/Buttons/BackButton.h"
 #include "Menu/Buttons/QuitButton.h"
 #include "Prefabs/BombermanCharacter.h"
+#include "Prefabs/GameLoopManager.h"
 
 UIManager::UIManager(std::vector<BombermanCharacter*> players, GameLoopManager* pGameLoopManager)
 	:m_pPlayers(players),
@@ -125,7 +126,7 @@ void UIManager::AddTimer(const SceneContext& sceneContext)
     const XMFLOAT2 timerPosition = XMFLOAT2(2 * sceneContext.windowWidth / 5.0f + sceneContext.windowWidth / 10.0f, 0.f); // Centered in the 3rd segment.
     m_pTimer = AddChild(new Timer(120, timerPosition));
 
-    m_pCountdown = AddChild(new CountDown(5, 
+    m_pCountdown = AddChild(new CountDown(m_pGameLoopManager->GetPreRoundTime(), 
                                           XMFLOAT2(sceneContext.windowWidth / 2, sceneContext.windowHeight / 2)));
 }
 

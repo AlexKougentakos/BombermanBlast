@@ -24,6 +24,7 @@ void CountDown::Update(const SceneContext& sceneContext)
 
 	if (m_ElapsedTime >= m_TimeInSeconds)
 	{
+		SoundManager::Get()->Play(L"StartGong.wav");
 		m_CountdownFinished = true;
 	}
 }

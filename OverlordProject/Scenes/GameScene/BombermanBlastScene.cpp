@@ -26,6 +26,10 @@ BombermanBlastScene::BombermanBlastScene() :
     
 	m_NumOfPlayers = std::stoi(line);
 	m_NumOfPlayers = std::clamp(m_NumOfPlayers, 2, 4);
+
+#ifdef _DEBUG
+	m_NumOfPlayers = 4;
+#endif
 }
 
 BombermanBlastScene::~BombermanBlastScene()
@@ -234,7 +238,7 @@ void BombermanBlastScene::DefinePlayerInputs() const
 	m_SceneContext.pInput->AddInputAction(inputAction);
 	inputAction = InputAction(CharacterMoveBackward_P3, InputState::down, VK_DOWN);
 	m_SceneContext.pInput->AddInputAction(inputAction);
-	inputAction = InputAction(CharacterPlaceBomb_P3, InputState::pressed, VK_LSHIFT, -1, XINPUT_GAMEPAD_A, GamepadIndex::playerThree);
+	inputAction = InputAction(CharacterPlaceBomb_P3, InputState::pressed, VK_RSHIFT, -1, XINPUT_GAMEPAD_A, GamepadIndex::playerThree);
 	m_SceneContext.pInput->AddInputAction(inputAction);
 	//P4
 	inputAction = InputAction(CharacterMoveLeft_P4, InputState::down, VK_NUMPAD1);
@@ -312,14 +316,17 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 			m_pUIManager->ResetTimer();
 			m_pUIManager->HideRoundWinners();
 			m_pUIManager->UpdatePlayers(m_pCharacters);
+			
 		}
 
+		SoundManager::Get()->Play(L"PreRoundStart.mp3", 0.6f);
 		m_pUIManager->StartCountdown();
 	}
 
 	if (event == "Round Start")
 	{
 		m_pUIManager->StartTimer();
+		SoundManager::Get()->PlayMusic(L"InGameMusic.mp3", 0.7f, true);
 	}
 
 	if (event == "Round-With-Skull-Boxes-Start")
@@ -336,6 +343,8 @@ void BombermanBlastScene::OnNotify(GameLoopManager* /*source*/, const std::strin
 		m_pGrid->DeleteAllObjectsWithTag(L"SkullBoxFalling");
 		m_pGrid->DeleteAllObjectsWithTag(L"Bomb");
 		m_pUIManager->ShowRoundWinners();
+		SoundManager::Get()->StopMusic();
+		SoundManager::Get()->Play(L"FinishGong.mp3");
 		
 		m_pUIManager->ZeroTimer();
 		m_IsGameOver = true;
