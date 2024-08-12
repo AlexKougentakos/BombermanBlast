@@ -21,8 +21,6 @@ public:
 	GameLoopManager& operator=(const GameLoopManager& other) = delete;
 	GameLoopManager& operator=(GameLoopManager&& other) noexcept = delete;
 
-	void IncreaseRoundNumber() { ++m_RoundNumber; }
-
 	void DrawOnGUI();
 	void StartGame() { notifyObservers("Pre-Round Start"); }
 
@@ -44,8 +42,6 @@ private:
 	const float m_PostRoundTime{ 5.f }; //Seconds
 
 	float m_ElapsedRoundTime{0.f};
-
-	int m_RoundNumber{ 1 };
 
 	const std::vector<BombermanCharacter*>& m_pPlayers{};
 

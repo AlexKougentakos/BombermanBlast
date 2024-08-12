@@ -108,8 +108,8 @@ void BombermanCharacter::Update(const SceneContext& sceneContext)
 
 			if (m_ElapsedDeathTimer >= m_DeathAnimTime)
 			{
-				notifyObservers("Player Death");
 				m_IsDead = true;
+				notifyObservers("Player Death");
 			}
 			break;
 	}
