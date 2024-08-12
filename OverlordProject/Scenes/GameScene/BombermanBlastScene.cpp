@@ -16,7 +16,17 @@
 #include "Prefabs/UI/UIManager.h"
 
 BombermanBlastScene::BombermanBlastScene() :
-	GameScene(L"BombermanBlastScene") {}
+	GameScene(L"BombermanBlastScene")
+{
+	const fs::path filePath =  ContentManager::GetFullAssetPath(L"NumPlayers.txt");
+    
+	std::ifstream file(filePath);
+	std::string line;
+	std::getline(file, line);
+    
+	m_NumOfPlayers = std::stoi(line);
+	m_NumOfPlayers = std::clamp(m_NumOfPlayers, 2, 4);
+}
 
 
 BombermanBlastScene::~BombermanBlastScene()

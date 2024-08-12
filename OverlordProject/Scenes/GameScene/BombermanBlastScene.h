@@ -34,7 +34,7 @@ protected:
 private:
 	//Characters
 	std::vector<BombermanCharacter*> m_pCharacters{};
-	const short unsigned int m_NumOfPlayers{2};
+	int m_NumOfPlayers{4};
 
 	std::vector<SkullBox*> m_pSkullBoxes{};
 	GridComponent* m_pGrid{};
