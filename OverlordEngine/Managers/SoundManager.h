@@ -23,8 +23,8 @@ private:
 
 	FMOD::System* m_pFmodSystem = nullptr;
 
-	FMOD::Sound* m_pCurrentMusic;
-	FMOD::Channel* m_pMusicChannel;
+	FMOD::Sound* m_pCurrentMusic{};
+	FMOD::Channel* m_pMusicChannel{};
 	std::wstring m_CurrentMusicPath{};
 };
 

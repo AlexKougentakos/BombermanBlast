@@ -119,8 +119,13 @@ void SoundManager::PlayMusic(const std::wstring& musicPath, float volume, bool o
 	// Stop and release any currently playing music
 	if (m_pMusicChannel)
 	{
-		m_pMusicChannel->stop();
-		m_pMusicChannel = nullptr;
+		bool isPlaying{};
+		m_pMusicChannel->isPlaying(&isPlaying);
+		if (isPlaying)
+		{
+			m_pMusicChannel->stop();
+			m_pMusicChannel = nullptr;	
+		}
 	}
 	if (m_pCurrentMusic)
 	{

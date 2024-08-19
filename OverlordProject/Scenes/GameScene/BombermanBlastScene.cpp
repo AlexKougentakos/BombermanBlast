@@ -28,7 +28,7 @@ BombermanBlastScene::BombermanBlastScene() :
 	m_NumOfPlayers = std::clamp(m_NumOfPlayers, 2, 4);
 
 #ifdef _DEBUG
-	m_NumOfPlayers = 2;
+	m_NumOfPlayers = 3;
 #endif
 }
 

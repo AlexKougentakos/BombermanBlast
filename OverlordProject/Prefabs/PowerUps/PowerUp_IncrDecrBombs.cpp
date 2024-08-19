@@ -36,7 +36,7 @@ PowerUp_DecreaseBomb::PowerUp_DecreaseBomb(GridComponent* pGridComponent, GridCe
 
 void PowerUp_DecreaseBomb::OnCollision(GameObject*, GameObject* other, PxTriggerAction action)
 {
-	if (action == PxTriggerAction::LEAVE) return;
+ 	if (action == PxTriggerAction::LEAVE) return;
 
 	const auto player = dynamic_cast<BombermanCharacter*>(other);
 
